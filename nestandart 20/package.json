@@ -1,0 +1,20 @@
+{
+  "name": "nestandart-phuket",
+  "version": "1.0.0",
+  "description": "Авторские экскурсии на Пхукете с русскоязычным гидом",
+  "private": true,
+  "scripts": {
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.4.1"
+  },
+  "keywords": [
+    "phuket",
+    "tours",
+    "excursions",
+    "thailand"
+  ],
+  "author": "Нестандартный Отдых®",
+  "license": "UNLICENSED"
+}
