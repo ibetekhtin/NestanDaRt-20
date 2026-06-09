@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  kote-bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: kote-bot
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - kote-backend
+    networks:
+      - kote-net
+    volumes:
+      - ./logs:/app/logs
+
+  kote-backend:
+    build:
+      context: ./app/backend
+      dockerfile: Dockerfile
+    container_name: kote-backend
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - n8n
+    networks:
+      - kote-net
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: kote-n8n
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - GENERIC_TIMEZONE=Asia/Bangkok
+      - TZ=Asia/Bangkok
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - kote-net
+
+volumes:
+  n8n_data:
+
+networks:
+  kote-net:
+    driver: bridge

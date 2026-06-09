@@ -1,0 +1,48 @@
+{
+  "name": "Lead Intake",
+  "description": "Приём лида из Telegram/Web → Supabase clients → уведомление",
+  "nodes": [
+    {
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "lead-intake",
+        "httpMethod": "POST"
+      },
+      "position": [200, 300]
+    },
+    {
+      "name": "Create Client",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "create",
+        "tableId": "clients",
+        "fields": {
+          "market_id": "={{ $json.market_id }}",
+          "telegram_id": "={{ $json.telegram_id }}",
+          "name": "={{ $json.name }}",
+          "phone": "={{ $json.phone }}"
+        }
+      },
+      "position": [400, 300]
+    },
+    {
+      "name": "Notify Manager",
+      "type": "n8n-nodes-base.telegram",
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $env.MANAGER_CHAT_ID }}",
+        "text": "🐾 Новый лид: {{ $json.name }}\n📍 {{ $json.market_id }}\n📱 {{ $json.phone || 'не указан' }}"
+      },
+      "position": [600, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[ { "node": "Create Client", "type": "main", "index": 0 } ]]
+    },
+    "Create Client": {
+      "main": [[ { "node": "Notify Manager", "type": "main", "index": 0 } ]]
+    }
+  }
+}

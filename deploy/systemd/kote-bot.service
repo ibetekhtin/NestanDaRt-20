@@ -1,0 +1,15 @@
+[Unit]
+Description=KOTE Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/kote
+ExecStart=/usr/bin/node -r dotenv/config bot/index.js
+Restart=always
+RestartSec=10
+EnvironmentFile=/opt/kote/.env
+
+[Install]
+WantedBy=multi-user.target

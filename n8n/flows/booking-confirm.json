@@ -1,0 +1,114 @@
+{
+  "name": "Booking Confirm",
+  "description": "Подтверждение / оплата брони — единый поток: платёж + статус + уведомления (используем Merge перед уведомлениями)",
+  "nodes": [
+    {
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "booking-confirm",
+        "httpMethod": "POST"
+      },
+      "position": [200, 300]
+    },
+    {
+      "name": "Get Booking",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "get",
+        "tableId": "booking_details",
+        "filters": "id=eq.{{ $json.booking_id }}",
+        "returnFirst": true
+      },
+      "position": [400, 300]
+    },
+    {
+      "name": "Build Payload",
+      "type": "n8n-nodes-base.set",
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "booking_id", "value": "={{ $json.id }}" },
+            { "name": "telegram_id", "value": "={{ $json.telegram_id }}" },
+            { "name": "service_title", "value": "={{ $json.service_title }}" },
+            { "name": "market_id", "value": "={{ $json.market_id }}" },
+            { "name": "date", "value": "={{ $json.date }}" },
+            { "name": "currency", "value": "={{ $json.currency }}" },
+            { "name": "method", "value": "={{ $json.method || 'cash' }}" }
+          ],
+          "number": [
+            { "name": "amount", "value": "={{ $json.amount || $json.total }}" }
+          ]
+        }
+      },
+      "position": [600, 300]
+    },
+    {
+      "name": "Save Payment",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "create",
+        "tableId": "payments",
+        "fields": {
+          "booking_id": "={{ $json.booking_id }}",
+          "amount": "={{ $json.amount }}",
+          "currency": "={{ $json.currency }}",
+          "method": "={{ $json.method }}",
+          "status": "completed"
+        }
+      },
+      "position": [800, 200]
+    },
+    {
+      "name": "Update Booking",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "update",
+        "tableId": "bookings",
+        "fields": { "status": "confirmed" },
+        "filters": "id=eq.{{ $json.booking_id }}"
+      },
+      "position": [800, 400]
+    },
+    {
+      "name": "Notify Client",
+      "type": "n8n-nodes-base.telegram",
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $json.telegram_id }}",
+        "text": "✅ Бронь подтверждена!\n📦 {{ $json.service_title }}\n📅 {{ $json.date }}\n💰 {{ $json.amount }} {{ $json.currency }}\n\nХорошего отдыха! 🐾"
+      },
+      "position": [1200, 300]
+    },
+    {
+      "name": "Notify Manager",
+      "type": "n8n-nodes-base.telegram",
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $env.MANAGER_CHAT_ID }}",
+        "text": "📋 Бронь #{{ $json.booking_id }} подтверждена\n{{ $json.service_title }} — {{ $json.date }}\n💰 {{ $json.amount }} {{ $json.currency }}\n📍 {{ $json.market_id }}"
+      },
+      "position": [1200, 500]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[ { "node": "Get Booking", "type": "main", "index": 0 } ]]
+    },
+    "Get Booking": {
+      "main": [[ { "node": "Build Payload", "type": "main", "index": 0 } ]]
+    },
+    "Build Payload": {
+      "main": [
+        [ { "node": "Save Payment", "type": "main", "index": 0 } ],
+        [ { "node": "Update Booking", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Save Payment": {
+      "main": [[ { "node": "Notify Client", "type": "main", "index": 0 } ]]
+    },
+    "Update Booking": {
+      "main": [[ { "node": "Notify Manager", "type": "main", "index": 0 } ]]
+    }
+  }
+}

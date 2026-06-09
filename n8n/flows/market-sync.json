@@ -1,0 +1,46 @@
+{
+  "name": "Market Sync",
+  "description": "Синхронизация состояния рынков (activate/deactivate)",
+  "nodes": [
+    {
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "market-sync",
+        "httpMethod": "POST"
+      },
+      "position": [200, 300]
+    },
+    {
+      "name": "Update Market",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "update",
+        "tableId": "markets",
+        "fields": {
+          "active": "={{ $json.action === 'activate' }}"
+        },
+        "filters": "id=eq.{{ $json.market_id }}"
+      },
+      "position": [400, 300]
+    },
+    {
+      "name": "Notify Manager",
+      "type": "n8n-nodes-base.telegram",
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $env.MANAGER_CHAT_ID }}",
+        "text": "🔄 Рынок {{ $json.market_id }}: {{ $json.action === 'activate' ? 'активирован' : 'деактивирован' }}"
+      },
+      "position": [600, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Update Market", "type": "main", "index": 0 }]]
+    },
+    "Update Market": {
+      "main": [[{ "node": "Notify Manager", "type": "main", "index": 0 }]]
+    }
+  }
+}

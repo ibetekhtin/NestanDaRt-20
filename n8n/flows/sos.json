@@ -1,0 +1,74 @@
+{
+  "name": "SOS",
+  "description": "Экстренный вызов — немедленное уведомление менеджера + номера по рынку",
+  "nodes": [
+    {
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "sos",
+        "httpMethod": "POST"
+      },
+      "position": [200, 300]
+    },
+    {
+      "name": "Get Client",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "get",
+        "tableId": "clients",
+        "filters": "telegram_id=eq.{{ $json.telegram_id }}",
+        "returnFirst": true
+      },
+      "position": [400, 300]
+    },
+    {
+      "name": "Normalize",
+      "type": "n8n-nodes-base.set",
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "telegram_id", "value": "={{ $json.telegram_id || $json[0].telegram_id }}" },
+            { "name": "name", "value": "={{ $json.name || $json[0].name || 'Неизвестно' }}" },
+            { "name": "market_id", "value": "={{ $json.market_id || $json[0].market_id || 'не указан' }}" }
+          ]
+        }
+      },
+      "position": [600, 300]
+    },
+    {
+      "name": "Alert Manager",
+      "type": "n8n-nodes-base.telegram",
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $env.MANAGER_CHAT_ID }}",
+        "text": "🚨 SOS!\nПользователь: {{ $json.name }}\nРынок: {{ $json.market_id }}\nTelegram: {{ $json.telegram_id }}\n\n⚡ Немедленно свяжитесь!"
+      },
+      "position": [800, 200]
+    },
+    {
+      "name": "Reply to Client",
+      "type": "n8n-nodes-base.telegram",
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $json.telegram_id }}",
+        "text": "🚨 Получил SOS!\n\n📞 Полиция: 191\n🚑 Скорая: 1669\n🔥 Пожарные: 199\n📞 Посольство РФ: +66-2-650-2531\n\nМенеджер свяжется с тобой прямо сейчас!"
+      },
+      "position": [800, 400]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[ { "node": "Get Client", "type": "main", "index": 0 } ]]
+    },
+    "Get Client": {
+      "main": [[ { "node": "Normalize", "type": "main", "index": 0 } ]]
+    },
+    "Normalize": {
+      "main": [
+        [ { "node": "Alert Manager", "type": "main", "index": 0 } ],
+        [ { "node": "Reply to Client", "type": "main", "index": 0 } ]
+      ]
+    }
+  }
+}

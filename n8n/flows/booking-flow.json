@@ -1,0 +1,106 @@
+{
+  "name": "Booking Flow",
+  "description": "Полный жизненный цикл брони (confirm/cancel/complete)",
+  "nodes": [
+    {
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {
+        "path": "booking-flow",
+        "httpMethod": "POST"
+      },
+      "position": [200, 300]
+    },
+    {
+      "name": "Get Booking",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "get",
+        "tableId": "booking_details",
+        "filters": "booking_id=eq.{{ $json.booking_id }}",
+        "returnFirst": true
+      },
+      "position": [400, 300]
+    },
+    {
+      "name": "Switch Action",
+      "type": "n8n-nodes-base.switch",
+      "parameters": {
+        "dataPropertyName": "action",
+        "rules": [
+          { "value": "confirm", "output": 0 },
+          { "value": "cancel", "output": 1 },
+          { "value": "complete", "output": 2 }
+        ]
+      },
+      "position": [600, 300]
+    },
+    {
+      "name": "Confirm",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "update",
+        "tableId": "bookings",
+        "fields": { "status": "confirmed" },
+        "filters": "id=eq.{{ $json.booking_id }}"
+      },
+      "position": [800, 200]
+    },
+    {
+      "name": "Cancel",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "update",
+        "tableId": "bookings",
+        "fields": { "status": "cancelled" },
+        "filters": "id=eq.{{ $json.booking_id }}"
+      },
+      "position": [800, 300]
+    },
+    {
+      "name": "Complete",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "update",
+        "tableId": "bookings",
+        "fields": { "status": "completed" },
+        "filters": "id=eq.{{ $json.booking_id }}"
+      },
+      "position": [800, 400]
+    },
+    {
+      "name": "Notify Client",
+      "type": "n8n-nodes-base.telegram",
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $json.telegram_id }}",
+        "text": "📋 Бронь #{{ $json.booking_id }}: {{ $json.action === 'confirm' ? 'подтверждена' : $json.action === 'cancel' ? 'отменена' : 'завершена' }}\n📦 {{ $json.service_title }}\n📅 {{ $json.date }}"
+      },
+      "position": [1000, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Get Booking", "type": "main", "index": 0 }]]
+    },
+    "Get Booking": {
+      "main": [[{ "node": "Switch Action", "type": "main", "index": 0 }]]
+    },
+    "Switch Action": {
+      "main": [
+        [{ "node": "Confirm", "type": "main", "index": 0 }],
+        [{ "node": "Cancel", "type": "main", "index": 0 }],
+        [{ "node": "Complete", "type": "main", "index": 0 }]
+      ]
+    },
+    "Confirm": {
+      "main": [[{ "node": "Notify Client", "type": "main", "index": 0 }]]
+    },
+    "Cancel": {
+      "main": [[{ "node": "Notify Client", "type": "main", "index": 0 }]]
+    },
+    "Complete": {
+      "main": [[{ "node": "Notify Client", "type": "main", "index": 0 }]]
+    }
+  }
+}

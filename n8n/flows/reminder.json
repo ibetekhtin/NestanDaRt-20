@@ -1,0 +1,69 @@
+{
+  "name": "Reminder",
+  "description": "Напоминание клиенту за 24 часа до брони. Cron ежедневно 18:00, считает 'завтра' (UTC) и шлёт напоминания по confirmed броням.",
+  "nodes": [
+    {
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "parameters": {
+        "triggerTimes": { "item": [{ "mode": "everyDay", "hour": 18, "minute": 0 }] }
+      },
+      "position": [200, 300]
+    },
+    {
+      "name": "Get Tomorrow",
+      "type": "n8n-nodes-base.code",
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const d = new Date(); d.setUTCDate(d.getUTCDate() + 1); const tomorrow = d.toISOString().split('T')[0]; return [{ json: { tomorrow } }];"
+      },
+      "position": [400, 300]
+    },
+    {
+      "name": "Get Upcoming Bookings",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "booking_details",
+        "filters": "status=eq.confirmed AND date=eq.{{ $json.tomorrow }}"
+      },
+      "position": [600, 300]
+    },
+    {
+      "name": "Loop",
+      "type": "n8n-nodes-base.splitInBatches",
+      "parameters": { "batchSize": 1 },
+      "position": [800, 300]
+    },
+    {
+      "name": "Send Reminder",
+      "type": "n8n-nodes-base.telegram",
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $json.telegram_id }}",
+        "text": "🐾 Напоминание! Завтра у вас бронь:\n📦 {{ $json.service_title }}\n📅 {{ $json.date }}\n📍 {{ $json.market_id }}\n\nНужно что-то изменить? Напиши мне!"
+      },
+      "position": [1000, 300]
+    }
+  ],
+  "connections": {
+    "Cron": {
+      "main": [[ { "node": "Get Tomorrow", "type": "main", "index": 0 } ]]
+    },
+    "Get Tomorrow": {
+      "main": [[ { "node": "Get Upcoming Bookings", "type": "main", "index": 0 } ]]
+    },
+    "Get Upcoming Bookings": {
+      "main": [[ { "node": "Loop", "type": "main", "index": 0 } ]]
+    },
+    "Loop": {
+      "main": [
+        [ { "node": "Send Reminder", "type": "main", "index": 0 } ],
+        [ { "node": "Loop", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Send Reminder": {
+      "main": [[ { "node": "Loop", "type": "main", "index": 0 } ]]
+    }
+  }
+}

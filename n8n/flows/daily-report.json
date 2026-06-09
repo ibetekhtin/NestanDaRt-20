@@ -1,0 +1,80 @@
+{
+  "name": "Daily Report",
+  "description": "Ежедневный отчёт статистики по рынкам",
+  "nodes": [
+    {
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "parameters": {
+        "triggerTimes": {
+          "item": [{ "mode": "everyDay", "hour": 9, "minute": 0 }]
+        }
+      },
+      "position": [200, 300]
+    },
+    {
+      "name": "Get Markets",
+      "type": "n8n-nodes-base.supabase",
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "markets",
+        "filters": "active=eq.true"
+      },
+      "position": [400, 300]
+    },
+    {
+      "name": "Loop",
+      "type": "n8n-nodes-base.splitInBatches",
+      "parameters": { "batchSize": 1 },
+      "position": [600, 300]
+    },
+    {
+      "name": "Get Stats",
+      "type": "n8n-nodes-base.code",
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const market = $input.first().json;\nconst stats = await $supabase.rpc('app_get_market_stats', { p_market_id: market.id });\nreturn [{ json: { market: market.name, stats: stats.data } }];"
+      },
+      "position": [800, 300]
+    },
+    {
+      "name": "Format Report",
+      "type": "n8n-nodes-base.code",
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const { market, stats } = $input.first().json;\nconst report = `📊 Отчёт за сегодня — ${market}\\n🎯 Лидов: ${stats.new_leads || 0}\\n📋 Бронирований: ${stats.new_bookings || 0}\\n✅ Подтверждено: ${stats.confirmed_bookings || 0}\\n💰 Выручка: ${stats.revenue || 0}\\n🤖 AI-диалогов: ${stats.ai_interactions || 0}\\n🚨 SOS: ${stats.sos_count || 0}`;\nreturn [{ json: { report } }];"
+      },
+      "position": [1000, 300]
+    },
+    {
+      "name": "Send to Manager",
+      "type": "n8n-nodes-base.telegram",
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $env.MANAGER_CHAT_ID }}",
+        "text": "={{ $json.report }}"
+      },
+      "position": [1200, 300]
+    }
+  ],
+  "connections": {
+    "Cron": {
+      "main": [[{ "node": "Get Markets", "type": "main", "index": 0 }]]
+    },
+    "Get Markets": {
+      "main": [[{ "node": "Loop", "type": "main", "index": 0 }]]
+    },
+    "Loop": {
+      "main": [
+        [{ "node": "Get Stats", "type": "main", "index": 0 }],
+        [{ "node": "Loop", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Stats": {
+      "main": [[{ "node": "Format Report", "type": "main", "index": 0 }]]
+    },
+    "Format Report": {
+      "main": [[{ "node": "Send to Manager", "type": "main", "index": 0 }]]
+    }
+  }
+}
