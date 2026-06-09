@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="color-scheme" content="dark">
+<title>ROADMAP до 30.10.2030 — Король Мира | Нестандартный Отдых®</title>
+<meta name="description" content="Дорожная карта роста Нестандартный Отдых® до 30 октября 2030 года. От $500 MRR до $2M MRR. Трекер целей и ключевых вех.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230A0A0A'/%3E%3Ctext x='50' y='62' font-family='Inter,sans-serif' font-size='52' font-weight='900' text-anchor='middle' fill='%23C0FF00'%3EН%3C/text%3E%3C/svg%3E">
+
+<style>
+  :root{
+    --bg:#0A0A0A; --bg-2:#141414; --bg-3:#1C1C1C;
+    --ink:#F5F5F0; --ink-soft:#8A8A85; --ink-faint:#2A2A2A;
+    --acid:#C0FF00; --orange:#FF6B00; --pink:#FF3366;
+    --line:rgba(255,255,255,0.08);
+    --mono:'JetBrains Mono',monospace;
+    --sans:'Inter',system-ui,sans-serif;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5; overflow-x:hidden;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(192,255,0,0.05), transparent 35%),
+      radial-gradient(circle at 85% 90%, rgba(255,107,0,0.04), transparent 40%);
+    background-attachment:fixed;
+  }
+  ::selection{background:var(--acid); color:var(--bg);}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 20px;}
+
+  /* ===== HEADER ===== */
+  header.top{padding:48px 0 28px; border-bottom:1px solid var(--line);}
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.22em;
+    text-transform:uppercase; color:var(--acid);
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:''; width:28px; height:1px; background:var(--acid);}
+  h1.title{
+    font-weight:900; font-size:clamp(38px,8vw,84px);
+    line-height:0.95; letter-spacing:-0.04em; margin:18px 0 6px;
+    text-transform:uppercase;
+  }
+  h1.title span{color:var(--acid);}
+  .subtitle{color:var(--ink-soft); font-size:clamp(15px,2vw,18px); max-width:560px;}
+
+  /* ===== COUNTDOWN ===== */
+  .countdown{
+    margin-top:32px; display:grid; grid-template-columns:repeat(4,1fr);
+    gap:12px; max-width:560px;
+  }
+  .cd-cell{
+    background:var(--bg-2); border:1px solid var(--line); border-radius:14px;
+    padding:16px 10px; text-align:center;
+  }
+  .cd-num{font-family:var(--mono); font-weight:700; font-size:clamp(22px,5vw,34px); color:var(--ink); line-height:1;}
+  .cd-label{font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-soft); margin-top:8px;}
+
+  /* ===== PROGRESS ===== */
+  .progress-card{
+    margin-top:40px; background:var(--bg-2); border:1px solid var(--line);
+    border-radius:18px; padding:24px;
+  }
+  .progress-head{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;}
+  .progress-head h2{font-size:15px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;}
+  .progress-pct{font-family:var(--mono); font-weight:700; font-size:28px; color:var(--acid);}
+  .bar{height:14px; background:var(--bg-3); border-radius:99px; overflow:hidden; margin-top:14px; border:1px solid var(--line);}
+  .bar-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--acid),#9ed400); border-radius:99px; transition:width .6s cubic-bezier(.2,.8,.2,1);}
+  .progress-meta{font-family:var(--mono); font-size:12px; color:var(--ink-soft); margin-top:12px;}
+
+  /* ===== SECTION ===== */
+  section{padding:56px 0; border-bottom:1px solid var(--line);}
+  .sec-head{display:flex; align-items:center; gap:14px; margin-bottom:28px;}
+  .sec-num{font-family:var(--mono); font-size:13px; color:var(--orange); font-weight:700;}
+  .sec-title{font-size:clamp(22px,4vw,32px); font-weight:800; letter-spacing:-0.03em; text-transform:uppercase;}
+
+  /* ===== PHASES ===== */
+  .phases{display:flex; flex-direction:column; gap:14px;}
+  .phase{
+    background:var(--bg-2); border:1px solid var(--line); border-radius:16px;
+    padding:20px 22px; display:grid;
+    grid-template-columns:auto 1fr auto; gap:18px; align-items:center;
+    position:relative; overflow:hidden; transition:border-color .25s, transform .25s;
+  }
+  .phase::before{content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--acid);}
+  .phase:hover{border-color:rgba(192,255,0,0.3); transform:translateX(4px);}
+  .phase-period{font-family:var(--mono); font-size:13px; color:var(--ink-soft); white-space:nowrap;}
+  .phase-mid{min-width:0;}
+  .phase-name{font-size:20px; font-weight:800; letter-spacing:-0.02em;}
+  .phase-stats{font-family:var(--mono); font-size:12px; color:var(--ink-soft); margin-top:6px; display:flex; gap:16px; flex-wrap:wrap;}
+  .phase-stats b{color:var(--ink); font-weight:700;}
+  .phase-mrr{font-family:var(--mono); font-weight:700; font-size:clamp(20px,4vw,30px); color:var(--acid); text-align:right; white-space:nowrap;}
+
+  /* ===== REVENUE ===== */
+  .revenue{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px;}
+  .rev{background:var(--bg-2); border:1px solid var(--line); border-radius:14px; padding:20px; text-align:center;}
+  .rev-year{font-family:var(--mono); font-size:13px; color:var(--ink-soft);}
+  .rev-amt{font-weight:900; font-size:clamp(20px,3vw,28px); margin-top:8px; letter-spacing:-0.03em;}
+  .rev:last-child .rev-amt{color:var(--acid);}
+
+  /* ===== MILESTONES ===== */
+  .milestones{display:flex; flex-direction:column; gap:10px;}
+  .ms{
+    background:var(--bg-2); border:1px solid var(--line); border-radius:14px;
+    padding:16px 18px; display:flex; align-items:center; gap:16px; cursor:pointer;
+    transition:border-color .2s, background .2s; user-select:none;
+  }
+  .ms:hover{border-color:rgba(192,255,0,0.25);}
+  .ms-check{
+    flex:0 0 26px; width:26px; height:26px; border-radius:8px;
+    border:2px solid var(--ink-faint); display:grid; place-items:center;
+    transition:all .2s; color:var(--bg); font-size:15px; font-weight:900;
+  }
+  .ms.done .ms-check{background:var(--acid); border-color:var(--acid);}
+  .ms-check svg{width:15px; height:15px; opacity:0; transform:scale(.5); transition:all .2s;}
+  .ms.done .ms-check svg{opacity:1; transform:scale(1);}
+  .ms-date{font-family:var(--mono); font-size:12px; color:var(--orange); flex:0 0 auto; width:96px; font-weight:700;}
+  .ms-text{font-size:16px; font-weight:600; transition:color .2s;}
+  .ms.done .ms-text{color:var(--ink-soft); text-decoration:line-through; text-decoration-color:var(--acid);}
+
+  /* ===== FINAL ===== */
+  .final{
+    text-align:center; padding:72px 24px; margin:56px 0;
+    background:var(--bg-2); border:1px solid rgba(192,255,0,0.2); border-radius:24px;
+    background-image:radial-gradient(circle at 50% 0%, rgba(192,255,0,0.08), transparent 60%);
+  }
+  .final-date{font-family:var(--mono); font-size:14px; letter-spacing:0.2em; color:var(--orange); text-transform:uppercase;}
+  .final-title{font-size:clamp(34px,7vw,72px); font-weight:900; letter-spacing:-0.04em; margin:14px 0; text-transform:uppercase; line-height:0.95;}
+  .final-title span{color:var(--acid);}
+  .final-sub{color:var(--ink-soft); max-width:440px; margin:0 auto;}
+
+  /* ===== RESET BTN ===== */
+  .actions{display:flex; justify-content:center; padding:0 0 64px;}
+  .reset-btn{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--ink-soft); border:1px solid var(--line); border-radius:99px; padding:12px 24px;
+    transition:all .2s;
+  }
+  .reset-btn:hover{color:var(--pink); border-color:var(--pink);}
+
+  footer{padding:36px 0 64px; text-align:center; color:var(--ink-soft); font-family:var(--mono); font-size:12px;}
+  footer a{color:var(--acid);}
+
+  @media (max-width:640px){
+    .phase{grid-template-columns:1fr; gap:10px;}
+    .phase-mrr{text-align:left;}
+    .countdown{grid-template-columns:repeat(2,1fr);}
+    .ms{flex-wrap:wrap;}
+    .ms-date{width:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header class="top">
+    <div class="eyebrow">Стратегическая дорожная карта</div>
+    <h1 class="title">ROADMAP до <span>2030</span></h1>
+    <p class="subtitle">От первых $500 MRR до короля мирового рынка. Девять фаз, реальные цифры, ясный путь. Отмечай вехи по мере выполнения.</p>
+
+    <!-- COUNTDOWN -->
+    <div class="countdown" id="countdown" aria-label="Обратный отсчёт до цели">
+      <div class="cd-cell"><div class="cd-num" id="cdDays">—</div><div class="cd-label">дней</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdHours">—</div><div class="cd-label">часов</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdMin">—</div><div class="cd-label">минут</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdSec">—</div><div class="cd-label">секунд</div></div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress-card">
+      <div class="progress-head">
+        <h2>Прогресс по вехам</h2>
+        <div class="progress-pct" id="progressPct">0%</div>
+      </div>
+      <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+      <div class="progress-meta" id="progressMeta">0 из 0 вех выполнено</div>
+    </div>
+  </header>
+
+  <!-- PHASES -->
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">Фазы роста</h2></div>
+    <div class="phases" id="phases"></div>
+  </section>
+
+  <!-- REVENUE -->
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Траектория выручки</h2></div>
+    <div class="revenue" id="revenue"></div>
+  </section>
+
+  <!-- MILESTONES -->
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Ключевые вехи</h2></div>
+    <div class="milestones" id="milestones"></div>
+  </section>
+
+  <!-- FINAL -->
+  <div class="final">
+    <div class="final-date">30 октября 2030</div>
+    <div class="final-title">КОРОЛЬ <span>МИРА</span></div>
+    <p class="final-sub">$2M MRR. 200 000 клиентов в месяц. 150+ рынков. IPO-ready. Финальная точка маршрута.</p>
+  </div>
+
+  <div class="actions">
+    <button class="reset-btn" id="resetBtn">Сбросить прогресс</button>
+  </div>
+
+  <footer>
+    Нестандартный Отдых® · <a href="index.html">← на главную</a>
+  </footer>
+
+</div>
+
+<script>
+  // ===== DATA =====
+  var PHASES = [
+    {period:'2026 H2', name:'BASE', mrr:'$500',  clients:'50',     markets:'4'},
+    {period:'2027 H1', name:'GROWTH', mrr:'$3K',  clients:'300',    markets:'7'},
+    {period:'2027 H2', name:'SCALE', mrr:'$10K', clients:'1 000',  markets:'10'},
+    {period:'2028 H1', name:'EMPIRE', mrr:'$30K', clients:'3 000',  markets:'20'},
+    {period:'2028 H2', name:'DOMINATION', mrr:'$80K', clients:'8 000', markets:'30'},
+    {period:'2029 H1', name:'WORLD TOUR', mrr:'$200K', clients:'20 000', markets:'50'},
+    {period:'2029 H2', name:'KING', mrr:'$500K', clients:'50 000', markets:'80'},
+    {period:'2030 H1', name:'WORLD DOMINANCE', mrr:'$1M', clients:'100 000', markets:'100+'},
+    {period:'2030 H2', name:'THE KING', mrr:'$2M', clients:'200 000', markets:'150+'}
+  ];
+
+  var REVENUE = [
+    {year:'2026', amt:'$6K'},
+    {year:'2027', amt:'$120K'},
+    {year:'2028', amt:'$960K'},
+    {year:'2029', amt:'$6M'},
+    {year:'2030', amt:'$24M'}
+  ];
+
+  var MILESTONES = [
+    {id:'m1', date:'Авг 2026', text:'Запуск VPS'},
+    {id:'m2', date:'Июн 2027', text:'Мобильное приложение'},
+    {id:'m3', date:'Дек 2027', text:'$10K MRR'},
+    {id:'m4', date:'Июн 2028', text:'100+ партнёров'},
+    {id:'m5', date:'Дек 2028', text:'Франшиза КотЭ'},
+    {id:'m6', date:'Июн 2029', text:'50 рынков'},
+    {id:'m7', date:'Дек 2029', text:'$500K MRR'},
+    {id:'m8', date:'Июн 2030', text:'IPO-ready'},
+    {id:'m9', date:'30 окт 2030', text:'КОРОЛЬ МИРА'}
+  ];
+
+  var STORAGE_KEY = 'nestandart_roadmap_done';
+  var CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+  function loadDone(){
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch(e){ return {}; }
+  }
+  function saveDone(d){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e){}
+  }
+
+  var done = loadDone();
+
+  // ===== RENDER PHASES =====
+  (function(){
+    var html = '';
+    for (var i=0;i<PHASES.length;i++){
+      var p = PHASES[i];
+      html += '<div class="phase">'
+        + '<div class="phase-period">'+p.period+'</div>'
+        + '<div class="phase-mid">'
+          + '<div class="phase-name">'+p.name+'</div>'
+          + '<div class="phase-stats"><span><b>'+p.clients+'</b> клиентов/мес</span><span><b>'+p.markets+'</b> рынков</span></div>'
+        + '</div>'
+        + '<div class="phase-mrr">'+p.mrr+'</div>'
+      + '</div>';
+    }
+    document.getElementById('phases').innerHTML = html;
+  })();
+
+  // ===== RENDER REVENUE =====
+  (function(){
+    var html = '';
+    for (var i=0;i<REVENUE.length;i++){
+      html += '<div class="rev"><div class="rev-year">'+REVENUE[i].year+'</div><div class="rev-amt">'+REVENUE[i].amt+'</div></div>';
+    }
+    document.getElementById('revenue').innerHTML = html;
+  })();
+
+  // ===== RENDER MILESTONES =====
+  function renderMilestones(){
+    var html = '';
+    for (var i=0;i<MILESTONES.length;i++){
+      var m = MILESTONES[i];
+      var isDone = !!done[m.id];
+      html += '<div class="ms'+(isDone?' done':'')+'" data-id="'+m.id+'" role="checkbox" aria-checked="'+isDone+'" tabindex="0">'
+        + '<div class="ms-check">'+CHECK_SVG+'</div>'
+        + '<div class="ms-date">'+m.date+'</div>'
+        + '<div class="ms-text">'+m.text+'</div>'
+      + '</div>';
+    }
+    document.getElementById('milestones').innerHTML = html;
+    bindMilestones();
+    updateProgress();
+  }
+
+  function toggle(id){
+    done[id] = !done[id];
+    if (!done[id]) delete done[id];
+    saveDone(done);
+    renderMilestones();
+  }
+
+  function bindMilestones(){
+    var nodes = document.querySelectorAll('.ms');
+    for (var i=0;i<nodes.length;i++){
+      (function(node){
+        var id = node.getAttribute('data-id');
+        node.addEventListener('click', function(){ toggle(id); });
+        node.addEventListener('keydown', function(e){
+          if (e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(id); }
+        });
+      })(nodes[i]);
+    }
+  }
+
+  function updateProgress(){
+    var total = MILESTONES.length;
+    var count = 0;
+    for (var i=0;i<MILESTONES.length;i++){ if (done[MILESTONES[i].id]) count++; }
+    var pct = Math.round((count/total)*100);
+    document.getElementById('barFill').style.width = pct+'%';
+    document.getElementById('progressPct').textContent = pct+'%';
+    document.getElementById('progressMeta').textContent = count+' из '+total+' вех выполнено';
+  }
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    if (confirm('Сбросить весь прогресс по вехам?')){
+      done = {}; saveDone(done); renderMilestones();
+    }
+  });
+
+  renderMilestones();
+
+  // ===== COUNTDOWN =====
+  var TARGET = new Date('2030-10-30T00:00:00').getTime();
+  function pad(n){ return n<10 ? '0'+n : ''+n; }
+  function tick(){
+    var now = Date.now();
+    var diff = TARGET - now;
+    if (diff < 0) diff = 0;
+    var days = Math.floor(diff/86400000);
+    var hours = Math.floor((diff%86400000)/3600000);
+    var mins = Math.floor((diff%3600000)/60000);
+    var secs = Math.floor((diff%60000)/1000);
+    document.getElementById('cdDays').textContent = days;
+    document.getElementById('cdHours').textContent = pad(hours);
+    document.getElementById('cdMin').textContent = pad(mins);
+    document.getElementById('cdSec').textContent = pad(secs);
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>
+
+</body>
+</html>
