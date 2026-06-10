@@ -137,6 +137,14 @@ async def cmd_start(message: types.Message):
     session = get_session(message.from_user.id)
     session["market"] = None
     session["history"] = []
+
+    # Уведомление менеджеру о новом пользователе
+    await notify.new_lead(
+        name=message.from_user.first_name or "Путник",
+        source="telegram",
+        telegram=message.from_user.username or "",
+    )
+
     await message.answer(
         f"🐾 Привет, {message.from_user.first_name}!\n"
         "Я — КотЭ, твой помощник на отдыхе.\n\n"
