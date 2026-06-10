@@ -1,8 +1,7 @@
 // ============ НЕСТАНДАРТНЫЙ ОТДЫХ® ============
 
-// === НАСТРОЙКИ ===
-const TG_BOT = 'nestandart_phuket';
-const WA_PHONE = '66804894595';
+// === НАСТРОЙКИ — из config.js ===
+const { tg_bot: TG_BOT, wa_phone: WA_PHONE, markets: CITIES, defaultMarket } = window.SITE_CONFIG;
 
 // === TELEGRAM WEB APP INIT ===
 const isTelegram = !!(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData);
@@ -82,10 +81,6 @@ if (isTelegram) {
 }
 
 // === CITY STATE ===
-const CITIES = {
-  phuket:  { name: 'Пхукет',  prep: 'на', loc: 'Пхукете',  dat: 'Пхукету', acc: 'Пхукет' },
-  pattaya: { name: 'Паттайя', prep: 'в',  loc: 'Паттайе',  dat: 'Паттайе', acc: 'Паттайю' }
-};
 let currentCity = localStorage.getItem('nestandart_city') || null;
 
 function applyCity(cityKey) {
