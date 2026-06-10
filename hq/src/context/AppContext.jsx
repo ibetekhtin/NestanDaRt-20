@@ -49,6 +49,8 @@ export const AppProvider = ({ children }) => {
     }
   }, [city]);
 
+  // Загрузка данных при смене рынка — асинхронный fetch, каскада рендеров нет
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
   // --- Clients ---
@@ -121,4 +123,5 @@ export const AppProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useApp = () => useContext(AppContext);

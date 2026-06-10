@@ -30,6 +30,7 @@ function AppContent() {
   const { activeMarket, setActiveMarket, refetch } = useApp();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!isSupabaseConfigured) { setAuthReady(true); return; }
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
