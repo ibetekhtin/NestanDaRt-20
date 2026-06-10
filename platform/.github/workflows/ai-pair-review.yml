@@ -1,0 +1,108 @@
+name: AI Pair Review
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  label-and-notify:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: read
+
+    steps:
+      - name: Determine AI source
+        id: source
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          if [[ "$BRANCH" == claude/* ]]; then
+            echo "source=claude" >> $GITHUB_OUTPUT
+            echo "label=claude-pr" >> $GITHUB_OUTPUT
+            echo "color=0075ca" >> $GITHUB_OUTPUT
+          elif [[ "$BRANCH" == cline/* ]]; then
+            echo "source=cline" >> $GITHUB_OUTPUT
+            echo "label=cline-pr" >> $GITHUB_OUTPUT
+            echo "color=7057ff" >> $GITHUB_OUTPUT
+          else
+            echo "source=human" >> $GITHUB_OUTPUT
+            echo "label=human-pr" >> $GITHUB_OUTPUT
+            echo "color=e4e669" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Ensure label exists
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const label = '${{ steps.source.outputs.label }}';
+            const color = '${{ steps.source.outputs.color }}';
+            try {
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: label,
+                color: color,
+                description: label === 'claude-pr' ? 'PR от Claude Code' : label === 'cline-pr' ? 'PR от Cline' : 'PR от человека'
+              });
+            } catch(e) {
+              // label already exists — ok
+            }
+
+      - name: Apply label to PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              labels: ['${{ steps.source.outputs.label }}']
+            });
+
+      - name: Post review request (on open/reopen only)
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const source = '${{ steps.source.outputs.source }}';
+            const branch = '${{ github.head_ref }}';
+            const pr = context.payload.pull_request.number;
+
+            let body = '';
+            if (source === 'claude') {
+              body = [
+                `🤖 **Claude Code** открыл этот PR с ветки \`${branch}\`.`,
+                ``,
+                `**Cline** — твоя очередь проверить:`,
+                `1. Открой этот PR в IDE`,
+                `2. Проверь изменённые файлы на баги и улучшения`,
+                `3. Оставь комментарий или одобри ревью`,
+                ``,
+                `> Читай \`CLAUDE.md\` для контекста проекта.`
+              ].join('\n');
+            } else if (source === 'cline') {
+              body = [
+                `🤖 **Cline** открыл этот PR с ветки \`${branch}\`.`,
+                ``,
+                `**Claude Code** — твоя очередь проверить:`,
+                `1. Используй \`subscribe_pr_activity\` для этого PR (#${pr})`,
+                `2. Прочитай diff и проверь на ошибки`,
+                `3. Оставь ревью или смержи если всё ок`,
+                ``,
+                `> Читай \`CLAUDE.md\` для контекста проекта.`
+              ].join('\n');
+            } else {
+              body = [
+                `👤 **Человек** открыл этот PR с ветки \`${branch}\`.`,
+                ``,
+                `**Claude Code и Cline** — оба должны проверить изменения перед мержем.`
+              ].join('\n');
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr,
+              body
+            });
