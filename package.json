@@ -1,15 +1,20 @@
 {
-  "name": "kote-nestandart-otdyh",
+  "name": "nestandart-phuket",
   "version": "1.0.0",
+  "description": "Авторские экскурсии на Пхукете с русскоязычным гидом",
   "private": true,
   "scripts": {
-    "bot": "node -r dotenv/config bot/index.js",
-    "dev": "open website/index.html"
+    "test": "echo \"No tests configured\" && exit 0"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
-    "@supabase/supabase-js": "^2.49.0",
-    "dotenv": "^16.4.7",
-    "telegraf": "^4.16.3"
-  }
+    "@vercel/analytics": "^1.4.1"
+  },
+  "keywords": [
+    "phuket",
+    "tours",
+    "excursions",
+    "thailand"
+  ],
+  "author": "Нестандартный Отдых®",
+  "license": "UNLICENSED"
 }

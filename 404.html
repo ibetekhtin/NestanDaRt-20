@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0A0A0A">
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script><script defer src="/_vercel/insights/script.js"></script>
+<title>404 — Страница не найдена | Нестандартный Отдых®</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fraunces:opsz,wght,SOFT@9..144,400..900,0..100&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0A0A0A; color: #F5F5F0;
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .e404-num {
+    font-size: clamp(100px, 25vw, 280px);
+    font-weight: 900; line-height: 0.85;
+    letter-spacing: -0.06em;
+    color: #F5F5F0;
+    filter: drop-shadow(-4px 0 #C0FF00) drop-shadow(4px 0 #FF6B00);
+    animation: glitch 3s ease-in-out infinite;
+    margin-bottom: 16px;
+  }
+  @keyframes glitch {
+    0%,90%,100% { filter: drop-shadow(-4px 0 #C0FF00) drop-shadow(4px 0 #FF6B00); }
+    92% { filter: drop-shadow(-6px 2px #C0FF00) drop-shadow(6px -2px #FF6B00); transform: translate(-2px, 1px); }
+    94% { filter: drop-shadow(5px -1px #C0FF00) drop-shadow(-5px 1px #FF6B00); transform: translate(2px, -1px); }
+    96% { filter: drop-shadow(-4px 0 #C0FF00) drop-shadow(4px 0 #FF6B00); transform: translate(0,0); }
+  }
+  .e404-text {
+    font-size: clamp(16px, 2vw, 22px);
+    color: #8A8A85; margin-bottom: 32px;
+    max-width: 400px; line-height: 1.5;
+  }
+  .e404-home {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #C0FF00; color: #0A0A0A;
+    padding: 16px 32px; font-weight: 800;
+    font-size: 16px; text-transform: uppercase;
+    text-decoration: none; letter-spacing: 0.01em;
+    transition: background 0.2s, transform 0.15s;
+    min-height: 52px;
+  }
+  .e404-home:hover { background: #FF6B00; transform: translate(-3px,-3px); box-shadow: 3px 3px 0 #FF3366; }
+  .e404-home:active { transform: scale(0.97); }
+  .e404-brand {
+    position: fixed; top: 20px; left: 24px;
+    font-size: 13px; font-weight: 800;
+    text-transform: uppercase; color: #F5F5F0;
+    text-decoration: none; display: flex; align-items: baseline; gap: 5px;
+  }
+  .e404-brand span { color: #C0FF00; font-size: 16px; }
+</style>
+</head>
+<body>
+  <a href="/" class="e404-brand"><span>®</span> Нестандартный Отдых</a>
+  <div class="e404-num">404</div>
+  <p class="e404-text">Этой страницы не существует. Возможно, она переехала или вы ошиблись адресом.</p>
+  <a href="/" class="e404-home">← На главную</a>
+</body>
+</html>

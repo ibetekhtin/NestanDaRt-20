@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="color-scheme" content="dark">
+<title>ROADMAP до 30.10.2030 — КОРОЛЬ МИРА | KOTЭ SYSTEM</title>
+<meta name="description" content="Дорожная карта KOTЭ SYSTEM до 30 октября 2030. От $500 MRR до $2M MRR. Интерактивный трекер задач и ключевых вех по всем фазам.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230A0A0A'/%3E%3Ctext x='50' y='62' font-family='Inter,sans-serif' font-size='52' font-weight='900' text-anchor='middle' fill='%23C0FF00'%3EК%3C/text%3E%3C/svg%3E">
+
+<style>
+  :root{
+    --bg:#0A0A0A; --bg-2:#141414; --bg-3:#1C1C1C;
+    --ink:#F5F5F0; --ink-soft:#8A8A85; --ink-faint:#2A2A2A;
+    --acid:#C0FF00; --orange:#FF6B00; --pink:#FF3366;
+    --line:rgba(255,255,255,0.08);
+    --mono:'JetBrains Mono',monospace;
+    --sans:'Inter',system-ui,sans-serif;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5; overflow-x:hidden;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(192,255,0,0.05), transparent 35%),
+      radial-gradient(circle at 85% 90%, rgba(255,107,0,0.04), transparent 40%);
+    background-attachment:fixed;
+  }
+  ::selection{background:var(--acid); color:var(--bg);}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 20px;}
+
+  /* ===== HEADER ===== */
+  header.top{padding:48px 0 28px; border-bottom:1px solid var(--line);}
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.22em;
+    text-transform:uppercase; color:var(--acid);
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:''; width:28px; height:1px; background:var(--acid);}
+  h1.title{
+    font-weight:900; font-size:clamp(38px,8vw,84px);
+    line-height:0.95; letter-spacing:-0.04em; margin:18px 0 6px;
+    text-transform:uppercase;
+  }
+  h1.title span{color:var(--acid);}
+  .subtitle{color:var(--ink-soft); font-size:clamp(15px,2vw,18px); max-width:600px;}
+
+  /* ===== COUNTDOWN ===== */
+  .countdown{
+    margin-top:32px; display:grid; grid-template-columns:repeat(4,1fr);
+    gap:12px; max-width:560px;
+  }
+  .cd-cell{
+    background:var(--bg-2); border:1px solid var(--line); border-radius:14px;
+    padding:16px 10px; text-align:center;
+  }
+  .cd-num{font-family:var(--mono); font-weight:700; font-size:clamp(22px,5vw,34px); color:var(--ink); line-height:1;}
+  .cd-label{font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-soft); margin-top:8px;}
+
+  /* ===== PROGRESS ===== */
+  .progress-card{
+    margin-top:40px; background:var(--bg-2); border:1px solid var(--line);
+    border-radius:18px; padding:24px;
+  }
+  .progress-head{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;}
+  .progress-head h2{font-size:15px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;}
+  .progress-pct{font-family:var(--mono); font-weight:700; font-size:28px; color:var(--acid);}
+  .bar{height:14px; background:var(--bg-3); border-radius:99px; overflow:hidden; margin-top:14px; border:1px solid var(--line);}
+  .bar-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--acid),#9ed400); border-radius:99px; transition:width .6s cubic-bezier(.2,.8,.2,1);}
+  .progress-meta{font-family:var(--mono); font-size:12px; color:var(--ink-soft); margin-top:12px;}
+
+  /* ===== SECTION ===== */
+  section{padding:56px 0; border-bottom:1px solid var(--line);}
+  .sec-head{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
+  .sec-num{font-family:var(--mono); font-size:13px; color:var(--orange); font-weight:700;}
+  .sec-title{font-size:clamp(22px,4vw,32px); font-weight:800; letter-spacing:-0.03em; text-transform:uppercase;}
+  .sec-desc{color:var(--ink-soft); font-size:14px; margin-bottom:28px; max-width:560px;}
+
+  /* ===== PHASE BLOCK ===== */
+  .phase-block{
+    background:var(--bg-2); border:1px solid var(--line); border-radius:18px;
+    margin-bottom:16px; overflow:hidden; position:relative;
+  }
+  .phase-block::before{content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--ink-faint); transition:background .3s;}
+  .phase-block.complete::before{background:var(--acid);}
+  .phase-bar-head{
+    display:grid; grid-template-columns:auto 1fr auto; gap:16px; align-items:center;
+    padding:20px 24px; cursor:pointer; user-select:none;
+  }
+  .phase-period{font-family:var(--mono); font-size:12px; color:var(--orange); font-weight:700; white-space:nowrap;}
+  .phase-mid{min-width:0;}
+  .phase-name{font-size:20px; font-weight:800; letter-spacing:-0.02em; display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .phase-goal{font-family:var(--mono); font-size:11px; color:var(--ink-soft); margin-top:6px;}
+  .phase-goal b{color:var(--acid); font-weight:700;}
+  .phase-count{font-family:var(--mono); font-size:13px; color:var(--ink-soft); text-align:right; white-space:nowrap;}
+  .phase-count b{color:var(--ink);}
+  .phase-mini-bar{height:5px; background:var(--bg-3); margin:0 24px;}
+  .phase-mini-fill{height:100%; width:0%; background:var(--acid); transition:width .5s;}
+  .chev{transition:transform .3s; color:var(--ink-soft); flex:0 0 auto;}
+  .phase-block.open .chev{transform:rotate(180deg);}
+
+  .tasks{display:none; flex-direction:column; padding:8px 24px 20px;}
+  .phase-block.open .tasks{display:flex;}
+
+  .task{
+    display:flex; align-items:flex-start; gap:14px; padding:12px 0;
+    border-top:1px solid var(--line); cursor:pointer; user-select:none;
+  }
+  .task:first-child{border-top:none;}
+  .task-check{
+    flex:0 0 22px; width:22px; height:22px; border-radius:7px; margin-top:1px;
+    border:2px solid var(--ink-faint); display:grid; place-items:center;
+    transition:all .2s; color:var(--bg);
+  }
+  .task.done .task-check{background:var(--acid); border-color:var(--acid);}
+  .task-check svg{width:13px; height:13px; opacity:0; transform:scale(.5); transition:all .2s;}
+  .task.done .task-check svg{opacity:1; transform:scale(1);}
+  .task-body{flex:1; min-width:0;}
+  .task-text{font-size:15px; font-weight:500; transition:color .2s;}
+  .task.done .task-text{color:var(--ink-soft); text-decoration:line-through; text-decoration-color:var(--acid);}
+  .task-when{font-family:var(--mono); font-size:11px; color:var(--ink-soft); margin-left:8px;}
+
+  /* ===== REVENUE ===== */
+  .revenue{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px;}
+  .rev{background:var(--bg-2); border:1px solid var(--line); border-radius:14px; padding:20px; text-align:center;}
+  .rev-year{font-family:var(--mono); font-size:13px; color:var(--ink-soft);}
+  .rev-amt{font-weight:900; font-size:clamp(20px,3vw,28px); margin-top:8px; letter-spacing:-0.03em;}
+  .rev:last-child .rev-amt{color:var(--acid);}
+
+  /* ===== MILESTONES ===== */
+  .milestones{display:flex; flex-direction:column; gap:10px;}
+  .ms{
+    background:var(--bg-2); border:1px solid var(--line); border-radius:14px;
+    padding:16px 18px; display:flex; align-items:center; gap:16px;
+    transition:border-color .2s;
+  }
+  .ms.hit{border-color:rgba(192,255,0,0.3);}
+  .ms-dot{flex:0 0 12px; width:12px; height:12px; border-radius:99px; border:2px solid var(--ink-faint);}
+  .ms.hit .ms-dot{background:var(--acid); border-color:var(--acid); box-shadow:0 0 0 4px rgba(192,255,0,0.12);}
+  .ms-date{font-family:var(--mono); font-size:12px; color:var(--orange); flex:0 0 auto; width:100px; font-weight:700;}
+  .ms-text{font-size:16px; font-weight:600;}
+  .ms.king{background-image:radial-gradient(circle at 0% 50%, rgba(192,255,0,0.1), transparent 60%);}
+  .ms.king .ms-text{font-weight:800;}
+
+  /* ===== FINAL ===== */
+  .final{
+    text-align:center; padding:72px 24px; margin:56px 0;
+    background:var(--bg-2); border:1px solid rgba(192,255,0,0.2); border-radius:24px;
+    background-image:radial-gradient(circle at 50% 0%, rgba(192,255,0,0.08), transparent 60%);
+  }
+  .final-date{font-family:var(--mono); font-size:14px; letter-spacing:0.2em; color:var(--orange); text-transform:uppercase;}
+  .final-title{font-size:clamp(34px,7vw,72px); font-weight:900; letter-spacing:-0.04em; margin:14px 0; text-transform:uppercase; line-height:0.95;}
+  .final-title span{color:var(--acid);}
+  .final-sub{color:var(--ink-soft); max-width:460px; margin:0 auto;}
+
+  /* ===== ACTIONS ===== */
+  .actions{display:flex; justify-content:center; gap:12px; padding:0 0 64px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
+    border:1px solid var(--line); border-radius:99px; padding:12px 24px; transition:all .2s; cursor:pointer; background:none; color:var(--ink-soft);
+  }
+  .btn.toggle:hover{color:var(--acid); border-color:var(--acid);}
+  .btn.reset:hover{color:var(--pink); border-color:var(--pink);}
+
+  footer{padding:36px 0 64px; text-align:center; color:var(--ink-soft); font-family:var(--mono); font-size:12px;}
+  footer a{color:var(--acid);}
+
+  @media (max-width:640px){
+    .phase-bar-head{grid-template-columns:1fr auto; gap:8px;}
+    .phase-period{grid-column:1 / -1;}
+    .countdown{grid-template-columns:repeat(2,1fr);}
+    .ms{flex-wrap:wrap;}
+    .ms-date{width:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header class="top">
+    <div class="eyebrow">KOTЭ SYSTEM · стратегическая дорожная карта</div>
+    <h1 class="title">ROADMAP до <span>2030</span></h1>
+    <p class="subtitle">От первых $500 MRR до короля мирового рынка туризма. Девять фаз, реальные задачи, ясный путь. Отмечай каждый пункт по мере выполнения — прогресс сохраняется автоматически.</p>
+
+    <!-- COUNTDOWN -->
+    <div class="countdown" id="countdown" aria-label="Обратный отсчёт до 30 октября 2030">
+      <div class="cd-cell"><div class="cd-num" id="cdDays">—</div><div class="cd-label">дней</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdHours">—</div><div class="cd-label">часов</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdMin">—</div><div class="cd-label">минут</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdSec">—</div><div class="cd-label">секунд</div></div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress-card">
+      <div class="progress-head">
+        <h2>Общий прогресс по roadmap</h2>
+        <div class="progress-pct" id="progressPct">0%</div>
+      </div>
+      <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+      <div class="progress-meta" id="progressMeta">0 из 0 задач выполнено</div>
+    </div>
+  </header>
+
+  <!-- PHASES -->
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">Фазы и задачи</h2></div>
+    <p class="sec-desc">Нажми на фазу, чтобы раскрыть задачи. Отмечай каждую галочкой — она зачёркивается, а полоса фазы заполняется.</p>
+    <div id="phases"></div>
+  </section>
+
+  <!-- REVENUE -->
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Траектория выручки</h2></div>
+    <p class="sec-desc">Годовая выручка по фазам — от $6K в 2026 до $24M в 2030.</p>
+    <div class="revenue" id="revenue"></div>
+  </section>
+
+  <!-- MILESTONES -->
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Ключевые вехи</h2></div>
+    <p class="sec-desc">Главные контрольные точки маршрута к трону.</p>
+    <div class="milestones" id="milestones"></div>
+  </section>
+
+  <!-- FINAL -->
+  <div class="final">
+    <div class="final-date">30 октября 2030</div>
+    <div class="final-title">КОРОЛЬ <span>МИРА</span></div>
+    <p class="final-sub">$2M MRR · 200 000 клиентов/мес · 150+ стран · 5000+ партнёров. #1 AI travel platform в мире. Финальная точка маршрута.</p>
+  </div>
+
+  <div class="actions">
+    <button class="btn toggle" id="toggleBtn">Развернуть все фазы</button>
+    <button class="btn reset" id="resetBtn">Сбросить прогресс</button>
+  </div>
+
+  <footer>
+    KOTЭ SYSTEM · Нестандартный Отдых® · <a href="index.html">← на главную</a>
+  </footer>
+
+</div>
+
+<script>
+  // ===== DATA: фазы с реальными задачами из roadmap =====
+  var PHASES = [
+    {
+      period:'2026 H2 · июнь–декабрь', name:'BASE', emoji:'🚀',
+      goal:'$500 MRR · 50 клиентов/мес · 4 рынка',
+      tasks:[
+        {t:'Telegram bot v2.0 (Telegraf + Gemini)', done:true},
+        {t:'Supabase schema v2.0 (13 таблиц + RLS + RPC)', done:true},
+        {t:'FastAPI backend (14 endpoints)', done:true},
+        {t:'n8n workflows (8 flow)', done:true},
+        {t:'Docker Compose + Dockerfiles', done:true},
+        {t:'VPS deployment scripts (Hetzner)', done:true},
+        {t:'Полная документация (9 файлов)', done:true},
+        {t:'Аудит + автономный тест', done:true},
+        {t:'Запуск Hetzner VPS', when:'9 июня 2026', done:true},
+        {t:'Настройка n8n credentials + webhook URLs', when:'июнь'},
+        {t:'Первые 50 клиентов', when:'июль'},
+        {t:'Онлайн-оплата — Stripe / 2C2P', when:'октябрь'},
+        {t:'AI-рекомендации на основе client_memory', when:'ноябрь'},
+        {t:'Аналитический дашборд — Metabase', when:'декабрь'}
+      ]
+    },
+    {
+      period:'2027 H1 · январь–июнь', name:'GROWTH', emoji:'📈',
+      goal:'$3K MRR · 300 клиентов/мес · 7 рынков · 15 партнёров',
+      tasks:[
+        {t:'Мобильное приложение — React Native / Expo', when:'январь'},
+        {t:'Расширение на 3 рынка — Ко Чанг, Краби, Хошимин', when:'февраль'},
+        {t:'Партнёрская программа — commission 10-15%', when:'март'},
+        {t:'Автоматические invoice/receipt PDF', when:'март'},
+        {t:'Multi-language — EN, RU, TH', when:'апрель'},
+        {t:'WhatsApp Business интеграция', when:'май'},
+        {t:'AI-звонки — Vapi / Bland AI', when:'июнь'},
+        {t:'CRM-дашборд для менеджеров', when:'июнь'}
+      ]
+    },
+    {
+      period:'2027 H2 · июль–декабрь', name:'SCALE', emoji:'🏗️',
+      goal:'$10K MRR · 1 000 клиентов/мес · 10 рынков · 50 партнёров',
+      tasks:[
+        {t:'White-label решение для партнёров', when:'июль'},
+        {t:'A/B тестирование AI промптов', when:'август'},
+        {t:'Automated content — Instagram Reels + Telegram канал', when:'сентябрь'},
+        {t:'Open API для партнёров', when:'октябрь'},
+        {t:'AI-аналитика — предиктивный анализ спроса', when:'ноябрь'},
+        {t:'Loyalty программа — баллы за бронирования', when:'декабрь'},
+        {t:'Мультирыночная аналитика — сравнение рынков', when:'декабрь'}
+      ]
+    },
+    {
+      period:'2028 H1 · январь–июнь', name:'EMPIRE', emoji:'🌏',
+      goal:'$30K MRR · 3 000 клиентов/мес · 20 рынков · 200 партнёров',
+      tasks:[
+        {t:'Экспансия в Европу — Хорватия, Греция, Турция', when:'январь'},
+        {t:'AI-консьерж 24/7 — голосовые звонки на 3 языках', when:'февраль'},
+        {t:'B2B портал для отелей — Self-service', when:'март'},
+        {t:'Dynamic pricing — AI оптимизация цен в реальном времени', when:'апрель'},
+        {t:'Blockchain-верификация отзывов', when:'май'},
+        {t:'Партнёрская сеть 100+ отелей', when:'июнь'}
+      ]
+    },
+    {
+      period:'2028 H2 · июль–декабрь', name:'DOMINATION', emoji:'💎',
+      goal:'$80K MRR · 8 000 клиентов/мес · 30 рынков · 500 партнёров',
+      tasks:[
+        {t:'Франшиза КотЭ — лицензирование', when:'июль'},
+        {t:'AI-генерация маршрутов — персональные планы', when:'август'},
+        {t:'VR-туры — предпросмотр отелей', when:'сентябрь'},
+        {t:'Корпоративный сегмент — B2B бронирования', when:'октябрь'},
+        {t:'Insurance integration — страховки для путешественников', when:'ноябрь'},
+        {t:'Консьерж-сервис для VIP-клиентов', when:'декабрь'}
+      ]
+    },
+    {
+      period:'2029 H1 · январь–июнь', name:'WORLD TOUR', emoji:'🌍',
+      goal:'$200K MRR · 20 000 клиентов/мес · 50 рынков',
+      tasks:[
+        {t:'Экспансия в Азию — Япония, Южная Корея, Вьетнам', when:'январь'},
+        {t:'Экспансия в Америку — Мексика, Коста-Рика, Доминикана', when:'февраль'},
+        {t:'AI-планировщик отпусков — автоматический подбор', when:'март'},
+        {t:'Subscription model — $9.99/мес за премиум', when:'апрель'},
+        {t:'Marketplace — агрегатор услуг', when:'май'},
+        {t:'Выход на IPO-ready stage', when:'июнь'}
+      ]
+    },
+    {
+      period:'2029 H2 · июль–декабрь', name:'KING', emoji:'👑',
+      goal:'$500K MRR · 50 000 клиентов/мес · 80 рынков',
+      tasks:[
+        {t:'КотЭ Global — единая платформа для всех рынков', when:'июль'},
+        {t:'AI-переводчик — реал-тайм перевод на 20+ языков', when:'август'},
+        {t:'Smart contracts для партнёров', when:'сентябрь'},
+        {t:'Predictive analytics — спрос на квартал вперёд', when:'октябрь'},
+        {t:'Autonomous travel — полная автоматизация бронирования', when:'ноябрь'},
+        {t:'КотЭ Premium — VIP-сервис с персональным AI', when:'декабрь'}
+      ]
+    },
+    {
+      period:'2030 H1 · январь–июнь', name:'WORLD DOMINANCE', emoji:'🏆',
+      goal:'$1M MRR · 100 000 клиентов/мес · 100+ рынков',
+      tasks:[
+        {t:'IPO / Strategic Partnership', when:'январь'},
+        {t:'КотЭ Ventures — инвестиции в стартапы', when:'февраль'},
+        {t:'AI Research Lab — собственные модели для туризма', when:'март'},
+        {t:'КотЭ Academy — обучение партнёров', when:'апрель'},
+        {t:'Sustainability Program — экотуризм', when:'май'},
+        {t:'Глобальное покрытие — 100+ стран', when:'июнь'}
+      ]
+    },
+    {
+      period:'2030 H2 · июль–октябрь', name:'THE KING', emoji:'👑🌍',
+      goal:'$2M MRR · 200 000 клиентов/мес · 150+ стран · 5000+ партнёров',
+      tasks:[
+        {t:'КотЭ — #1 AI travel platform в мире', when:'июль'},
+        {t:'Полная автоматизация — от запроса до возвращения домой', when:'август'},
+        {t:'КотЭ Metaverse — виртуальные путешествия', when:'сентябрь'},
+        {t:'ТЫ КОРОЛЬ МИРА в туристическом бизнесе', when:'30 окт 2030'}
+      ]
+    }
+  ];
+
+  var REVENUE = [
+    {year:'2026', amt:'$6K'},
+    {year:'2027', amt:'$120K'},
+    {year:'2028', amt:'$960K'},
+    {year:'2029', amt:'$6M'},
+    {year:'2030', amt:'$24M'}
+  ];
+
+  var MILESTONES = [
+    {date:'9 июня 2026', text:'VPS ЗАПУЩЕН 🚀', hit:true},
+    {date:'Дек 2026', text:'Первые 50 клиентов'},
+    {date:'Июн 2027', text:'Мобильное приложение'},
+    {date:'Дек 2027', text:'$10K MRR'},
+    {date:'Июн 2028', text:'100+ партнёров'},
+    {date:'Дек 2028', text:'Франшиза КотЭ'},
+    {date:'Июн 2029', text:'50 рынков'},
+    {date:'Дек 2029', text:'$500K MRR'},
+    {date:'Июн 2030', text:'IPO-ready'},
+    {date:'30 окт 2030', text:'КОРОЛЬ МИРА 🏆👑🌍', king:true}
+  ];
+
+  // assign stable ids
+  for (var pi=0; pi<PHASES.length; pi++){
+    for (var ti=0; ti<PHASES[pi].tasks.length; ti++){
+      PHASES[pi].tasks[ti].id = 'p'+pi+'t'+ti;
+    }
+  }
+
+  var STORAGE_KEY = 'kote_roadmap_done_v2';
+  var CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+  function loadDone(){
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e){}
+    if (stored) return stored;
+    // first visit: seed with pre-completed tasks from data
+    var seed = {};
+    for (var p=0;p<PHASES.length;p++){
+      for (var t=0;t<PHASES[p].tasks.length;t++){
+        if (PHASES[p].tasks[t].done) seed[PHASES[p].tasks[t].id] = true;
+      }
+    }
+    return seed;
+  }
+  function saveDone(d){ try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch(e){} }
+
+  var done = loadDone();
+
+  // ===== RENDER PHASES =====
+  function phaseCounts(p){
+    var total = p.tasks.length, count = 0;
+    for (var i=0;i<p.tasks.length;i++){ if (done[p.tasks[i].id]) count++; }
+    return {total:total, count:count};
+  }
+
+  function renderPhases(){
+    var html = '';
+    for (var i=0;i<PHASES.length;i++){
+      var p = PHASES[i];
+      var c = phaseCounts(p);
+      var pct = Math.round((c.count/c.total)*100);
+      var complete = c.count===c.total;
+      var openClass = (i===0) ? ' open' : '';
+      html += '<div class="phase-block'+openClass+(complete?' complete':'')+'" data-phase="'+i+'">';
+      html +=   '<div class="phase-bar-head" data-toggle="'+i+'">';
+      html +=     '<div class="phase-period">'+p.period+'</div>';
+      html +=     '<div class="phase-mid"><div class="phase-name">'+p.name+' <span style="font-size:16px">'+p.emoji+'</span></div><div class="phase-goal">Цель: <b>'+p.goal+'</b></div></div>';
+      html +=     '<div style="display:flex;align-items:center;gap:14px"><div class="phase-count"><b>'+c.count+'</b>/'+c.total+'</div><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>';
+      html +=   '</div>';
+      html +=   '<div class="phase-mini-bar"><div class="phase-mini-fill" style="width:'+pct+'%"></div></div>';
+      html +=   '<div class="tasks">';
+      for (var j=0;j<p.tasks.length;j++){
+        var task = p.tasks[j];
+        var isDone = !!done[task.id];
+        html += '<div class="task'+(isDone?' done':'')+'" data-id="'+task.id+'" role="checkbox" aria-checked="'+isDone+'" tabindex="0">';
+        html +=   '<div class="task-check">'+CHECK_SVG+'</div>';
+        html +=   '<div class="task-body"><span class="task-text">'+task.t+'</span>'+(task.when?'<span class="task-when">'+task.when+'</span>':'')+'</div>';
+        html += '</div>';
+      }
+      html +=   '</div>';
+      html += '</div>';
+    }
+    document.getElementById('phases').innerHTML = html;
+    bindPhases();
+    updateProgress();
+  }
+
+  function bindPhases(){
+    // toggle expand
+    var heads = document.querySelectorAll('.phase-bar-head');
+    for (var i=0;i<heads.length;i++){
+      (function(head){
+        head.addEventListener('click', function(){
+          head.parentNode.classList.toggle('open');
+        });
+      })(heads[i]);
+    }
+    // toggle tasks
+    var tasks = document.querySelectorAll('.task');
+    for (var k=0;k<tasks.length;k++){
+      (function(node){
+        var id = node.getAttribute('data-id');
+        node.addEventListener('click', function(){ toggleTask(id); });
+        node.addEventListener('keydown', function(e){
+          if (e.key===' '||e.key==='Enter'){ e.preventDefault(); toggleTask(id); }
+        });
+      })(tasks[k]);
+    }
+  }
+
+  function toggleTask(id){
+    done[id] = !done[id];
+    if (!done[id]) delete done[id];
+    saveDone(done);
+    // keep open state: re-render but preserve which blocks are open
+    var openStates = [];
+    var blocks = document.querySelectorAll('.phase-block');
+    for (var i=0;i<blocks.length;i++){ openStates[i] = blocks[i].classList.contains('open'); }
+    renderPhases();
+    var newBlocks = document.querySelectorAll('.phase-block');
+    for (var j=0;j<newBlocks.length;j++){
+      if (openStates[j]) newBlocks[j].classList.add('open'); else newBlocks[j].classList.remove('open');
+    }
+  }
+
+  function updateProgress(){
+    var total = 0, count = 0;
+    for (var i=0;i<PHASES.length;i++){
+      for (var j=0;j<PHASES[i].tasks.length;j++){
+        total++; if (done[PHASES[i].tasks[j].id]) count++;
+      }
+    }
+    var pct = total ? Math.round((count/total)*100) : 0;
+    document.getElementById('barFill').style.width = pct+'%';
+    document.getElementById('progressPct').textContent = pct+'%';
+    document.getElementById('progressMeta').textContent = count+' из '+total+' задач выполнено';
+  }
+
+  // ===== RENDER REVENUE =====
+  (function(){
+    var html = '';
+    for (var i=0;i<REVENUE.length;i++){
+      html += '<div class="rev"><div class="rev-year">'+REVENUE[i].year+'</div><div class="rev-amt">'+REVENUE[i].amt+'</div></div>';
+    }
+    document.getElementById('revenue').innerHTML = html;
+  })();
+
+  // ===== RENDER MILESTONES =====
+  (function(){
+    var html = '';
+    for (var i=0;i<MILESTONES.length;i++){
+      var m = MILESTONES[i];
+      html += '<div class="ms'+(m.hit?' hit':'')+(m.king?' king':'')+'">'
+        + '<div class="ms-dot"></div>'
+        + '<div class="ms-date">'+m.date+'</div>'
+        + '<div class="ms-text">'+m.text+'</div>'
+      + '</div>';
+    }
+    document.getElementById('milestones').innerHTML = html;
+  })();
+
+  // ===== ACTIONS =====
+  var allOpen = false;
+  document.getElementById('toggleBtn').addEventListener('click', function(){
+    allOpen = !allOpen;
+    var blocks = document.querySelectorAll('.phase-block');
+    for (var i=0;i<blocks.length;i++){
+      if (allOpen) blocks[i].classList.add('open'); else blocks[i].classList.remove('open');
+    }
+    this.textContent = allOpen ? 'Свернуть все фазы' : 'Развернуть все фазы';
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    if (confirm('Сбросить весь прогресс по roadmap? Отметки вернутся к исходному состоянию (выполнено только то, что уже сделано).')){
+      try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+      done = loadDone();
+      renderPhases();
+    }
+  });
+
+  renderPhases();
+
+  // ===== COUNTDOWN =====
+  var TARGET = new Date('2030-10-30T00:00:00').getTime();
+  function pad(n){ return n<10 ? '0'+n : ''+n; }
+  function tick(){
+    var diff = TARGET - Date.now();
+    if (diff < 0) diff = 0;
+    document.getElementById('cdDays').textContent = Math.floor(diff/86400000);
+    document.getElementById('cdHours').textContent = pad(Math.floor((diff%86400000)/3600000));
+    document.getElementById('cdMin').textContent = pad(Math.floor((diff%3600000)/60000));
+    document.getElementById('cdSec').textContent = pad(Math.floor((diff%60000)/1000));
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>
+
+</body>
+</html>

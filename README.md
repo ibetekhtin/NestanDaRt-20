@@ -1,174 +1,110 @@
-# 🐾 Нестандартный Отдых / KOTЭ SYSTEM
+# Нестандартный Отдых® — сайт + Telegram Mini App
 
-> **Telegram-бот КотЭ + AI + Supabase + n8n** — единая платформа для управления отдыхом на нескольких рынках (Пхукет, Паттайя, Бали, Дубай).
+Brutalist editorial дизайн, глитч-эффекты, параллакс. Чёрный (#0A0A0A) с акцентами кислотно-салатовый (#C0FF00) и кислотно-оранжевый (#FF6B00). Тот же HTML работает как обычный сайт и как Telegram Web App.
 
----
+## Деплой
 
-## 🏗️ Архитектура
+Прод — Vercel: https://nestandart-phuket.ru
+Конфигурация — `vercel.json` (cache headers + security + редиректы www→naked и vercel.app→nestandart-phuket.ru).
 
-```
-┌──────────┐   ┌──────────┐   ┌──────────┐
-│ Telegram │   │ Website  │   │  Mobile  │  ← Клиенты
-│   Bot    │   │   (Web)  │   │  (App)   │
-└────┬─────┘   └────┬─────┘   └────┬─────┘
-     │              │              │
-     └──────────────┼──────────────┘
-                    ▼
-            ┌──────────────┐
-            │   AI КотЭ    │  ← Gemini 2.0 Flash
-            │ (Gemini API) │
-            └──────┬───────┘
-                   ▼
-            ┌──────────────┐
-            │   Supabase   │  ← Single Source of Truth
-            │  (Postgres)  │
-            └──────┬───────┘
-                   ▼
-            ┌──────────────┐
-            │     n8n      │  ← Автоматизация
-            │  Workflows   │
-            └──────┬───────┘
-                   ▼
-         ┌─────────┴─────────┐
-         ▼                   ▼
-   ┌──────────┐        ┌──────────┐
-   │ Provider │        │ Telegram │
-   │  (Отель) │        │ Manager  │
-   └──────────┘        └──────────┘
-```
+### Деплой
 
-**Принципы:**
-- 🎯 **Один код, одна БД, один AI** — никаких дублирований
-- 🌍 **Много рынков = данные (market_id)** — новый рынок = новая строка в `markets`
-- 🚫 **Минимум логики в сервисах** — максимум автоматизации
-- 💾 **Бот не хранит состояние** — всё через Supabase
+Push в `main` — Vercel разворачивает автоматически. Превью на каждый PR.
 
----
-
-## 🚀 Quickstart (5 минут)
-
-### 1. Клонируй и настрой окружение
-
-```bash
-git clone <repo>
-cd "папка с проектом"
-npm install
-cp .env.example .env
-```
-
-Заполни `.env`:
-```env
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_SERVICE_KEY=eyJ...              # service_role key
-SUPABASE_ANON_KEY=eyJ...                # anon key
-TELEGRAM_BOT_TOKEN=123456:ABC-DEF...    # от @BotFather
-GEMINI_API_KEY=AIza...                  # от aistudio.google.com
-MANAGER_CHAT_ID=123456789               # твой Telegram ID
-```
-
-### 2. Создай Supabase проект и примени схему
-
-1. Зайди на [supabase.com](https://supabase.com) → New Project
-2. SQL Editor → New Query
-3. Скопируй `supabase/schema.sql` → Run
-4. Скопируй `supabase/migrations/002_full_schema.sql` → Run
-5. Скопируй `supabase/seed/seed_demo.sql` → Run (опционально, demo-данные)
-
-### 3. Запусти бота
-
-```bash
-npm run bot
-```
-
-Открой Telegram → найди бота → `/start` → выбери рынок → пользуйся!
-
-### 4. (Опционально) Запусти backend API
-
-```bash
-cd app/backend
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8000
-```
-
-Открой [http://localhost:8000/docs](http://localhost:8000/docs) — Swagger UI.
-
-### 5. (Опционально) Импортируй n8n flows
-
-1. Запусти n8n (self-hosted или cloud)
-2. Workflows → Import from File → выбери JSON из `n8n/flows/`
-3. Настрой credentials (Supabase, Telegram)
-4. Активируй
-
----
-
-## 📁 Структура проекта
+## 📁 Структура
 
 ```
 .
-├── bot/                    # Telegram bot (Node.js + Telegraf)
-├── bot_py/                 # Telegram bot (Python + aiogram 3.x) — альтернатива
-├── app/backend/            # FastAPI backend API
-├── mobile/                 # Mobile app skeleton (Expo + TypeScript)
-├── supabase/               # SQL: schema, migrations, seed
-├── n8n/flows/              # 8 workflow JSON
-├── ai/                     # AI prompts (КотЭ)
-├── website/                # Static HTML + Supabase JS
-├── deploy/                 # VPS deployment scripts
-├── docs/                   # Полная документация
-├── docker-compose.yml      # Bot + Backend + n8n
-└── Makefile                # Команды для dev/deploy
+├── index.html              ← Главная, 20 туров, Schema.org, FAQ
+├── roadmap.html            ← Внутренний трекер до 2030 (noindex)
+├── 404.html
+├── vercel.json             ← Headers + редиректы
+├── sitemap.xml             ← 12 URL
+├── robots.txt
+├── og-image.png
+├── package.json            ← @vercel/analytics
+├── css/
+│   ├── style.css           ← Глитч + параллакс + brutalist
+│   └── blog.css            ← Стили статей
+├── js/
+│   └── app.js              ← Загрузчик, city-chooser, фильтры, drag, modal, TG Mini App
+├── blog/                   ← 10 SEO-статей
+└── tours/
+    └── mototour.html       ← Лендинг авторского мототура
 ```
 
-Подробности: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+## 🎨 20 услуг в каталоге
 
----
+Категории фильтра: `sea` / `land` / `signature` / `shows`
 
-## 🛠️ Команды
+Морские: Джеймс Бонд, Пхи-Пхи+Бамбу, Пхи-Пхи+Кхай, Симиланы.
+Сухопутные: Као Лак, Као Сок (1д/2д), Путь Аватара, Рафтинг+Слоны+ATV, Прыжок Гиббона.
+Вечерние шоу: Фаер-шоу, Свадьбы, Фотосессии, Организация мероприятий, Аренда байков/машин, Недвижимость.
+Авторские (★): МотоТур, АвтоТур, Аренда яхты, VIP-сопровождение.
 
-| Команда | Описание |
-|---|---|
-| `npm run bot` | Запустить Telegram бота (Node.js) |
-| `npm run dev` | Открыть website в браузере |
-| `npm run backend` | Запустить FastAPI (Python) |
-| `make up` | Запустить все сервисы (Docker) |
-| `make logs` | Логи всех контейнеров |
-| `make deploy` | Деплой на VPS |
-| `make validate` | Валидация всего кода |
+## 💰 Цены (источник правды)
 
----
+Цены продублированы в HTML FAQ + Schema FAQPage + Schema OfferCatalog. **При любом изменении синхронизируй все три места**:
 
-## 🌍 Новый рынок за 2 минуты
+- Дневные морские экскурсии (Джеймс Бонд, Пхи-Пхи, Симиланы): **2 500 – 4 500 ₽** с человека
+- Активные туры (рафтинг+ATV, Прыжок Гиббона): **3 600 – 4 200 ₽**
+- МотоТур авторский: **от 7 500 ₽**
+- VIP-сопровождение: **от 12 000 ₽/день**
+- АвтоТур: **от 15 000 ₽**
+- Аренда яхты с экипажем: **от 25 000 ₽**
 
-```sql
-INSERT INTO markets (id, name, currency, timezone, active) VALUES
-  ('phuket', '🏖 Пхукет', 'THB', 'Asia/Bangkok', true);
+## 🤖 Telegram Mini App
+
+`index.html` детектит запуск внутри Telegram (`window.Telegram.WebApp.initData`) и переключается в режим Mini App:
+
+- `tg.expand()` — на весь экран
+- `MainButton` — нативная зелёная кнопка «Написать в Telegram»
+- `BackButton` — появляется при скролле >400px, ведёт наверх
+- `HapticFeedback` — на тапах CTA и карточек
+- `setHeaderColor` / `setBackgroundColor` — #0A0A0A
+- `disableVerticalSwipes` — чтобы не закрывался на скролле
+
+CSS-таргетинг внутри TG: `body.tg-app { ... }`.
+
+## ✨ Эффекты
+
+- Загрузочный экран «НЕСТАНДАРТ» с глитч-аурой и счётчиком
+- Drag-каталог 20 туров, прогресс-бар, инерция, скролл колесом
+- 5 фильтров категорий
+- Ротатор городов Пхукет/Паттайя (CSS variable color theming)
+- 2 бегущие строки (салатовая сверху, оранжевая снизу)
+- Glitch на hero, hover-glitch на заголовках секций
+- Mouse-параллакс на десктопе (отключён на mobile + `prefers-reduced-motion`)
+- Scroll reveal через IntersectionObserver
+- Модалка бронирования при клике на карточку
+
+## 🔍 SEO
+
+- JSON-LD: Organization+LocalBusiness, WebSite+WebPage, ItemList (20 туров), FAQPage, OfferCatalog, BreadcrumbList
+- Полная мета (title, description, keywords, OG, Twitter, geo, canonical, hreflang)
+- sitemap.xml (12 URL), robots.txt с Host для Яндекса
+- 10 SEO-статей под популярные запросы
+- 1 лендинг тура (MotoTour) — стартовая модель, под расширение
+
+### Следующие шаги по SEO
+
+- Подключить Google Search Console + Яндекс.Вебмастер к домену `nestandart-phuket.ru`
+- Отправить sitemap.xml
+- Расширить tours/ ещё 19 страницами под каждый тур (отдельные SEO-запросы)
+
+## 🗺️ Roadmap
+
+Внутренний трекер до 30.10.2030: [`/roadmap.html`](./roadmap.html). 9 фаз, 65+ задач, прогресс в localStorage. Скрыт от индексации.
+
+## ➕ Изменить цвета
+
+`css/style.css` → `:root`:
+```css
+--bg:           #0A0A0A;
+--acid-green:   #C0FF00;
+--acid-orange:  #FF6B00;
 ```
 
-Добавь `services` с `market_id='phuket'` — **всё, никакого кода**.
-
 ---
 
-## 📚 Документация
-
-- [ARCHITECTURE.md](docs/ARCHITECTURE.md) — полная архитектура
-- [SUPABASE.md](docs/SUPABASE.md) — схема, миграции, RPC, RLS
-- [N8N.md](docs/N8N.md) — все 8 workflows
-- [API.md](docs/API.md) — FastAPI endpoints
-- [DEPLOY.md](docs/DEPLOY.md) — VPS, Docker, Hetzner
-- [AUDIT.md](docs/AUDIT.md) — отчёт аудита
-- [AUTONOMY_TEST.md](docs/AUTONOMY_TEST.md) — симуляция сценариев
-- [ENV.md](docs/ENV.md) — все переменные окружения
-
----
-
-## 🤝 Contributing
-
-Pull requests приветствуются. Для крупных изменений — сначала открой issue.
-
----
-
-## 📄 License
-
-MIT — см. [LICENSE](LICENSE)
+©2026 Нестандартный Отдых® · Phuket / Pattaya
