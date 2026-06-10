@@ -24,7 +24,7 @@ Disallow: /css/
 Disallow: /js/
 
 # Sitemap
-Sitemap: https://nestandart-phuket.netlify.app/sitemap.xml
+Sitemap: https://nestandart-phuket.ru/sitemap.xml
 
 # Host (для Яндекса)
-Host: https://nestandart-phuket.netlify.app
+Host: https://nestandart-phuket.ru
