@@ -60,7 +60,8 @@ cd nestandart-phuket && npx serve . -p 3000
 # ШТАБ
 cd hq && npm install && npm run dev   # вход: админ-email + пароль
 
-# КотЭ: n8n → Import from File → platform/kote/workflow.json
+# КотЭ live: VPS /opt/kote (docker compose), мозг = n8n workflow kote-main
+# Редактор n8n: ssh -L 5678:localhost:5678 root@VPS → http://localhost:5678
 ```
 
 ## Безопасность (что уже настроено)
