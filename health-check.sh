@@ -80,6 +80,10 @@ if ssh -o BatchMode=yes -o ConnectTimeout=10 "$VPS" 'true' 2>/dev/null; then
     err=$(curl -s "https://api.telegram.org/bot$T/getWebhookInfo" | python3 -c "import json,sys; r=json.load(sys.stdin)[\"result\"]; print(r.get(\"last_error_message\") or \"ok\")" 2>/dev/null)
     q=$(curl -s "https://api.telegram.org/bot$T/getWebhookInfo" | python3 -c "import json,sys; print(json.load(sys.stdin)[\"result\"][\"pending_update_count\"])" 2>/dev/null)
     [ "$err" = "ok" ] && echo "  ✅ Telegram webhook чист (очередь: $q)" || echo "  ❌ webhook ошибка: $err"
+    # Мозг КотЭ: валиден ли Gemini-ключ (без него бот не отвечает)
+    GK=$(grep "^GEMINI_API_KEY=" /opt/kote/.env | cut -d= -f2-)
+    gc=$(curl -s -o /dev/null -w "%{http_code}" --max-time 12 "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GK" -H "Content-Type: application/json" -d "{\"contents\":[{\"parts\":[{\"text\":\"hi\"}]}]}")
+    [ "$gc" = "200" ] && echo "  ✅ мозг КотЭ: Gemini отвечает (бот думает)" || echo "  ❌ мозг КотЭ молчит: Gemini вернул $gc — нужен валидный ключ в /opt/kote/.env"
   '
 else
   bad "SSH к VPS недоступен"
