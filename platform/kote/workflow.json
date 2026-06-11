@@ -3,17 +3,25 @@
   "nodes": [
     {
       "parameters": {
-        "updates": ["message"],
+        "updates": [
+          "message"
+        ],
         "additionalFields": {}
       },
       "id": "tg-trigger",
       "name": "📱 Telegram",
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.1,
-      "position": [200, 400],
+      "position": [
+        200,
+        400
+      ],
       "webhookId": "kote",
       "credentials": {
-        "telegramApi": { "id": "REPLACE_ME", "name": "Telegram account 2" }
+        "telegramApi": {
+          "id": "REPLACE_ME",
+          "name": "Telegram account 2"
+        }
       }
     },
     {
@@ -24,7 +32,10 @@
       "name": "📝 Извлечь",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [440, 400]
+      "position": [
+        440,
+        400
+      ]
     },
     {
       "parameters": {
@@ -33,10 +44,22 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs" },
-            { "name": "Authorization", "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs" },
-            { "name": "Content-Type", "value": "application/json" },
-            { "name": "Prefer", "value": "resolution=merge-duplicates,return=representation" }
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=representation"
+            }
           ]
         },
         "sendBody": true,
@@ -48,7 +71,10 @@
       "name": "👤 Upsert клиент",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [680, 400]
+      "position": [
+        680,
+        400
+      ]
     },
     {
       "parameters": {
@@ -57,31 +83,46 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs" },
-            { "name": "Authorization", "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={ \"p_tg_chat_id\": \"{{ $('📝 Извлечь').first().json.tg_chat_id }}\" }",
+        "jsonBody": "={ \"p_tg_chat_id\": \"{{ $('📝 Извлечь').first().json.tg_chat_id }}\", \"p_query\": {{ JSON.stringify($('📝 Извлечь').first().json.message_text) }} }",
         "options": {}
       },
       "id": "get-context",
       "name": "🧠 Загрузить контекст",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [920, 400]
+      "position": [
+        920,
+        400
+      ]
     },
     {
       "parameters": {
-        "jsCode": "const ctx = Array.isArray($input.first().json) ? $input.first().json[0] : $input.first().json;\nconst extracted = $('📝 Извлечь').first().json;\nconst msg = extracted.message_text;\n\n// Season awareness\nconst month = new Date().getMonth() + 1;\nconst monthName = new Date().toLocaleDateString('ru-RU', {month: 'long', year: 'numeric'});\nconst isSimilanOpen = month >= 11 || month <= 4;\nconst isHighSeason = month >= 11 || month <= 4;\nconst seasonStatus = isSimilanOpen\n  ? 'Симиланские острова ОТКРЫТЫ — отличное время для снорклинга!'\n  : 'Симиланские острова ЗАКРЫТЫ до ноября (нацпарк закрыт летом). Предлагай Пхи-Пхи, Джеймс Бонд, Ко Лан.';\n\n// Build client memory block\nconst lines = [];\nlines.push(`Текущая дата: ${monthName}, ${isHighSeason ? 'высокий сезон' : 'зелёный сезон'}`);\nlines.push(`Симилан: ${isSimilanOpen ? 'ОТКРЫТЫ ✅' : 'ЗАКРЫТЫ ⛔ (до ноября)'}`);\nif (ctx && ctx.client_name) lines.push(`Имя: ${ctx.client_name}`);\nif (ctx && ctx.client_stage && ctx.client_stage !== 'new') lines.push(`Стадия: ${ctx.client_stage}`);\nif (ctx && ctx.client_country) lines.push(`Откуда: ${ctx.client_country}`);\nif (ctx && ctx.interests && ctx.interests.length) lines.push(`Интересы: ${ctx.interests.join(', ')}`);\nif (ctx && ctx.budget_level && ctx.budget_level !== 'medium') lines.push(`Бюджет: ${ctx.budget_level}`);\nif (ctx && ctx.travel_style) lines.push(`Стиль: ${ctx.travel_style}`);\nif (ctx && ctx.arrival_date) lines.push(`Дата приезда: ${ctx.arrival_date}`);\nif (ctx && ctx.group_size) lines.push(`Группа: ${ctx.group_size} чел.`);\nif (ctx && ctx.has_children) lines.push('Едут с детьми: да');\nif (ctx && ctx.last_tour_viewed) lines.push(`Последний тур: ${ctx.last_tour_viewed}`);\nif (ctx && ctx.tours_booked && ctx.tours_booked.length) lines.push(`Забронировал: ${ctx.tours_booked.join(', ')}`);\nconst clientMemory = lines.join('\\n');\n\n// Build conversation history\nlet lastConvs = 'Первое обращение.';\ntry {\n  let convs = (ctx && ctx.last_conversations) || [];\n  if (typeof convs === 'string') convs = JSON.parse(convs);\n  if (Array.isArray(convs) && convs.length) {\n    lastConvs = convs\n      .filter(c => c && (c.msg || c.message))\n      .slice(0, 8)\n      .reverse()\n      .map(c => `Клиент: ${c.msg||c.message||''}\\nКотЭ: ${c.res||c.response||''}`)\n      .join('\\n---\\n');\n  }\n} catch(e) { lastConvs = 'История недоступна.'; }\n\nreturn [{ json: {\n  tg_chat_id: extracted.tg_chat_id,\n  message_text: msg,\n  client_id: ctx ? ctx.client_id : null,\n  client_name: ctx ? ctx.client_name : null,\n  client_stage: (ctx && ctx.client_stage) || 'new',\n  is_new_client: (ctx && ctx.is_new_client) || false,\n  client_memory: clientMemory,\n  last_conversations: lastConvs,\n  similan_open: isSimilanOpen\n}}];"
+        "jsCode": "const ctx = Array.isArray($input.first().json) ? $input.first().json[0] : $input.first().json;\nconst extracted = $('📝 Извлечь').first().json;\n\n// Дата — единственное, что считает код. Всё остальное — данные из базы.\nconst currentDate = new Date().toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'});\n\n// Память о клиенте\nconst lines = [];\nif (ctx?.client_name) lines.push(`Имя: ${ctx.client_name}`);\nif (ctx?.client_stage && ctx.client_stage !== 'new') lines.push(`Стадия: ${ctx.client_stage}`);\nif (ctx?.client_country) lines.push(`Откуда: ${ctx.client_country}`);\nif (ctx?.interests?.length) lines.push(`Интересы: ${ctx.interests.join(', ')}`);\nif (ctx?.budget_level && ctx.budget_level !== 'medium') lines.push(`Бюджет: ${ctx.budget_level}`);\nif (ctx?.travel_style) lines.push(`Стиль: ${ctx.travel_style}`);\nif (ctx?.arrival_date) lines.push(`Дата приезда: ${ctx.arrival_date}`);\nif (ctx?.group_size) lines.push(`Группа: ${ctx.group_size} чел.`);\nif (ctx?.has_children) lines.push('Едут с детьми: да');\nif (ctx?.last_tour_viewed) lines.push(`Смотрел тур: ${ctx.last_tour_viewed}`);\nif (ctx?.tours_booked?.length) lines.push(`Забронировал: ${ctx.tours_booked.join(', ')}`);\nconst clientMemory = lines.length ? lines.join('\\n') : 'Новый гость, ничего не знаем.';\n\n// История диалога\nlet lastConvs = 'Первое обращение.';\nlet convs = ctx?.last_conversations || [];\nif (typeof convs === 'string') { try { convs = JSON.parse(convs); } catch { convs = []; } }\nif (Array.isArray(convs) && convs.length) {\n  lastConvs = convs.slice(0, 8).reverse()\n    .map(c => `Клиент: ${c.msg || ''}\\nКотЭ: ${c.res || ''}`).join('\\n---\\n');\n}\n\n// Туры — компактные строки для промпта\nconst tours = (ctx?.tours_catalog || [])\n  .map(t => `[${t.city}] ${t.t} — ${t.price}฿${t.child ? ` (дети ${t.child}฿)` : ''}${t.dur ? `, ${t.dur}` : ''}${t.season ? ` ⚠️ ${t.season}` : ''} | start=${t.slug}`)\n  .join('\\n') || 'Каталог временно пуст — отправь к менеджеру.';\n\n// Знания под вопрос\nconst knowledge = (ctx?.knowledge_pack || [])\n  .map(k => `• ${k.t} [${k.city}]: ${k.c}${k.tip ? `\\n  💡 ${k.tip}` : ''}`)\n  .join('\\n') || 'Под этот вопрос знаний не нашлось — отвечай аккуратно, без выдумок.';\n\nreturn [{ json: {\n  tg_chat_id: extracted.tg_chat_id,\n  message_text: extracted.message_text,\n  client_id: ctx?.client_id ?? null,\n  client_name: ctx?.client_name ?? null,\n  client_stage: ctx?.client_stage || 'new',\n  is_new_client: ctx?.is_new_client || false,\n  current_date: currentDate,\n  client_memory: clientMemory,\n  last_conversations: lastConvs,\n  tours_catalog: tours,\n  knowledge_pack: knowledge\n}}];"
       },
       "id": "build-prompt",
       "name": "✍️ Собрать промпт",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1160, 400]
+      "position": [
+        1160,
+        400
+      ]
     },
     {
       "parameters": {
@@ -90,19 +131,25 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"systemInstruction\": {\n    \"parts\": [{ \"text\": {{ JSON.stringify(\n      \"Ты КотЭ — дружелюбный эксперт по турам компании 'Нестандартный Отдых'. Работаешь с 2013 года.\\nПомогаешь туристам выбрать экскурсии на Пхукете и в Паттайе. Говоришь как живой человек, не чат-бот.\\n\\n\" +\n      \"КОНТЕКСТ КЛИЕНТА:\\n\" + $json.client_memory +\n      \"\\n\\nИСТОРИЯ ДИАЛОГА:\\n\" + $json.last_conversations +\n      \"\\n\\nЗАДАЧА:\\n\" +\n      \"- Продолжай как знакомый помощник, учитывай всё что уже знаешь\\n\" +\n      \"- Называй клиента по имени\\n\" +\n      \"- Предлагай конкретные туры с ценой под его интересы\\n\" +\n      \"- Если клиент едет с детьми — предлагай семейные туры\\n\" +\n      \"- Если клиент едет в период закрытия Симилан — НЕ предлагай их, предлагай альтернативы\\n\" +\n      \"- Если спрашивают про погоду/сезон — отвечай конкретно по текущей дате\\n\" +\n      \"- Если спрашивают про трансфер/отель — скажи что помогаешь только с экскурсиями, но посоветуй обратиться в WhatsApp\\n\" +\n      \"- После экскурсии — спроси как впечатления, попроси отзыв\\n\" +\n      \"- Мягко веди к бронированию без давления\\n\" +\n      \"\\nСТИЛЬ: 2-4 предложения, живой тон, иногда эмодзи 🌊🏝️⛵⚡\\n\" +\n      \"\\nТУРЫ ПХУКЕТ: Джеймс Бонд 2500₽, Пхи-Пхи+Бамбу 3200₽, Симиланские 4500₽ (сезон ноябрь-апрель!), МотоТур 2200₽, Рафтинг+Слоны+ATV 4200₽, Гиббон зиплайн 3600₽, Као Сок 2 дня 6500₽, Яхта 25000₽/день, VIP 12000₽/день, Фаер-шоу 1800₽\\n\" +\n      \"ТУРЫ ПАТТАЙЯ: Ко Лан 2400₽, Закат на катамаране 3600₽, Тиффани 2500₽, Сафари Кхао Кхео 2800₽, Нонг Нуч 1800₽, Аквапарк Рамаяна 2200₽\\n\" +\n      \"Дети: скидка 30% от цены взрослого\\n\" +\n      \"\\nДЛЯ БРОНИ: https://nestandart-phuket.ru | @phuket_nestandart_bot | WhatsApp +66 80 489 4595\\n\" +\n      \"ЗАПРЕЩЕНО: давление ('последние места!'), манипуляции, обещания которых нет в списке\"\n    ) }}] }\n  },\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [{ \"text\": {{ JSON.stringify($json.message_text) }} }]\n    }\n  ],\n  \"generationConfig\": {\n    \"maxOutputTokens\": 350,\n    \"temperature\": 0.8,\n    \"topP\": 0.9\n  }\n}",
+        "jsonBody": "={\n  \"systemInstruction\": {\n    \"parts\": [{ \"text\": {{ JSON.stringify(\n      \"Ты — КотЭ 🐾, цифровой кот и душа проекта «Нестандартный Отдых». Живёшь в Таиланде с 2013 года, знаешь его как свои подушечки. Помогаешь туристам экономить деньги, время и нервы.\\n\\nХАРАКТЕР: тёплый, живой, с лёгким кошачьим юмором без клоунады. Говоришь как друг, который там живёт. Сначала помочь человеку, потом продать — всегда в этом порядке. Не навязываешь. Безопасность туриста важнее любой продажи.\\n\\nСТИЛЬ: коротко, 2-4 предложения — это переписка, не лекция. По имени, если знаешь. Эмодзи умеренно 🌊🏝️🐾. Цены сразу и честно.\\n\\nПРАВИЛА РАБОТЫ С ДАННЫМИ:\\n- ТУРЫ ниже — твой живой каталог. Рекомендуй только из него, с реальными ценами. Поле season — закон: не в сезоне — честно скажи и предложи замену\\n- ЗНАНИЯ — проверенные факты. Опирайся на них. Есть 💡 tip — поделись как личным секретом\\n- ПАМЯТЬ О КЛИЕНТЕ — не переспрашивай известное. Учитывай детей, группу, бюджет\\n- Нет ответа в данных — скажи честно и направь к менеджеру @nestandart_phuket\\n\\nВЕДИ МЯГКО: понять что нужно → предложить 1-3 варианта под человека → когда готов, дать ссылку https://t.me/nestandart_phuket?start={slug из каталога}\" +\n      \"\\n\\n=== ТЕКУЩАЯ ДАТА ===\\n\" + $json.current_date +\n      \"\\n\\n=== ПАМЯТЬ О КЛИЕНТЕ ===\\n\" + $json.client_memory +\n      \"\\n\\n=== ИСТОРИЯ ДИАЛОГА ===\\n\" + $json.last_conversations +\n      \"\\n\\n=== ТУРЫ (живой каталог) ===\\n\" + $json.tours_catalog +\n      \"\\n\\n=== ЗНАНИЯ (под вопрос клиента) ===\\n\" + $json.knowledge_pack\n    ) }} }]\n  },\n  \"contents\": [{ \"role\": \"user\", \"parts\": [{ \"text\": {{ JSON.stringify($json.message_text) }} }] }],\n  \"generationConfig\": { \"temperature\": 0.8, \"maxOutputTokens\": 500 }\n}",
         "options": {}
       },
       "id": "gemini",
       "name": "🤖 Gemini",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1400, 400]
+      "position": [
+        1400,
+        400
+      ]
     },
     {
       "parameters": {
@@ -112,21 +159,32 @@
       "name": "💬 Достать ответ",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1640, 400]
+      "position": [
+        1640,
+        400
+      ]
     },
     {
       "parameters": {
         "chatId": "={{ $json.tg_chat_id }}",
         "text": "={{ $json.ai_reply }}",
-        "additionalFields": { "parse_mode": "HTML" }
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
       },
       "id": "send-tg",
       "name": "📤 Отправить",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [1880, 400],
+      "position": [
+        1880,
+        400
+      ],
       "credentials": {
-        "telegramApi": { "id": "REPLACE_ME", "name": "Telegram account 2" }
+        "telegramApi": {
+          "id": "REPLACE_ME",
+          "name": "Telegram account 2"
+        }
       }
     },
     {
@@ -136,10 +194,22 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs" },
-            { "name": "Authorization", "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs" },
-            { "name": "Content-Type", "value": "application/json" },
-            { "name": "Prefer", "value": "return=minimal" }
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
           ]
         },
         "sendBody": true,
@@ -151,7 +221,10 @@
       "name": "💾 Сохранить диалог",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1880, 600]
+      "position": [
+        1880,
+        600
+      ]
     },
     {
       "parameters": {
@@ -161,17 +234,27 @@
       "name": "🔍 Интент",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2120, 600]
+      "position": [
+        2120,
+        600
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
           "conditions": [
             {
               "leftValue": "={{ $json.has_updates }}",
               "rightValue": true,
-              "operator": { "type": "boolean", "operation": "true" }
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
             }
           ],
           "combinator": "and"
@@ -182,7 +265,10 @@
       "name": "❓ Есть обновления?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [2360, 600]
+      "position": [
+        2360,
+        600
+      ]
     },
     {
       "parameters": {
@@ -191,9 +277,18 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs" },
-            { "name": "Authorization", "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -205,7 +300,10 @@
       "name": "📊 Обновить память",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2600, 500]
+      "position": [
+        2600,
+        500
+      ]
     },
     {
       "parameters": {
@@ -214,9 +312,18 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs" },
-            { "name": "Authorization", "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtbWRyaHVzdXNqdWFkcXp5c3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0OTQxODcsImV4cCI6MjA5NjA3MDE4N30.IDExX_9wO21I8HIs_rJzDwMwAdD5xIBH5zHI043FEhs"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -228,51 +335,148 @@
       "name": "🎯 Обновить стадию",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2600, 700]
+      "position": [
+        2600,
+        700
+      ]
     }
   ],
   "connections": {
     "📱 Telegram": {
-      "main": [[{ "node": "📝 Извлечь", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "📝 Извлечь",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "📝 Извлечь": {
-      "main": [[{ "node": "👤 Upsert клиент", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "👤 Upsert клиент",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "👤 Upsert клиент": {
-      "main": [[{ "node": "🧠 Загрузить контекст", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "🧠 Загрузить контекст",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "🧠 Загрузить контекст": {
-      "main": [[{ "node": "✍️ Собрать промпт", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "✍️ Собрать промпт",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "✍️ Собрать промпт": {
-      "main": [[{ "node": "🤖 Gemini", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "🤖 Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "🤖 Gemini": {
-      "main": [[{ "node": "💬 Достать ответ", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "💬 Достать ответ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "💬 Достать ответ": {
-      "main": [[
-        { "node": "📤 Отправить", "type": "main", "index": 0 },
-        { "node": "💾 Сохранить диалог", "type": "main", "index": 0 }
-      ]]
+      "main": [
+        [
+          {
+            "node": "📤 Отправить",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "💾 Сохранить диалог",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "💾 Сохранить диалог": {
-      "main": [[{ "node": "🔍 Интент", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "🔍 Интент",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "🔍 Интент": {
-      "main": [[{ "node": "❓ Есть обновления?", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "❓ Есть обновления?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "❓ Есть обновления?": {
       "main": [
         [
-          { "node": "📊 Обновить память", "type": "main", "index": 0 },
-          { "node": "🎯 Обновить стадию", "type": "main", "index": 0 }
+          {
+            "node": "📊 Обновить память",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "🎯 Обновить стадию",
+            "type": "main",
+            "index": 0
+          }
         ],
         []
       ]
     }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
-  "tags": [{ "name": "КотЭ" }, { "name": "Telegram" }, { "name": "AI" }]
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "КотЭ"
+    },
+    {
+      "name": "Telegram"
+    },
+    {
+      "name": "AI"
+    }
+  ]
 }
