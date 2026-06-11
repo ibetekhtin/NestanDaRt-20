@@ -67,7 +67,7 @@ echo ""
 echo "▸ VPS + КотЭ"
 if ssh -o BatchMode=yes -o ConnectTimeout=10 "$VPS" 'true' 2>/dev/null; then
   ok "SSH доступен"
-  ssh -o BatchMode=yes "$VPS" '
+  remote=$(ssh -o BatchMode=yes "$VPS" '
     for c in kote-n8n kote-backend; do
       s=$(docker inspect -f "{{.State.Status}}" $c 2>/dev/null)
       [ "$s" = "running" ] && echo "  ✅ $c: running" || echo "  ❌ $c: ${s:-нет}"
@@ -84,7 +84,11 @@ if ssh -o BatchMode=yes -o ConnectTimeout=10 "$VPS" 'true' 2>/dev/null; then
     GK=$(grep "^GEMINI_API_KEY=" /opt/kote/.env | cut -d= -f2-)
     gc=$(curl -s -o /dev/null -w "%{http_code}" --max-time 12 "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$GK" -H "Content-Type: application/json" -d "{\"contents\":[{\"parts\":[{\"text\":\"hi\"}]}]}")
     [ "$gc" = "200" ] && echo "  ✅ мозг КотЭ: Gemini отвечает (бот думает)" || echo "  ❌ мозг КотЭ молчит: Gemini вернул $gc — нужен валидный ключ в /opt/kote/.env"
-  '
+  ')
+  echo "$remote"
+  # Считаем ❌ из удалённого блока в общий счётчик
+  rfail=$(printf '%s\n' "$remote" | grep -c '❌')
+  fail=$((fail + rfail)); pass=$((pass + $(printf '%s\n' "$remote" | grep -c '✅')))
 else
   bad "SSH к VPS недоступен"
 fi
