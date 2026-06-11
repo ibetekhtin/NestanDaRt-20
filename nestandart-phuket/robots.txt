@@ -22,6 +22,7 @@ Crawl-delay: 0
 Disallow: /*.json$
 Disallow: /css/
 Disallow: /js/
+Disallow: /baza/
 
 # Sitemap
 Sitemap: https://nestandart-phuket.ru/sitemap.xml
