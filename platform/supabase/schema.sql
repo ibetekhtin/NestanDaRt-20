@@ -199,3 +199,10 @@ create table content_plan (
 create or replace function public.is_admin() returns boolean
 language sql stable security definer set search_path = ''
 as $$ select coalesce(auth.jwt()->>'email', '') = 'ibetekhtin@gmail.com' $$;
+
+
+-- get_kote_context(p_tg_chat_id, p_query, p_secret) — SECURITY DEFINER
+-- Память клиента (имя, стадия, диалоги) отдаётся ТОЛЬКО при верном p_secret
+-- (sha256-хеш в теле функции; сам секрет — в n8n .env как KOTE_RPC_SECRET).
+-- Без секрета: каталог туров и знания отдаются (публичны), личные поля = null.
+-- Защита от перебора tg_chat_id анонимами.
