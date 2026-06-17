@@ -1,110 +1,109 @@
-# Нестандартный Отдых® — сайт + Telegram Mini App
+# Нестандартный Отдых®
 
-Brutalist editorial дизайн, глитч-эффекты, параллакс. Чёрный (#0A0A0A) с акцентами кислотно-салатовый (#C0FF00) и кислотно-оранжевый (#FF6B00). Тот же HTML работает как обычный сайт и как Telegram Web App.
+> Ваш маршрут. Ваш темп. Ваши правила.
 
-## Деплой
+**Монорепо.** Один бренд. Один код. Одна база. Много рынков.
 
-Прод — Vercel: https://nestandart-phuket.ru
-Конфигурация — `vercel.json` (cache headers + security + редиректы www→naked и vercel.app→nestandart-phuket.ru).
-
-### Деплой
-
-Push в `main` — Vercel разворачивает автоматически. Превью на каждый PR.
-
-## 📁 Структура
+## Карта системы
 
 ```
-.
-├── index.html              ← Главная, 20 туров, Schema.org, FAQ
-├── roadmap.html            ← Внутренний трекер до 2030 (noindex)
-├── 404.html
-├── vercel.json             ← Headers + редиректы
-├── sitemap.xml             ← 12 URL
-├── robots.txt
-├── og-image.png
-├── package.json            ← @vercel/analytics
-├── css/
-│   ├── style.css           ← Глитч + параллакс + brutalist
-│   └── blog.css            ← Стили статей
-├── js/
-│   └── app.js              ← Загрузчик, city-chooser, фильтры, drag, modal, TG Mini App
-├── blog/                   ← 10 SEO-статей
-└── tours/
-    └── mototour.html       ← Лендинг авторского мототура
+NestanDaRt-20/                       ← github.com/ibetekhtin/NestanDaRt-20
+├── nestandart-phuket/   САЙТ        HTML/CSS/JS → VPS 77.42.93.187 (nginx + SSL)
+├── hq/                  ШТАБ        React + Vite → Supabase (вход только для админа)
+├── platform/            ПЛАТФОРМА
+│   ├── kote/            🐾 КотЭ: prompt.txt (личность) + workflow.json (n8n)
+│   ├── supabase/        schema.sql — справочник реальной схемы БД
+│   └── docs/            STACK, SUPABASE, MULTI_MARKET, ROADMAP, KOTE_SYSTEM
+└── shared/              константы рынков и бренда
 ```
 
-## 🎨 20 услуг в каталоге
+## Где что живёт (источники истины)
 
-Категории фильтра: `sea` / `land` / `signature` / `shows`
+| Что | Где | Как менять |
+|-----|-----|-----------|
+| Туры, цены, сезоны | Supabase → `tours` | SQL / HQ-панель. КотЭ подхватит сам |
+| База знаний (84 записи) | Supabase → `knowledge` | SQL. КотЭ ищет по вопросу клиента |
+| Клиенты, заявки, платежи | Supabase → `clients`, `bookings`, `payments` | через HQ или бота |
+| Личность КотЭ | `platform/kote/prompt.txt` | правишь текст → импорт workflow в n8n |
+| Контент сайта | `nestandart-phuket/*.html` | правка + git push (VPS подтянет за 5 мин) |
+| Конфиг сайта (боты, города) | `nestandart-phuket/js/config.js` | правка + push |
 
-Морские: Джеймс Бонд, Пхи-Пхи+Бамбу, Пхи-Пхи+Кхай, Симиланы.
-Сухопутные: Као Лак, Као Сок (1д/2д), Путь Аватара, Рафтинг+Слоны+ATV, Прыжок Гиббона.
-Вечерние шоу: Фаер-шоу, Свадьбы, Фотосессии, Организация мероприятий, Аренда байков/машин, Недвижимость.
-Авторские (★): МотоТур, АвтоТур, Аренда яхты, VIP-сопровождение.
+**Supabase проект:** `cmmdrhususjuadqzyssc` (NON-STANDART)
 
-## 💰 Цены (источник правды)
+## Архитектура КотЭ
 
-Цены продублированы в HTML FAQ + Schema FAQPage + Schema OfferCatalog. **При любом изменении синхронизируй все три места**:
-
-- Дневные морские экскурсии (Джеймс Бонд, Пхи-Пхи, Симиланы): **2 500 – 4 500 ₽** с человека
-- Активные туры (рафтинг+ATV, Прыжок Гиббона): **3 600 – 4 200 ₽**
-- МотоТур авторский: **от 7 500 ₽**
-- VIP-сопровождение: **от 12 000 ₽/день**
-- АвтоТур: **от 15 000 ₽**
-- Аренда яхты с экипажем: **от 25 000 ₽**
-
-## 🤖 Telegram Mini App
-
-`index.html` детектит запуск внутри Telegram (`window.Telegram.WebApp.initData`) и переключается в режим Mini App:
-
-- `tg.expand()` — на весь экран
-- `MainButton` — нативная зелёная кнопка «Написать в Telegram»
-- `BackButton` — появляется при скролле >400px, ведёт наверх
-- `HapticFeedback` — на тапах CTA и карточек
-- `setHeaderColor` / `setBackgroundColor` — #0A0A0A
-- `disableVerticalSwipes` — чтобы не закрывался на скролле
-
-CSS-таргетинг внутри TG: `body.tg-app { ... }`.
-
-## ✨ Эффекты
-
-- Загрузочный экран «НЕСТАНДАРТ» с глитч-аурой и счётчиком
-- Drag-каталог 20 туров, прогресс-бар, инерция, скролл колесом
-- 5 фильтров категорий
-- Ротатор городов Пхукет/Паттайя (CSS variable color theming)
-- 2 бегущие строки (салатовая сверху, оранжевая снизу)
-- Glitch на hero, hover-glitch на заголовках секций
-- Mouse-параллакс на десктопе (отключён на mobile + `prefers-reduced-motion`)
-- Scroll reveal через IntersectionObserver
-- Модалка бронирования при клике на карточку
-
-## 🔍 SEO
-
-- JSON-LD: Organization+LocalBusiness, WebSite+WebPage, ItemList (20 туров), FAQPage, OfferCatalog, BreadcrumbList
-- Полная мета (title, description, keywords, OG, Twitter, geo, canonical, hreflang)
-- sitemap.xml (12 URL), robots.txt с Host для Яндекса
-- 10 SEO-статей под популярные запросы
-- 1 лендинг тура (MotoTour) — стартовая модель, под расширение
-
-### Следующие шаги по SEO
-
-- Подключить Google Search Console + Яндекс.Вебмастер к домену `nestandart-phuket.ru`
-- Отправить sitemap.xml
-- Расширить tours/ ещё 19 страницами под каждый тур (отдельные SEO-запросы)
-
-## 🗺️ Roadmap
-
-Внутренний трекер до 30.10.2030: [`/roadmap.html`](./roadmap.html). 9 фаз, 65+ задач, прогресс в localStorage. Скрыт от индексации.
-
-## ➕ Изменить цвета
-
-`css/style.css` → `:root`:
-```css
---bg:           #0A0A0A;
---acid-green:   #C0FF00;
---acid-orange:  #FF6B00;
+```
+Telegram → n8n → get_kote_context(chat_id, вопрос) → Supabase
+                       ↓ один запрос отдаёт всё:
+              память клиента + живой каталог туров + знания под вопрос
+                       ↓
+                 Gemini (личность из prompt.txt) → ответ
 ```
 
----
+Новый тур или факт = insert в базу. Воркфлоу не трогается.
 
-©2026 Нестандартный Отдых® · Phuket / Pattaya
+## Рынки
+
+| Рынок | Статус |
+|-------|--------|
+| 🏝️ Пхукет | ✅ Активен (33 тура, 41 знание) |
+| 🌅 Паттайя | 🟡 Туры и знания готовы, сайт «coming soon» |
+| 🌿 Бали | 📋 Planned |
+| 🏙️ Дубай | 📋 Planned |
+
+## Быстрый старт
+
+```bash
+# Сайт локально
+cd nestandart-phuket && npx serve . -p 3000
+
+# ШТАБ
+cd hq && npm install && npm run dev   # вход: админ-email + пароль
+
+# КотЭ live: VPS /opt/kote (docker compose), мозг = n8n workflow kote-main
+# Редактор n8n: ssh -L 5678:localhost:5678 root@VPS → http://localhost:5678
+```
+
+## Безопасность (что уже настроено)
+
+- RLS: персональные данные читает только админ (email в JWT), anon — лишь публичное
+- Сайт: HTTPS (Let's Encrypt, автопродление), HSTS, X-Frame-Options — в nginx на VPS
+- БАЗА (ШТАБ): https://nestandart-phuket.ru/baza — вход только по админ-паролю, скрыта от поисковиков
+- Секреты: только в `.env` (gitignore) и n8n credentials — в репо ничего нет
+- КотЭ ходит в базу через SECURITY DEFINER RPC — у бота нет прямого доступа к таблицам
+
+## Документация
+
+[Стек](platform/docs/STACK.md) · [Supabase](platform/docs/SUPABASE.md) · [Multi-Market](platform/docs/MULTI_MARKET.md) · [Роадмап](platform/docs/ROADMAP.md) · [КотЭ](platform/docs/KOTE_SYSTEM.md)
+
+## ⚠️ Что нужно для работы КотЭ
+
+Мозг КотЭ (n8n → Gemini) подключён и активен, но требует **валидный Gemini API-ключ**:
+1. Получить ключ на https://aistudio.google.com/apikey (формат `AIza...`)
+2. На VPS: заменить строку `GEMINI_API_KEY=` в `/opt/kote/.env`
+3. `cd /opt/kote && docker compose restart n8n`
+
+Воркфлоу читает ключ через `$env.GEMINI_API_KEY` — править воркфлоу не нужно, только .env.
+Текущий ключ невалиден (формат не `AIza`, отдаёт 401) — до замены КотЭ не отвечает.
+
+## 🐾 КотЭ-бот: перенос с Railway на наш VPS
+
+Код бота (@phuket_nestandart_bot, Python/aiogram + Claude) теперь в `platform/bot/`,
+задеплоен как контейнер `kote-tg-bot` на VPS рядом со старым стеком.
+
+**Чтобы запустить — впиши 2 секрета из Railway в `/opt/kote/bot/.env`:**
+1. `TELEGRAM_BOT_TOKEN` — токен @phuket_nestandart_bot (Railway → Variables)
+2. `ANTHROPIC_API_KEY` — ключ Claude (Railway → Variables)
+
+Затем:
+```bash
+# 1. На Railway: остановить (Pause) деплой бота — иначе два инстанса
+#    конфликтуют за getUpdates (Telegram отдаёт 409).
+# 2. На VPS:
+cd /opt/kote && docker compose up -d kote-tg-bot
+docker logs -f kote-tg-bot   # увидеть "🐾 КотЭ (Python/Claude) запущен!"
+```
+
+Бот работает на polling (отдельный токен от @nestandart_phuket_bot — конфликта нет).
+Что починено при переносе: `market`→`city` в поиске знаний (был баг — знания не находились),
+память диалога (была заглушка `get_session(0)`), тёплый промпт-сердце.

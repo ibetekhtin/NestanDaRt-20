@@ -1,0 +1,480 @@
+{
+  "name": "КотЭ — AI Агент с памятью",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "tg-trigger",
+      "name": "📱 Telegram",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        200,
+        400
+      ],
+      "webhookId": "kote",
+      "credentials": {
+        "telegramApi": {
+          "id": "kote-tg",
+          "name": "KotE Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const tg = $input.first().json;\nconst msg = tg.message || tg.edited_message;\nif (!msg) return [];\nconst text = (msg.text || msg.caption || '').trim();\nif (!text || (msg.from && msg.from.is_bot)) return [];\nconst from = msg.from || {};\nreturn [{ json: {\n  tg_chat_id: String(msg.chat.id),\n  message_text: text,\n  name: [from.first_name, from.last_name].filter(Boolean).join(' ') || 'Гость',\n  language: from.language_code || 'ru'\n}}];"
+      },
+      "id": "extract",
+      "name": "📝 Извлечь",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/rpc/app_upsert_lead",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUPABASE_ANON_KEY_ЗДЕСЬ"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer SUPABASE_ANON_KEY_ЗДЕСЬ"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"p_name\":       \"{{ $json.name }}\",\n  \"p_tg_chat_id\": \"{{ $json.tg_chat_id }}\",\n  \"p_source\":     \"telegram\"\n}",
+        "options": {}
+      },
+      "id": "upsert-client",
+      "name": "👤 Upsert клиент",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/rpc/get_kote_context",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUPABASE_ANON_KEY_ЗДЕСЬ"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer SUPABASE_ANON_KEY_ЗДЕСЬ"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"p_tg_chat_id\": \"{{ $('📝 Извлечь').first().json.tg_chat_id }}\", \"p_query\": {{ JSON.stringify($('📝 Извлечь').first().json.message_text) }} }",
+        "options": {}
+      },
+      "id": "get-context",
+      "name": "🧠 Загрузить контекст",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        920,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ctx = Array.isArray($input.first().json) ? $input.first().json[0] : $input.first().json;\nconst extracted = $('📝 Извлечь').first().json;\n\n// Дата — единственное, что считает код. Всё остальное — данные из базы.\nconst currentDate = new Date().toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'});\n\n// Память о клиенте\nconst lines = [];\nif (ctx?.client_name) lines.push(`Имя: ${ctx.client_name}`);\nif (ctx?.client_stage && ctx.client_stage !== 'new') lines.push(`Стадия: ${ctx.client_stage}`);\nif (ctx?.client_country) lines.push(`Откуда: ${ctx.client_country}`);\nif (ctx?.interests?.length) lines.push(`Интересы: ${ctx.interests.join(', ')}`);\nif (ctx?.budget_level && ctx.budget_level !== 'medium') lines.push(`Бюджет: ${ctx.budget_level}`);\nif (ctx?.travel_style) lines.push(`Стиль: ${ctx.travel_style}`);\nif (ctx?.arrival_date) lines.push(`Дата приезда: ${ctx.arrival_date}`);\nif (ctx?.group_size) lines.push(`Группа: ${ctx.group_size} чел.`);\nif (ctx?.has_children) lines.push('Едут с детьми: да');\nif (ctx?.last_tour_viewed) lines.push(`Смотрел тур: ${ctx.last_tour_viewed}`);\nif (ctx?.tours_booked?.length) lines.push(`Забронировал: ${ctx.tours_booked.join(', ')}`);\nconst clientMemory = lines.length ? lines.join('\\n') : 'Новый гость, ничего не знаем.';\n\n// История диалога\nlet lastConvs = 'Первое обращение.';\nlet convs = ctx?.last_conversations || [];\nif (typeof convs === 'string') { try { convs = JSON.parse(convs); } catch { convs = []; } }\nif (Array.isArray(convs) && convs.length) {\n  lastConvs = convs.slice(0, 8).reverse()\n    .map(c => `Клиент: ${c.msg || ''}\\nКотЭ: ${c.res || ''}`).join('\\n---\\n');\n}\n\n// Туры — компактные строки для промпта\nconst tours = (ctx?.tours_catalog || [])\n  .map(t => `[${t.city}] ${t.t} — ${t.price}฿${t.child ? ` (дети ${t.child}฿)` : ''}${t.dur ? `, ${t.dur}` : ''}${t.season ? ` ⚠️ ${t.season}` : ''} | start=${t.slug}`)\n  .join('\\n') || 'Каталог временно пуст — отправь к менеджеру.';\n\n// Знания под вопрос\nconst knowledge = (ctx?.knowledge_pack || [])\n  .map(k => `• ${k.t} [${k.city}]: ${k.c}${k.tip ? `\\n  💡 ${k.tip}` : ''}`)\n  .join('\\n') || 'Под этот вопрос знаний не нашлось — отвечай аккуратно, без выдумок.';\n\nreturn [{ json: {\n  tg_chat_id: extracted.tg_chat_id,\n  message_text: extracted.message_text,\n  client_id: ctx?.client_id ?? null,\n  client_name: ctx?.client_name ?? null,\n  client_stage: ctx?.client_stage || 'new',\n  is_new_client: ctx?.is_new_client || false,\n  current_date: currentDate,\n  client_memory: clientMemory,\n  last_conversations: lastConvs,\n  tours_catalog: tours,\n  knowledge_pack: knowledge\n}}];"
+      },
+      "id": "build-prompt",
+      "name": "✍️ Собрать промпт",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1160,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={{ $env.GEMINI_API_KEY }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"systemInstruction\": {\n    \"parts\": [{ \"text\": {{ JSON.stringify(\n      \"Ты — КотЭ 🐾, цифровой кот и душа проекта «Нестандартный Отдых» на Пхукете и в Паттайе.\\nЖивёшь в Таиланде с 2013 года, знаешь каждый пляж, рынок и закат как свои подушечки.\\nТвоя миссия: чтобы человек получил лучший отпуск в жизни — быстро, спокойно и без переплат.\\n\\n━━━ КТО ТЫ ━━━\\nТы не бот и не call-центр. Ты — тот самый местный друг, к которому пишут «слушай, а посоветуй...».\\nТёплый, внимательный, с мягким кошачьим юмором. Тебе искренне не всё равно.\\nТы радуешься за человека, который собрался в отпуск, и хочешь, чтобы всё прошло идеально.\\n\\n━━━ ГЛАВНЫЙ ПРИНЦИП ━━━\\nСначала — забота о человеке. Потом — продажа. Всегда в этом порядке.\\nПродажа — это не «впарить тур», а помочь выбрать то, от чего человек будет в восторге.\\nЕсли честный ответ — «вам это не нужно» или «сейчас не сезон» — так и говори. Доверие дороже одной продажи.\\nБезопасность и спокойствие туриста важнее любых денег.\\n\\n━━━ КАК ТЫ ОБЩАЕШЬСЯ ━━━\\n- Тепло и по-человечески. Обращайся по имени, если знаешь его.\\n- Коротко: 2-4 предложения. Это живая переписка, а не брошюра.\\n- Сначала ответь на вопрос человека, потом — мягко предложи.\\n- Эмодзи к месту и умеренно: 🌊 🏝️ 🐾 🛥️ — для тепла, не для украшения.\\n- Зеркаль настроение: с весёлым — легко, с уставшим с дороги — заботливо, с тревожным — спокойно и по делу.\\n- Цены называй сразу и честно, без «уточните у менеджера».\\n\\n━━━ КАК ТЫ ПРОДАЁШЬ (мягко и умно) ━━━\\n- Не вываливай каталог. Пойми, что человеку важно (отдых/драйв/дети/романтика/бюджет) — предложи 1-3 точных варианта.\\n- Рисуй картинку, а не список: не «тур Пхи-Пхи 3200₽», а «представьте: бирюзовая лагуна, вы плывёте над рыбами... это Пхи-Пхи, 3200₽».\\n- Объясняй ценность, а не оправдывай цену. Дорогой тур — это про впечатление и спокойствие, не про деньги.\\n- Если человек сомневается — не дави. Сними возражение фактом или предложи вариант попроще.\\n- Бережно делай допредложение, когда уместно: «к Симиланам отлично заходит ночёвка на Као Сок — если есть лишний день».\\n- Лови момент: человек готов — сразу дай ссылку на бронь, не тяни диалог.\\n- Семья с детьми, годовщина, первый раз в Азии — подмечай это и подбирай под повод.\\n\\n━━━ ОТКУДА ТЫ БЕРЁШЬ ПРАВДУ (данные ниже) ━━━\\n- ТУРЫ — твой живой каталог. Рекомендуй ТОЛЬКО из него, с реальными ценами. Поле season — закон: не сезон — честно скажи и предложи равноценную замену.\\n- ЗНАНИЯ — проверенные факты и инсайдерские фишки. Делись tip как личным секретом местного. Никогда не выдумывай факты, цены, расписания.\\n- ПАМЯТЬ О КЛИЕНТЕ — продолжай разговор как со старым знакомым. Не переспрашивай известное (имя, даты, состав группы, бюджет, прошлые интересы).\\n- Если данных под вопрос нет — честно скажи и предложи уточнить у живого менеджера @nestandart_phuket. Лучше честное «уточню», чем уверенная ошибка.\\n\\n━━━ ПУТЬ К ЦЕЛИ ━━━\\n1. Услышать человека — что ему по-настоящему хочется от отпуска.\\n2. Предложить 1-3 варианта точно под него, с картинкой и ценой.\\n3. Снять сомнения заботой и фактами.\\n4. Когда готов — дать ссылку: https://t.me/nestandart_phuket?start={slug из каталога}\\n5. Пожелать прекрасного отдыха так, будто провожаешь друга. 🐾\\n\\n━━━ ЧЕГО ТЫ НИКОГДА НЕ ДЕЛАЕШЬ ━━━\\n- Не врёшь и не придумываешь то, чего нет в данных.\\n- Не давишь, не торопишь, не используешь фальшивую срочность.\\n- Не споришь и не обесцениваешь — даже если человек резок.\\n- Не обещаешь то, что не можешь гарантировать (погоду, наличие мест — это уточнит менеджер).\" +\n      \"\\n\\n=== ТЕКУЩАЯ ДАТА ===\\n\" + $json.current_date +\n      \"\\n\\n=== ПАМЯТЬ О КЛИЕНТЕ ===\\n\" + $json.client_memory +\n      \"\\n\\n=== ИСТОРИЯ ДИАЛОГА ===\\n\" + $json.last_conversations +\n      \"\\n\\n=== ТУРЫ (живой каталог) ===\\n\" + $json.tours_catalog +\n      \"\\n\\n=== ЗНАНИЯ (под вопрос клиента) ===\\n\" + $json.knowledge_pack\n    ) }} }]\n  },\n  \"contents\": [{ \"role\": \"user\", \"parts\": [{ \"text\": {{ JSON.stringify($json.message_text) }} }] }],\n  \"generationConfig\": { \"temperature\": 0.85, \"maxOutputTokens\": 600, \"topP\": 0.95 }\n}",
+        "options": {}
+      },
+      "id": "gemini",
+      "name": "🤖 Gemini",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1400,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ai = $input.first().json;\nconst prev = $('✍️ Собрать промпт').first().json;\nlet reply = 'Извините, что-то пошло не так. Попробуйте через минуту 🙏';\ntry {\n  if (ai.error) {\n    const code = ai.error.code || ai.error.status || '';\n    if (code === 429 || String(code).includes('RESOURCE_EXHAUSTED')) {\n      reply = 'Секунду, немного перегружен — напишите ещё раз через минуту 🙏';\n    } else if (code === 401 || code === 403) {\n      reply = 'Технические неполадки, уже разбираемся!';\n    } else if (code === 500 || code === 503) {\n      reply = 'Временные неполадки с ИИ. Попробуйте через пару минут 🙏';\n    } else {\n      reply = 'Что-то пошло не так. Попробуйте ещё раз 🙏';\n    }\n  } else {\n    const text = ai.candidates?.[0]?.content?.parts?.[0]?.text;\n    if (text && text.trim()) reply = text.trim();\n  }\n} catch(e) {}\nreturn [{ json: { ...prev, ai_reply: reply } }];"
+      },
+      "id": "extract-reply",
+      "name": "💬 Достать ответ",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1640,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.tg_chat_id }}",
+        "text": "={{ $json.ai_reply }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "send-tg",
+      "name": "📤 Отправить",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1880,
+        400
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "kote-tg",
+          "name": "KotE Telegram"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/conversations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUPABASE_ANON_KEY_ЗДЕСЬ"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer SUPABASE_ANON_KEY_ЗДЕСЬ"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"client_id\": \"{{ $json.client_id }}\",\n  \"message\": {{ JSON.stringify($json.message_text) }},\n  \"response\": {{ JSON.stringify($json.ai_reply) }},\n  \"source\": \"telegram\"\n}",
+        "options": {}
+      },
+      "id": "save-conv",
+      "name": "💾 Сохранить диалог",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1880,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $input.first().json;\nconst text = (d.message_text || '').toLowerCase();\n\n// Interests detection\nconst interests = [];\nif (/остров|море|пляж|пхи|симил|джеймс|снорклинг|яхт|морск|дайв|кораллы|плавани/i.test(text)) interests.push('islands');\nif (/актив|рафтинг|atv|квадро|мото|зиплайн|гиббон|слон|адренал|спорт|экстрим/i.test(text)) interests.push('active');\nif (/природ|джунгли|као.*сок|водопад|лес|нацпарк|эко|нетронут/i.test(text)) interests.push('nature');\nif (/вечер|шоу|фаер|тиффани|муай|бокс|закат|романтик|ужин|кабаре/i.test(text)) interests.push('evening');\nif (/дети|ребенок|семья|детей|малыш|семейн|ребята|ребёнок/i.test(text)) interests.push('family');\nif (/vip|яхта|премиум|luxury|эксклюзив|персональн/i.test(text)) interests.push('vip');\n\n// Budget signals\nlet budget = null;\nif (/недорого|дёшево|бюджетн|экономн|сколько стоит.*самый/i.test(text)) budget = 'low';\nif (/vip|не.*дорог|деньги.*не.*вопрос|любой бюджет|премиум/i.test(text)) budget = 'vip';\n\n// Arrival date extraction (month names)\nlet arrivalDate = null;\nconst months = [\n  ['январ', '01'], ['феврал', '02'], ['март', '03'], ['апрел', '04'],\n  ['май', '05'], ['мая', '05'], ['июн', '06'], ['июл', '07'],\n  ['август', '08'], ['сентябр', '09'], ['октябр', '10'], ['ноябр', '11'], ['декабр', '12']\n];\nfor (const [name, num] of months) {\n  if (text.includes(name)) {\n    const year = num >= '11' ? '2026' : '2027';\n    arrivalDate = `${year}-${num}`;\n    break;\n  }\n}\n// Also catch \"через N дней/недель\"\nif (!arrivalDate && /через (\\d+) (день|дня|дней|недел)/i.test(text)) {\n  const match = text.match(/через (\\d+) (день|дня|дней|недел)/i);\n  const days = parseInt(match[1]) * (match[2].startsWith('недел') ? 7 : 1);\n  const arrival = new Date();\n  arrival.setDate(arrival.getDate() + days);\n  arrivalDate = arrival.toISOString().slice(0, 7);\n}\n\n// Group size extraction\nlet groupSize = null;\nlet hasChildren = null;\nconst groupMatch = text.match(/нас\\s+(\\d+)|([двое|трое|четверо|пятеро])|([\\d]+)\\s*человек|([\\d]+)\\s*взросл/);\nif (groupMatch) {\n  const wordNums = { 'двое': 2, 'трое': 3, 'четверо': 4, 'пятеро': 5 };\n  groupSize = parseInt(groupMatch[1] || groupMatch[3] || groupMatch[4]) || wordNums[groupMatch[2]] || null;\n}\nif (/дети|ребенок|ребёнок|детей|малыш|с детьми|ребята/i.test(text)) hasChildren = true;\nif (/без детей|только взросл|не берём детей/i.test(text)) hasChildren = false;\n\n// Stage detection\nlet stage = null;\nif (/забронир|оформ|хочу.*(тур|брон)|запис|оплат|купить|давай|беру|берём|пишите цену|как заброн/i.test(text)) {\n  stage = 'booking';\n} else if (/понравил|отлично|супер|класс|незабываем|рекомендую|спасибо за тур|было здорово/i.test(text)) {\n  stage = 'done';\n} else if (/потом|подумаю|позже|не сейчас|может быть|посмотрим|пока не знаю/i.test(text)) {\n  stage = 'thinking';\n} else if (/не нужно|не надо|не интересно|нет спасибо|передумал|отменить/i.test(text)) {\n  stage = 'cold';\n} else if (interests.length || budget || arrivalDate || groupSize) {\n  stage = 'interest';\n}\n\n// Tour viewed\nlet lastTour = null;\nconst tourMap = [\n  [/джеймс.*бонд|james.*bond|бонд.*остров/i, 'james'],\n  [/пхи.пхи|phi.phi/i, 'phiphi-bamboo'],\n  [/симилан/i, 'similan'],\n  [/мото.?тур|мотоцикл.*остров/i, 'moto'],\n  [/рафтинг|слоны.*atv|atv.*слон/i, 'raft'],\n  [/гиббон|зиплайн/i, 'gibbon'],\n  [/као.*сок/i, 'khaosok2'],\n  [/яхт/i, 'yacht'],\n  [/vip.*сопров|персональный.*менеджер/i, 'vip'],\n  [/фаер.*шоу|fire.*show/i, 'fire'],\n  [/ко.*лан|ko.*lan/i, 'kolan'],\n  [/тиффани/i, 'tiffany'],\n  [/нонг.*нуч/i, 'nong-nooch'],\n  [/рамаян|аквапарк/i, 'aqua-ramayana'],\n  [/катамаран|закат/i, 'sunset-cat'],\n  [/кхао.*кхео|сафари/i, 'khao-kheo'],\n];\nfor (const [re, slug] of tourMap) {\n  if (re.test(text)) { lastTour = slug; break; }\n}\n\nreturn [{ json: {\n  client_id: d.client_id,\n  tg_chat_id: d.tg_chat_id,\n  client_stage: d.client_stage,\n  interests: interests.length ? interests : null,\n  budget_level: budget,\n  new_stage: stage,\n  last_tour_viewed: lastTour,\n  arrival_date: arrivalDate,\n  group_size: groupSize,\n  has_children: hasChildren,\n  has_updates: !!(interests.length || budget || lastTour || arrivalDate || groupSize || hasChildren !== null),\n  has_stage_update: !!stage\n}}];"
+      },
+      "id": "detect-intent",
+      "name": "🔍 Интент",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2120,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.has_updates }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-update",
+      "name": "❓ Есть обновления?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2360,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/rpc/upsert_client_memory",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUPABASE_ANON_KEY_ЗДЕСЬ"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer SUPABASE_ANON_KEY_ЗДЕСЬ"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"p_client_id\": \"{{ $json.client_id }}\",\n  \"p_interests\": {{ $json.interests ? JSON.stringify($json.interests) : 'null' }},\n  \"p_budget_level\": {{ $json.budget_level ? JSON.stringify($json.budget_level) : 'null' }},\n  \"p_last_intent\": {{ $json.new_stage ? JSON.stringify($json.new_stage) : 'null' }},\n  \"p_last_tour_viewed\": {{ $json.last_tour_viewed ? JSON.stringify($json.last_tour_viewed) : 'null' }},\n  \"p_arrival_date\": {{ $json.arrival_date ? JSON.stringify($json.arrival_date) : 'null' }},\n  \"p_group_size\": {{ $json.group_size || 'null' }},\n  \"p_has_children\": {{ $json.has_children !== null ? $json.has_children : 'null' }}\n}",
+        "options": {}
+      },
+      "id": "update-memory",
+      "name": "📊 Обновить память",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2600,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/rpc/update_client_stage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "SUPABASE_ANON_KEY_ЗДЕСЬ"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer SUPABASE_ANON_KEY_ЗДЕСЬ"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"p_tg_chat_id\": \"{{ $json.tg_chat_id }}\",\n  \"p_stage\": \"{{ $json.new_stage || $json.client_stage || 'interest' }}\"\n}",
+        "options": {}
+      },
+      "id": "update-stage",
+      "name": "🎯 Обновить стадию",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2600,
+        700
+      ]
+    }
+  ],
+  "connections": {
+    "📱 Telegram": {
+      "main": [
+        [
+          {
+            "node": "📝 Извлечь",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Извлечь": {
+      "main": [
+        [
+          {
+            "node": "👤 Upsert клиент",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "👤 Upsert клиент": {
+      "main": [
+        [
+          {
+            "node": "🧠 Загрузить контекст",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧠 Загрузить контекст": {
+      "main": [
+        [
+          {
+            "node": "✍️ Собрать промпт",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✍️ Собрать промпт": {
+      "main": [
+        [
+          {
+            "node": "🤖 Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🤖 Gemini": {
+      "main": [
+        [
+          {
+            "node": "💬 Достать ответ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "💬 Достать ответ": {
+      "main": [
+        [
+          {
+            "node": "📤 Отправить",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "💾 Сохранить диалог",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "💾 Сохранить диалог": {
+      "main": [
+        [
+          {
+            "node": "🔍 Интент",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Интент": {
+      "main": [
+        [
+          {
+            "node": "❓ Есть обновления?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "❓ Есть обновления?": {
+      "main": [
+        [
+          {
+            "node": "📊 Обновить память",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "🎯 Обновить стадию",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "КотЭ"
+    },
+    {
+      "name": "Telegram"
+    },
+    {
+      "name": "AI"
+    }
+  ],
+  "id": "kote-main",
+  "_readme": "BACKUP файл. Живой workflow — n8n Cloud (ibetekhtin.app.n8n.cloud). SUPABASE_ANON_KEY_ЗДЕСЬ — заменить на реальный ключ при импорте. Узел «Upsert клиент» использует RPC app_upsert_lead (анти-дубль, idempotent)."
+}

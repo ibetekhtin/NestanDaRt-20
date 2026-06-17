@@ -1,45 +1,102 @@
 """
-KOTЭ Backend — FastAPI Application
+kote-backend — FastAPI REST API
+Нестандартный Отдых® / ПХУКЕТИК
+
+Маршруты:
+  GET  /health            — healthcheck (docker + nginx)
+  GET  /api/v1/tours      — каталог туров
+  GET  /api/v1/markets    — активные рынки
+  POST /api/v1/lead       — создать/обновить лид (→ app_upsert_lead RPC)
+  GET  /api/v1/bookings   — брони клиента по телефону
 """
-from fastapi import FastAPI
+import os
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime
+from supabase import create_client, Client
+from pydantic import BaseModel
 
-from config import settings
-from routers import markets, leads, bookings, clients, ai, sos, memory, webhooks
-
+# ── Конфиг ────────────────────────────────────────────────────
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY", "")
 
 app = FastAPI(
-    title="KOTЭ Backend API",
-    description="Нестандартный Отдых — REST API для мобильного приложения и webhook relay",
+    title="Нестандартный Отдых — API",
     version="1.0.0",
+    docs_url="/api/docs",
+    redoc_url=None,
 )
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_origins=[
+        "https://nestandart-phuket.ru",
+        "https://www.nestandart-phuket.ru",
+        "http://localhost:3000",     # dev
+    ],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
-# Routers
-app.include_router(markets.router, prefix="/api/v1", tags=["markets"])
-app.include_router(leads.router, prefix="/api/v1", tags=["leads"])
-app.include_router(bookings.router, prefix="/api/v1", tags=["bookings"])
-app.include_router(clients.router, prefix="/api/v1", tags=["clients"])
-app.include_router(ai.router, prefix="/api/v1", tags=["ai"])
-app.include_router(sos.router, prefix="/api/v1", tags=["sos"])
-app.include_router(memory.router, prefix="/api/v1", tags=["memory"])
-app.include_router(webhooks.router, prefix="/webhook", tags=["webhooks"])
+def get_sb() -> Client:
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        raise HTTPException(503, "Supabase не настроен")
+    return create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-@app.get("/api/v1/health")
+# ── Схемы ──────────────────────────────────────────────────────
+class LeadIn(BaseModel):
+    name: str | None = None
+    phone: str | None = None
+    telegram: str | None = None
+    tg_chat_id: str | None = None
+    source: str = "app"
+    market_id: str | None = None
+
+
+# ── Маршруты ──────────────────────────────────────────────────
+@app.get("/health")
 async def health():
-    return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
+    return {"status": "ok"}
 
 
-@app.get("/")
-async def root():
-    return {"service": "KOTЭ Backend", "version": "1.0.0", "docs": "/docs"}
+@app.get("/api/v1/tours")
+async def get_tours(market_id: str | None = None, active: bool = True):
+    sb = get_sb()
+    q = sb.table("tours").select(
+        "id,slug,title,market_id,category,price_adult,price_child,"
+        "duration,description,image_url,tags,sort_order"
+    ).eq("active", active)
+    if market_id:
+        q = q.eq("market_id", market_id)
+    res = q.order("sort_order").execute()
+    return res.data
+
+
+@app.get("/api/v1/markets")
+async def get_markets():
+    sb = get_sb()
+    res = sb.table("markets").select(
+        "id,slug,name,name_en,accent_color,active,sort_order,tagline"
+    ).eq("active", True).order("sort_order").execute()
+    return res.data
+
+
+@app.post("/api/v1/lead")
+async def upsert_lead(lead: LeadIn):
+    sb = get_sb()
+    res = sb.rpc("app_upsert_lead", {
+        "p_name":       lead.name,
+        "p_phone":      lead.phone,
+        "p_telegram":   lead.telegram,
+        "p_tg_chat_id": lead.tg_chat_id,
+        "p_source":     lead.source,
+        "p_market_id":  lead.market_id,
+    }).execute()
+    return {"ok": True, "data": res.data}
+
+
+@app.get("/api/v1/bookings")
+async def get_bookings(phone: str):
+    sb = get_sb()
+    res = sb.rpc("get_bookings_by_phone", {"p_phone": phone}).execute()
+    return res.data

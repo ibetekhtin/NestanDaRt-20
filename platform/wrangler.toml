@@ -1,0 +1,7 @@
+name = "non-standart-phuket"
+compatibility_date = "2026-01-01"
+
+[assets]
+directory = "./public"
+html_handling = "auto-trailing-slash"
+not_found_handling = "single-page-application"

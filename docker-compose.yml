@@ -1,54 +1,95 @@
-version: "3.8"
+# ═══════════════════════════════════════════════════════════════
+# Нестандартный Отдых® — Docker Compose
+# VPS: 77.42.93.187
+#
+# Сервисы:
+#   kote-backend  FastAPI REST API для мобильного приложения
+#   kote-bot      Python бот КотЭ (aiogram + Gemini) — ВЫКЛЮЧЕН
+#   kote-n8n      Локальный n8n для автоматизаций
+#
+# Бот сейчас живёт в n8n Cloud — kote-bot выключен (profiles: bot)
+# Чтобы включить: docker compose --profile bot up -d kote-bot
+# СНАЧАЛА остановить n8n Cloud workflow во избежание конфликта!
+#
+# Запуск:  docker compose up -d
+# Логи:    docker compose logs -f kote-backend
+# Стоп:    docker compose down
+# ═══════════════════════════════════════════════════════════════
+
+version: "3.9"
 
 services:
-  kote-bot:
-    build:
-      context: ./bot
-      dockerfile: Dockerfile
-    container_name: kote-bot
-    restart: unless-stopped
-    env_file: .env
-    depends_on:
-      - kote-backend
-    networks:
-      - kote-net
-    volumes:
-      - ./logs:/app/logs
 
+  # ─── FastAPI бэкенд для мобильного приложения ───────────────
   kote-backend:
     build:
-      context: ./app/backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: app/backend/Dockerfile
     container_name: kote-backend
     restart: unless-stopped
     env_file: .env
-    ports:
-      - "8000:8000"
-    depends_on:
-      - n8n
+    expose:
+      - "8000"          # внутри сети — nginx проксирует
     networks:
       - kote-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
-  n8n:
+  # ─── Python бот КотЭ (выключен: production = n8n Cloud) ────
+  kote-bot:
+    build:
+      context: .
+      dockerfile: platform/bot/Dockerfile
+    container_name: kote-bot
+    restart: unless-stopped
+    profiles: ["bot"]     # запускать вручную: docker compose --profile bot up -d
+    env_file: .env
+    environment:
+      - WEBHOOK_URL=https://nestandart-phuket.ru
+      - BOT_PORT=8081
+    expose:
+      - "8081"
+    networks:
+      - kote-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/bot/webhook"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ─── Локальный n8n (автоматизации) ──────────────────────────
+  kote-n8n:
     image: n8nio/n8n:latest
     container_name: kote-n8n
     restart: unless-stopped
-    env_file: .env
     environment:
       - N8N_HOST=0.0.0.0
       - N8N_PORT=5678
       - GENERIC_TIMEZONE=Asia/Bangkok
       - TZ=Asia/Bangkok
-    ports:
-      - "5678:5678"
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+      - N8N_LOG_LEVEL=warn
+    expose:
+      - "5678"          # внутри сети — nginx проксирует (только по IP)
     volumes:
       - n8n_data:/home/node/.n8n
     networks:
       - kote-net
 
+# ─── Тома ───────────────────────────────────────────────────────
 volumes:
   n8n_data:
+    name: kote-n8n-data
 
+# ─── Сеть ───────────────────────────────────────────────────────
 networks:
   kote-net:
+    name: kote-network
     driver: bridge
