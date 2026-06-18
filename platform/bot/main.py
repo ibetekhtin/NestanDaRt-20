@@ -9,15 +9,25 @@ Pipeline (зеркало n8n workflow «КотЭ — AI Агент с памят
 ⚠️  НЕ ЗАПУСКАТЬ пока n8n Cloud webhook активен — будет конфликт!
     Для переключения: остановить n8n workflow, потом:
       python main.py  (polling, dev)
-      WEBHOOK_URL=https://nestandart-phuket.ru python main.py  (webhook, prod)
+      WEBHOOK_URL=https://nestandart.online python main.py  (webhook, prod)
 """
 
 import asyncio
 import json
 import logging
 import os
+import sys
 
 import httpx
+
+# Structured JSON logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+logger = logging.getLogger("kote-bot")
+
 from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandStart

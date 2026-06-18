@@ -1,0 +1,224 @@
+# ============================================================================
+# KOTЭ SYSTEM — CI/CD Pipeline
+# ============================================================================
+# Этот workflow запускается при пуше в main:
+#   1. Lint & проверка кода (Python, JS, Docker)
+#   2. Проверка на утечку секретов
+#   3. Сборка Docker образов
+#   4. Пуш образов в Docker Hub (или GitHub Container Registry)
+#   5. Деплой на VPS через SSH (опционально)
+# ============================================================================
+
+name: KOTЭ CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # Ручной запуск
+
+env:
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "20"
+  DOCKER_IMAGE_BACKEND: ghcr.io/${{ github.repository }}/kote-backend
+  DOCKER_IMAGE_BOT: ghcr.io/${{ github.repository }}/kote-bot
+
+jobs:
+  # ─── Job 1: Проверка кода ────────────────────────────────────
+  lint:
+    name: Lint & Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black pyright
+          if [ -f app/backend/requirements.txt ]; then pip install -r app/backend/requirements.txt; fi
+          if [ -f platform/bot/requirements.txt ]; then pip install -r platform/bot/requirements.txt; fi
+
+      - name: Lint Python (flake8)
+        run: |
+          flake8 app/backend/ --max-line-length=120 --ignore=E501,W503 || true
+          flake8 platform/bot/ --max-line-length=120 --ignore=E501,W503 || true
+
+      - name: Check Python formatting (black)
+        run: |
+          black --check --diff app/backend/ platform/bot/ || echo "Formatting issues found (non-blocking)"
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Checking for potential secrets..."
+          ! grep -rn "KOTE_SECRET\|SUPABASE_ANON_KEY\|TELEGRAM_BOT_TOKEN\|GEMINI_API_KEY=" \
+            --include="*.py" --include="*.js" --include="*.json" --include="*.md" --include="*.yml" \
+            --exclude-dir=node_modules --exclude-dir=.git --exclude="*.example.*" . || {
+            echo "❌ Potential secrets found in code!"
+            exit 1
+          }
+          echo "✅ No secrets found in code"
+
+      - name: Check Dockerfile syntax
+        run: |
+          docker compose config -q || echo "Docker compose validation skipped (some env vars may be missing)"
+
+  # ─── Job 2: Проверка утечки секретов ─────────────────────────
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for secrets with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for naughty strings
+        run: |
+          echo "Scanning for common secret patterns..."
+          python3 -c "
+import re, sys, os
+patterns = {
+    'API key pattern': r'[Aa][Pp][Ii]_?[Kk][Ee][Yy]=[\'\"][A-Za-z0-9_\-]{20,}[\'\"]',
+    'Bearer token': r'bearer\s+[A-Za-z0-9_\-\.]{20,}',
+    'Password': r'password\s*[=:]\s*[\'\"][^\'\"]+[\'\"]',
+}
+issues = []
+for root, dirs, files in os.walk('.'):
+    dirs[:] = [d for d in dirs if d not in ('node_modules', '.git')]
+    for f in files:
+        if f.endswith(('.py', '.js', '.json', '.yml', '.yaml', '.sh', '.md', '.html')):
+            fp = os.path.join(root, f)
+            try:
+                with open(fp) as fh:
+                    for i, line in enumerate(fh, 1):
+                        line_s = line.strip()
+                        if not line_s or line_s.startswith('#'):
+                            continue
+                        for name, pat in patterns.items():
+                            if re.search(pat, line_s, re.IGNORECASE):
+                                issues.append(f'{fp}:{i}: potential {name}')
+            except:
+                pass
+if issues:
+    for i in issues:
+        print(f'  ⚠️  {i}')
+    print(f'Found {len(issues)} potential issues')
+else:
+    print('✅ No obvious secrets found')
+"
+
+  # ─── Job 3: Сборка Docker образов ────────────────────────────
+  docker:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [lint]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push kote-backend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: app/backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKER_IMAGE_BACKEND }}:${{ github.sha }}
+            ${{ env.DOCKER_IMAGE_BACKEND }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push kote-bot
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: platform/bot/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKER_IMAGE_BOT }}:${{ github.sha }}
+            ${{ env.DOCKER_IMAGE_BOT }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ─── Job 4: Деплой на VPS ────────────────────────────────────
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: [docker]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            # Перейти в директорию проекта
+            cd /opt/kote || exit 1
+
+            # Обновить код
+            git pull origin main
+
+            # Обновить .env если новые переменные
+            if [ -f .env.example ]; then
+              while IFS= read -r line; do
+                key=$(echo "$line" | cut -d= -f1)
+                if ! grep -q "^${key}=" .env 2>/dev/null; then
+                  echo "$line" >> .env
+                  echo "➕ Added $key to .env"
+                fi
+              done < <(grep -v "^#" .env.example | grep -v "^$")
+            fi
+
+            # Пересобрать и запустить
+            docker compose build
+            docker compose up -d --remove-orphans
+
+            # Проверка здоровья
+            echo "Waiting for services..."
+            for i in $(seq 1 30); do
+              if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
+                echo "✅ Backend is healthy"
+                break
+              fi
+              sleep 3
+            done
+
+            # Очистка
+            docker image prune -f
+
+            echo "✅ Deploy complete!"

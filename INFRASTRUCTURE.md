@@ -151,7 +151,7 @@ nestandart-api/
 Но nginx обслуживает из:
 - `/var/www/nestandart/nestandart-phuket/` (корень сайта)
 
-Поэтому `https://nestandart-phuket.ru/tours/phiphi_bamboo.html` → **404**
+Поэтому `https://nestandart.online/tours/phiphi_bamboo.html` → **404**
 
 Только `/tours/mototour.html` работает потому что он есть в `nestandart-phuket/tours/`.
 

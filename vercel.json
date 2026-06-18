@@ -42,14 +42,14 @@
   "redirects": [
     {
       "source": "/(.*)",
-      "has": [{ "type": "host", "value": "www.nestandart-phuket.ru" }],
-      "destination": "https://nestandart-phuket.ru/$1",
+      "has": [{ "type": "host", "value": "www.nestandart.online" }],
+      "destination": "https://nestandart.online/$1",
       "permanent": true
     },
     {
       "source": "/(.*)",
-      "has": [{ "type": "host", "value": "nestandart-phuket.vercel.app" }],
-      "destination": "https://nestandart-phuket.ru/$1",
+      "has": [{ "type": "host", "value": "nestandart.vercel.app" }],
+      "destination": "https://nestandart.online/$1",
       "permanent": true
     }
   ]

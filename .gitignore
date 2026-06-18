@@ -27,6 +27,7 @@ Thumbs.db
 # Logs
 *.log
 logs/
+backups/
 
 # Docker
 docker-compose.override.yml
@@ -34,3 +35,22 @@ docker-compose.override.yml
 # IDE
 .vscode/
 .idea/
+
+# Secrets in any format
+*.key
+*.pem
+*.crt
+*.cert
+*-credentials*
+*credential*
+secrets/
+
+# Backup files
+*.dump
+*.dump.gz
+*.backup
+*.sql.gz
+*.tar.gz
+
+# n8n workflow exports (kept tracked, used as backup)
+# n8n/flows/*.json

@@ -6,34 +6,45 @@ admin_notify.py — Уведомления менеджеру в Telegram.
 - Новое бронирование
 - Эскалация (клиент просит помочь)
 - Успешная оплата (ЮKassa)
+
+ВСЕ переменные — из окружения (см. .env.example):
+  TELEGRAM_BOT_TOKEN
+  MANAGER_CHAT_ID       — ID менеджера для уведомлений
 """
 
 import os
 import httpx
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # ── Конфиг ────────────────────────────────────────────────────────────────────
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
-ADMIN_CHAT_ID = os.getenv("TELEGRAM_ADMIN_CHAT_ID") or os.getenv("MANAGER_CHAT_ID", "")
+MANAGER_CHAT_ID = os.getenv("MANAGER_CHAT_ID", os.getenv("TELEGRAM_ADMIN_CHAT_ID", ""))
 _API = f"https://api.telegram.org/bot{BOT_TOKEN}" if BOT_TOKEN else ""
 
 
 # ── Внутренняя функция отправки ──────────────────────────────────────────────
 async def _send(text: str) -> bool:
-    """Отправляет сообщение админу/менеджеру в Telegram."""
-    if not _API or not ADMIN_CHAT_ID:
-        print(f"[AdminNotify] Пропущено (нет токена/chata): {text[:80]}...")
+    """Отправляет сообщение менеджеру в Telegram."""
+    if not _API or not MANAGER_CHAT_ID:
+        logger.warning(f"Пропущено (нет токена/chat_id): {text[:80]}...")
         return False
 
     try:
         async with httpx.AsyncClient(timeout=10) as client:
             resp = await client.post(
                 f"{_API}/sendMessage",
-                json={"chat_id": ADMIN_CHAT_ID, "text": text, "parse_mode": "HTML"},
+                json={"chat_id": MANAGER_CHAT_ID, "text": text, "parse_mode": "HTML"},
             )
+            if resp.status_code == 200:
+                logger.info(f"Уведомление отправлено: {text[:50]}...")
+            else:
+                logger.error(f"Ошибка Telegram API: {resp.status_code} {resp.text[:100]}")
             return resp.status_code == 200
     except Exception as e:
-        print(f"[AdminNotify] Ошибка отправки: {e}")
+        logger.error(f"Ошибка отправки: {e}")
         return False
 
 

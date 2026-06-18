@@ -9,10 +9,10 @@
 Internet
     │
   Nginx (VPS 77.42.93.187)
-    ├── nestandart-phuket.ru/          → /var/www/nestandart/nestandart-phuket/
-    ├── nestandart-phuket.ru/app/      → /var/www/nestandart/platform/app.html
-    ├── nestandart-phuket.ru/baza/     → /var/www/nestandart/nestandart-phuket/baza/
-    ├── nestandart-phuket.ru/tours/*   → /var/www/nestandart/nestandart-phuket/tours/
+    ├── nestandart.online/              → /var/www/nestandart/nestandart-phuket/
+    ├── nestandart.online/app/          → /var/www/nestandart/platform/app.html
+    ├── nestandart.online/baza/         → /var/www/nestandart/nestandart-phuket/baza/
+    ├── nestandart.online/tours/*       → /var/www/nestandart/nestandart-phuket/tours/
     ├── /api/leads                     → pm2: nestandart-api (порт 3055)
     └── /n8n/webhook                   → n8n Docker (порт 5678)
     

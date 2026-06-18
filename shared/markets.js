@@ -13,7 +13,7 @@ export const MARKETS = {
     active: true,
     tg_bot: 'phuket_nestandart_bot',
     wa_phone: '66804894595',
-    domain: 'nestandart-phuket.ru',
+    domain: 'nestandart.online',
     theme: 'green', // CSS theme class
   },
   pattaya: {

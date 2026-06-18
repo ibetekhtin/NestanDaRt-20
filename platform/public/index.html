@@ -1877,9 +1877,9 @@ function hideOnboarding(){ $('onboarding').style.display = 'none'; }
    Until configured, we guide the user to fill the form manually. */
 const OAUTH_CONFIG = {
   // fill these once you register apps (see social-login.md)
-  google: { client_id:'', redirect:'https://app.nestandart-phuket.ru/oauth/google' },
-  vk:     { client_id:'', redirect:'https://app.nestandart-phuket.ru/oauth/vk' },
-  ok:     { client_id:'', redirect:'https://app.nestandart-phuket.ru/oauth/ok' }
+  google: { client_id:'', redirect:'https://app.nestandart.online/oauth/google' },
+  vk:     { client_id:'', redirect:'https://app.nestandart.online/oauth/vk' },
+  ok:     { client_id:'', redirect:'https://app.nestandart.online/oauth/ok' }
 };
 function socialLogin(provider){
   haptic('light');
@@ -2575,7 +2575,7 @@ function payLater(){
    CRM / SUPABASE — единый сток клиентов и заказов.
    Данные шлём НЕ напрямую в Supabase, а на свой бэкенд (VPS/Express),
    который пишет в Supabase service-ключом. Туда же шлёт бот-продавец
-   и сайт nestandart-phuket.ru — одна база на всех. Ключи Supabase в
+   и сайт nestandart.online — одна база на всех. Ключи Supabase в
    этом файле не храним. Включи CRM_CONFIG.enabled, когда бэкенд готов.
    ============================================================ */
 async function syncCRM(type, data){
@@ -2793,7 +2793,7 @@ function finalizeOrder(paid){
 
 function shareSuccess(){
   const text = `Забронировал экскурсии через Нестандартный Отдых`;
-  const url = 'https://app.nestandart-phuket.ru';
+  const url = 'https://app.nestandart.online';
   if(IN_TG && tg.openTelegramLink){
     tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`);
   } else if(navigator.share){

@@ -1,15 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  <url><loc>https://nestandart.online/phuket/</loc><lastmod>2026-05-28</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://nestandart.online/phuket/blog/chto-posmotret-na-phukete.html</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nestandart.online/phuket/blog/top-10-plyazhey-phuketa.html</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nestandart.online/phuket/blog/pattaya-vs-phuket.html</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nestandart.online/phuket/blog/kak-dobratsya-iz-aeroporta-phuketa.html</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nestandart.online/phuket/blog/skolko-stoit-otdyh-na-phukete.html</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nestandart.online/phuket/blog/luchshie-ekskursii-na-phukete.html</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nestandart.online/phuket/blog/ostrova-ryadom-s-phuketom.html</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nestandart.online/phuket/blog/chto-poprobovat-na-phukete.html</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nestandart.online/phuket/blog/phuket-s-detmi.html</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nestandart.online/phuket/blog/kogda-letet-na-phuket.html</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://nestandart.online/phuket/tours/mototour.html</loc><lastmod>2026-05-28</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <!-- Главная -->
+  <url><loc>https://nestandart.online/phuket/</loc><lastmod>2026-06-18</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  
+  <!-- База знаний -->
+  <url><loc>https://nestandart.online/phuket/baza/</loc><lastmod>2026-06-18</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+
+  <!-- Туры - Пхукет -->
+  <url><loc>https://nestandart.online/phuket/tours/mototour.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/auto_tour.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/james_bond.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/phiphi_bamboo.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/phiphi_khai.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/similan.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/khao_sok_1.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/khao_sok_2.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/khao_lak.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/khao_kheo.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/avatar_way.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/aqua_ramayana.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/sunset_cat.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/yacht.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/rafting_atv.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/nong_nooch.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/tiffany.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/fire_show.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/gibbon_jump.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/kolan.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/events.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/photo.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/vip.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/wedding.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/realty.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nestandart.online/phuket/tours/rent_bike.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  
+  <!-- Блог -->
+  <url><loc>https://nestandart.online/phuket/blog/chto-posmotret-na-phukete.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nestandart.online/phuket/blog/top-10-plyazhey-phuketa.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nestandart.online/phuket/blog/pattaya-vs-phuket.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nestandart.online/phuket/blog/kak-dobratsya-iz-aeroporta-phuketa.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nestandart.online/phuket/blog/skolko-stoit-otdyh-na-phukete.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nestandart.online/phuket/blog/luchshie-ekskursii-na-phukete.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nestandart.online/phuket/blog/ostrova-ryadom-s-phuketom.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nestandart.online/phuket/blog/chto-poprobovat-na-phukete.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nestandart.online/phuket/blog/phuket-s-detmi.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nestandart.online/phuket/blog/kogda-letet-na-phuket.html</loc><lastmod>2026-06-18</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>

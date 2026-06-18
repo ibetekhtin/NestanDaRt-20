@@ -9,15 +9,13 @@ kote-backend — FastAPI REST API
   POST /api/v1/lead       — создать/обновить лид (→ app_upsert_lead RPC)
   GET  /api/v1/bookings   — брони клиента по телефону
 """
-import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
 from pydantic import BaseModel
 
 # ── Конфиг ────────────────────────────────────────────────────
-SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY", "")
+from config import settings
 
 app = FastAPI(
     title="Нестандартный Отдых — API",
@@ -29,8 +27,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://nestandart-phuket.ru",
-        "https://www.nestandart-phuket.ru",
+        "https://nestandart.online",
+        "https://www.nestandart.online",
         "http://localhost:3000",     # dev
     ],
     allow_methods=["GET", "POST"],
@@ -38,9 +36,9 @@ app.add_middleware(
 )
 
 def get_sb() -> Client:
-    if not SUPABASE_URL or not SUPABASE_KEY:
+    if not settings.SUPABASE_URL or not settings.SUPABASE_SERVICE_KEY:
         raise HTTPException(503, "Supabase не настроен")
-    return create_client(SUPABASE_URL, SUPABASE_KEY)
+    return create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
 
 
 # ── Схемы ──────────────────────────────────────────────────────

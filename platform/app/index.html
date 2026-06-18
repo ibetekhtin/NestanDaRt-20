@@ -1976,8 +1976,8 @@ const SB = {
 };
 /* Эндпоинты записи лида (leads.js на сайте). Пробуем по очереди. */
 const CRM_ENDPOINTS = [
-  'https://nestandart-phuket.ru/.netlify/functions/leads',
-  'https://nestandart-phuket.ru/api/leads'
+  'https://nestandart.online/.netlify/functions/leads',
+  'https://nestandart.online/api/leads'
 ];
 const RATING_BY_SLUG = {"james":"4.9","phiphi-bamboo":"4.9","phiphi-khai":"4.8","similan":"5.0","khaolak":"4.7","khaosok1":"4.9","khaosok2":"5.0","avatar":"4.8","raft":"4.8","gibbon":"4.9","fire":"4.7","wedding":"5.0","photo":"4.9","event":"5.0","moto":"4.9","auto":"4.8","rent":"4.8","estate":"5.0","yacht":"5.0","vip":"5.0","kolan":"4.9","3islands":"4.8","samet":"4.8","koh-kood":"5.0","sunset-cat":"4.9","nong-nooch":"4.9","khao-kheo":"4.8","mini-siam":"4.5","aqua-ramayana":"4.9","aqua-columbia":"4.7","tiffany":"4.8","alcazar":"4.7","muaythai":"4.6","bangkok":"4.9","river-kwai":"4.9"};
 const TAG_BY_SLUG = {"james":"Хит","phiphi-bamboo":"Топ-3","similan":"Сезон","khaosok2":"Топ","raft":"3 в 1","gibbon":"Адреналин","fire":"Вечер","moto":"★ Авторский","auto":"★ Авторский","estate":"Премиум","yacht":"Премиум","vip":"ЛОТ: СЮРПРИЗ","kolan":"Хит","3islands":"Топ","koh-kood":"Премиум","sunset-cat":"Вечер","nong-nooch":"Хит","aqua-ramayana":"Топ","tiffany":"Хит","muaythai":"Вечер","bangkok":"★ Авторский","river-kwai":"★ Авторский"};
@@ -2637,9 +2637,9 @@ function hideOnboarding(){ $('onboarding').style.display = 'none'; }
    Until configured, we guide the user to fill the form manually. */
 const OAUTH_CONFIG = {
   // fill these once you register apps (see social-login.md)
-  google: { client_id:'', redirect:'https://app.nestandart-phuket.ru/oauth/google' },
-  vk:     { client_id:'', redirect:'https://app.nestandart-phuket.ru/oauth/vk' },
-  ok:     { client_id:'', redirect:'https://app.nestandart-phuket.ru/oauth/ok' }
+  google: { client_id:'', redirect:'https://app.nestandart.online/oauth/google' },
+  vk:     { client_id:'', redirect:'https://app.nestandart.online/oauth/vk' },
+  ok:     { client_id:'', redirect:'https://app.nestandart.online/oauth/ok' }
 };
 function socialLogin(provider){
   haptic('light');
@@ -3550,7 +3550,7 @@ function finalizeOrder(paid){
 
 function shareSuccess(){
   const text = `Забронировал экскурсии через Нестандартный Отдых`;
-  const url = 'https://app.nestandart-phuket.ru';
+  const url = 'https://app.nestandart.online';
   if(IN_TG && tg.openTelegramLink){
     tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`);
   } else if(navigator.share){
