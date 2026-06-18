@@ -5,7 +5,7 @@ import httpx
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_ANON_KEY", "")
-KOTE_SECRET = os.getenv("KOTE_SECRET", "dc3247bae80970e35f7a65906e1bfddb2bd4eb91ce80a514")
+KOTE_SECRET = os.getenv("KOTE_SECRET", "")
 
 _HEADERS = {
     "apikey": SUPABASE_KEY,
@@ -33,6 +33,7 @@ async def bot_upsert_client(tg_chat_id: str, name: str = "Гость") -> dict |
         "p_tg_chat_id": tg_chat_id,
         "p_name": name,
         "p_source": "telegram",
+        "p_secret": KOTE_SECRET,
     })
 
 

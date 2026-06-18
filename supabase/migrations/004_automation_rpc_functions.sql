@@ -18,7 +18,8 @@ GRANT EXECUTE ON FUNCTION public.get_new_leads(int) TO anon;
 
 
 -- ── Функция 2: Брони на N дней вперёд (напоминание накануне тура) ───────────
-CREATE OR REPLACE FUNCTION public.get_tour_reminders(p_days_ahead int DEFAULT 1)
+-- Auth: SHA256-хеш KOTE_SECRET (паттерн как в get_kote_context)
+CREATE OR REPLACE FUNCTION public.get_tour_reminders(p_days_ahead int DEFAULT 1, p_secret text DEFAULT '')
 RETURNS TABLE (
   booking_id   uuid,
   tour_name    text,
@@ -27,8 +28,15 @@ RETURNS TABLE (
   client_name  text,
   tg_chat_id   text,
   phone        text
-) LANGUAGE sql SECURITY DEFINER
+) LANGUAGE plpgsql SECURITY DEFINER
 SET search_path TO 'public', 'pg_temp' AS $$
+BEGIN
+  IF encode(extensions.digest(coalesce(p_secret,''), 'sha256'), 'hex')
+     != '2734a0d3fb48d8d58987947a46be1b2cb41eb961d36475c96a37530291c67a59' THEN
+    RAISE EXCEPTION 'Unauthorized';
+  END IF;
+
+  RETURN QUERY
   SELECT b.id,
          b.tour_name,
          b.date_start,
@@ -42,20 +50,29 @@ SET search_path TO 'public', 'pg_temp' AS $$
     AND b.status IN ('Подтверждена', 'Оплачено')
     AND c.tg_chat_id IS NOT NULL
   ORDER BY b.date_start;
+END;
 $$;
-GRANT EXECUTE ON FUNCTION public.get_tour_reminders(int) TO anon;
+GRANT EXECUTE ON FUNCTION public.get_tour_reminders(int, text) TO anon;
 
 
 -- ── Функция 3: Туры которые завершились N дней назад (запрос отзыва) ────────
-CREATE OR REPLACE FUNCTION public.get_review_requests(p_days_ago int DEFAULT 0)
+-- Auth: SHA256-хеш KOTE_SECRET (паттерн как в get_kote_context)
+CREATE OR REPLACE FUNCTION public.get_review_requests(p_days_ago int DEFAULT 0, p_secret text DEFAULT '')
 RETURNS TABLE (
   booking_id   uuid,
   tour_name    text,
   date_start   date,
   client_name  text,
   tg_chat_id   text
-) LANGUAGE sql SECURITY DEFINER
+) LANGUAGE plpgsql SECURITY DEFINER
 SET search_path TO 'public', 'pg_temp' AS $$
+BEGIN
+  IF encode(extensions.digest(coalesce(p_secret,''), 'sha256'), 'hex')
+     != '2734a0d3fb48d8d58987947a46be1b2cb41eb961d36475c96a37530291c67a59' THEN
+    RAISE EXCEPTION 'Unauthorized';
+  END IF;
+
+  RETURN QUERY
   SELECT b.id,
          b.tour_name,
          b.date_start,
@@ -67,5 +84,6 @@ SET search_path TO 'public', 'pg_temp' AS $$
     AND b.status IN ('Оплачено', 'Завершено')
     AND c.tg_chat_id IS NOT NULL
   ORDER BY b.date_start;
+END;
 $$;
-GRANT EXECUTE ON FUNCTION public.get_review_requests(int) TO anon;
+GRANT EXECUTE ON FUNCTION public.get_review_requests(int, text) TO anon;

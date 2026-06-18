@@ -1,0 +1,14 @@
+{
+  "name": "nestandart-phuket-website",
+  "version": "1.0.0",
+  "description": "Авторские экскурсии — Нестандартный Отдых®",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "build": "echo 'Static site — no build step'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["phuket", "tours", "thailand"],
+  "author": "Нестандартный Отдых®",
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,27 @@
+# robots.txt — Нестандартный Отдых®
+# nestandart.online
+
+User-agent: *
+Allow: /
+Crawl-delay: 1
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Yandex
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+# Закрываем только реально служебное
+Disallow: /api/
+Disallow: /.git/
+
+Sitemap: https://nestandart.online/phuket/sitemap.xml
+
+# Host (для Яндекса)
+Host: nestandart.online

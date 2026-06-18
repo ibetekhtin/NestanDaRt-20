@@ -1,6 +1,13 @@
-# Secrets
+# Secrets — broad coverage so stray .env variants can never be committed
 .env
 .env.local
+.env*
+!.env.example
+*.save
+
+# Git bundles / archives accidentally dropped in the tree
+*.bundle
+*.tar.gz
 
 # Dependencies
 node_modules/
