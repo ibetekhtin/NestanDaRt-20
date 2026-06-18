@@ -2527,10 +2527,9 @@ function payLater(){
 // Post-payment details: date + hotel + contact confirmation
 /* ============================================================
    CRM / SUPABASE — единый сток клиентов и заказов.
-   Данные шлём НЕ напрямую в Supabase, а на свой бэкенд (VPS/Express),
-   который пишет в Supabase service-ключом. Туда же шлёт бот-продавец
-   и сайт nestandart.online/phuket — одна база на всех. Ключи Supabase в
-   этом файле не храним. Включи CRM_CONFIG.enabled, когда бэкенд готов.
+   Заказы идут через RPC app_upsert_lead (anon-ключ): антидубль по
+   phone/tg_chat_id/external_id, авто-создание клиента + брони + записи
+   в action_history (её слушает n8n). Одна база на всех: сайт, бот, app.
    ============================================================ */
 async function syncCRM(type, data){
   if(!data) return;
@@ -2547,20 +2546,25 @@ async function syncCRM(type, data){
         keepalive:true
       }).catch(()=>{});
     } else if(type==='order'){
-      fetch(`${SB_URL}/rest/v1/bookings`,{
+      const tgId=(IN_TG&&tg.initDataUnsafe&&tg.initDataUnsafe.user)?String(tg.initDataUnsafe.user.id):null;
+      const tourName=(data.items||[]).map(i=>i.title).filter(Boolean).join(', ');
+      fetch(`${SB_URL}/rest/v1/rpc/app_upsert_lead`,{
         method:'POST',
         headers:{...SB_HDR,'Prefer':'return=minimal'},
         body:JSON.stringify({
-          tour_name: data.title||data.tourTitle||'',
-          date_start: data.date||null,
-          adults: data.adults||1,
-          children: data.children||0,
-          people_count: (data.adults||1)+(data.children||0),
-          total: data.total||data.amount||0,
-          comment: [data.hotel?'Отель: '+data.hotel:'', data.comment||''].filter(Boolean).join(' · ')||null,
-          source: 'app',
-          status: 'new',
-          external_id: data.orderId||null
+          p_external_id: data.order_id||null,
+          p_source: 'app',
+          p_name: data.name||PROFILE.name||null,
+          p_phone: data.phone||PROFILE.phone||null,
+          p_email: data.email||PROFILE.email||null,
+          p_telegram: PROFILE.telegram||null,
+          p_tg_chat_id: tgId,
+          p_tour_name: tourName||null,
+          p_date_start: data.date||null,
+          p_people: (data.adults||1)+(data.children||0),
+          p_total: (data.price&&data.price.total)||0,
+          p_comment: [data.hotel?'Отель: '+data.hotel:'', data.comment||'', data.promo?'Промо: '+data.promo:''].filter(Boolean).join(' · ')||null,
+          p_status: 'Новый'
         }),
         keepalive:true
       }).catch(()=>{});
