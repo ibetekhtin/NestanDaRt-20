@@ -117,7 +117,7 @@ function AppContent() {
             </button>
           )}
           <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center' }}>
-            nestandart-phuket.ru © 2026
+            nestandart.online © 2026
           </div>
         </div>
       </aside>

@@ -137,7 +137,7 @@ check_api() {
     fi
     
     # Website health
-    if ! curl -sf "https://nestandart-phuket.ru/" >/dev/null 2>&1; then
+    if ! curl -sf "https://nestandart.online/" >/dev/null 2>&1; then
         if ! curl -sf "http://77.42.93.187/" >/dev/null 2>&1; then
             alert "CRIT" "Website is not accessible"
         fi
@@ -168,7 +168,7 @@ check_ssl() {
     log "🔒 Checking SSL certificate..."
     
     if command -v openssl &> /dev/null; then
-        local expiry=$(echo | openssl s_client -servername nestandart-phuket.ru -connect nestandart-phuket.ru:443 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
+        local expiry=$(echo | openssl s_client -servername nestandart.online -connect nestandart.online:443 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
         if [ -n "$expiry" ]; then
             local expiry_epoch=$(date -j -f "%b %d %T %Y %Z" "$expiry" +%s 2>/dev/null || date -d "$expiry" +%s 2>/dev/null)
             local now=$(date +%s)

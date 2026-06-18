@@ -19,7 +19,7 @@ const WIKI_CATEGORIES = [
   {
     title: '🏝️ Ресурсы экосистемы',
     items: [
-      { q: 'Официальные ресурсы «Нестандартный Отдых»', a: 'Сайт: nestandart-phuket.ru\nКанал: @nestandart_phuket_channel\nАфиша: @nestandart_phuket_events\nАдминистратор/бронь: @nestandart_phuket' }
+      { q: 'Официальные ресурсы «Нестандартный Отдых»', a: 'Сайт: nestandart.online\nКанал: @nestandart_phuket_channel\nАфиша: @nestandart_phuket_events\nАдминистратор/бронь: @nestandart_phuket' }
     ]
   }
 ];
