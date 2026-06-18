@@ -5,9 +5,13 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends curl && \
     rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+# Контекст сборки = корень репо (см. docker-compose.yml), поэтому пути с префиксом
+COPY platform/bot/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY main.py tools_knowledge.py admin_notify.py ./
+# Весь код бота (main.py, intent.py, supabase_client.py, admin_notify.py, tools_knowledge.py)
+COPY platform/bot/ .
+# Общий AI-слой (fallback chain) из корня репо — нужен для `from providers import ask`
+COPY providers/ ./providers/
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:8081/health || exit 1

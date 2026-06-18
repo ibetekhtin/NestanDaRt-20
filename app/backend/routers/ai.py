@@ -1,12 +1,12 @@
 """
-AI Router — proxy to Gemini via KOTE
+AI Router — proxy to AI providers via KOTE
 """
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 import time
-import uuid
 from config import settings
+from providers import ask as ai_ask
 from supabase import create_client
 
 router = APIRouter()
@@ -28,8 +28,7 @@ class AIResponse(BaseModel):
 
 @router.post("/ai/ask", response_model=AIResponse)
 async def ask_ai(req: AIRequest):
-    """Задать вопрос КотЭ (Gemini AI)."""
-    from google.generativeai import GenerativeModel
+    """Задать вопрос КотЭ (AI с fallback chain)."""
 
     start_time = time.time()
 
@@ -67,12 +66,16 @@ async def ask_ai(req: AIRequest):
     full_prompt = f"{system_prompt}\n\n{messages_text}\nПользователь: {req.message}\nКотЭ:"
 
     try:
-        model = GenerativeModel(settings.GEMINI_MODEL)
-        response = model.generate_content(full_prompt)
-        reply = response.text or "🐾 Извини, я не могу ответить."
+        reply = await ai_ask(
+            prompt=full_prompt,
+            system=system_prompt,
+            max_tokens=600,
+            temperature=0.85,
+        )
+        if not reply:
+            reply = "🐾 Извини, я не могу ответить."
     except Exception as e:
         reply = f"🐾 Техническая пауза. Попробуй позже!"
-        intent = "error"
 
     latency_ms = int((time.time() - start_time) * 1000)
 

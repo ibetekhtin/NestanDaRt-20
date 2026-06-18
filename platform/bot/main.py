@@ -1,5 +1,5 @@
 """
-КотЭ — Telegram бот (Python / aiogram / Gemini 2.0 Flash)
+КотЭ — Telegram бот (Python / aiogram / AI Fallback Chain)
 
 Pipeline (зеркало n8n workflow «КотЭ — AI Агент с памятью»):
   Telegram → Upsert client → Load context → Build prompt →
@@ -17,8 +17,6 @@ import json
 import logging
 import os
 import sys
-
-import httpx
 
 # Structured JSON logging
 logging.basicConfig(
@@ -43,24 +41,17 @@ from supabase_client import (
     update_client_stage,
     upsert_client_memory,
 )
+from providers import ask as ai_ask
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL", "")  # empty = polling mode
 WEBHOOK_PATH = "/bot/webhook"
 HOST = "0.0.0.0"
 PORT = int(os.getenv("BOT_PORT", "8080"))
 
-GEMINI_ENDPOINT = (
-    f"https://generativelanguage.googleapis.com/v1beta/models/"
-    f"gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
-)
-
 if not BOT_TOKEN:
     raise SystemExit("TELEGRAM_BOT_TOKEN обязателен в .env")
-if not GEMINI_API_KEY:
-    raise SystemExit("GEMINI_API_KEY обязателен в .env")
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("kote")
@@ -179,33 +170,6 @@ def _build_system(ctx: dict) -> str:
     )
 
 
-async def ask_gemini(system: str, user_message: str) -> str:
-    """Call Gemini 2.0 Flash and return text reply."""
-    payload = {
-        "systemInstruction": {"parts": [{"text": system}]},
-        "contents": [{"role": "user", "parts": [{"text": user_message}]}],
-        "generationConfig": {"temperature": 0.85, "maxOutputTokens": 600, "topP": 0.95},
-    }
-    try:
-        async with httpx.AsyncClient(timeout=30) as client:
-            resp = await client.post(GEMINI_ENDPOINT, json=payload)
-            data = resp.json()
-            if data.get("error"):
-                code = data["error"].get("code") or data["error"].get("status", "")
-                if code in (429, "RESOURCE_EXHAUSTED"):
-                    return "Секунду, немного перегружен — напишите ещё раз через минуту 🙏"
-                log.error(f"Gemini error: {data['error']}")
-                return "Технические неполадки, уже разбираемся!"
-            text = (
-                data.get("candidates", [{}])[0]
-                .get("content", {})
-                .get("parts", [{}])[0]
-                .get("text", "")
-            )
-            return text.strip() or "🐾 Не могу ответить. Попробуй ещё раз!"
-    except Exception as e:
-        log.error(f"Gemini request error: {e}")
-        return "🐾 Техническая пауза. Попробуй позже!"
 
 
 # ── Handlers ───────────────────────────────────────────────────────────────────
@@ -253,9 +217,14 @@ async def handle_message(message: types.Message):
     # 2. Load full context: history, tours, knowledge, memory
     ctx = await get_kote_context(tg_chat_id, text) or {}
 
-    # 3. Build prompt + call Gemini
+    # 3. Build prompt + call AI (fallback chain)
     system = _build_system(ctx)
-    reply = await ask_gemini(system, text)
+    reply = await ai_ask(
+        prompt=text,
+        system=system,
+        max_tokens=600,
+        temperature=0.85,
+    )
 
     # 4. Send reply to Telegram
     await message.answer(reply)

@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     SUPABASE_ANON_KEY: str = ""
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-2.0-flash"
+    OPENROUTER_API_KEY: str = ""
+    OPENROUTER_MODEL: str = "google/gemini-2.0-flash-exp:free"
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
     BACKEND_PORT: int = 8000
     N8N_HOST: str = "http://localhost:5678"
 
