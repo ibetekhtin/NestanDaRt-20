@@ -7,7 +7,7 @@ sudo certbot --nginx -d nestandart.online -d www.nestandart.online
 # После подтверждения certbot сам настроит HTTPS редирект
 ```
 
-## 2. Crontab — автоматические бэкапы и мониторинг
+## 2. Crontab — автоматические бэкапы и healthcheck
 ```bash
 ssh root@77.42.93.187
 
@@ -16,7 +16,7 @@ crontab -e
 
 # Добавить строки:
 0 3 * * * /opt/kote/deploy/backup-supabase.sh >> /var/log/kote-backup.log 2>&1
-*/5 * * * * /opt/kote/deploy/monitoring.sh >> /var/log/kote-monitor.log 2>&1
+*/5 * * * * /opt/kote/deploy/healthcheck.sh >> /var/log/kote-health.log 2>&1
 
 # Проверить:
 crontab -l
