@@ -82,13 +82,15 @@ async def get_markets():
 @app.post("/api/v1/lead")
 async def upsert_lead(lead: LeadIn):
     sb = get_sb()
+    # ВАЖНО: боевая app_upsert_lead НЕ имеет параметра p_market_id (рынок
+    # выводится из тура). Передавать его нельзя — PostgREST не найдёт overload
+    # и вернёт 404. Передаём только реально существующие параметры.
     res = sb.rpc("app_upsert_lead", {
         "p_name":       lead.name,
         "p_phone":      lead.phone,
         "p_telegram":   lead.telegram,
         "p_tg_chat_id": lead.tg_chat_id,
         "p_source":     lead.source,
-        "p_market_id":  lead.market_id,
     }).execute()
     return {"ok": True, "data": res.data}
 

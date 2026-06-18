@@ -15,8 +15,7 @@
 # Логи:    docker compose logs -f kote-backend
 # Стоп:    docker compose down
 # ═══════════════════════════════════════════════════════════════
-
-version: "3.9"
+# (атрибут version: удалён — устарел в Compose v2, выдаёт warning)
 
 services:
 

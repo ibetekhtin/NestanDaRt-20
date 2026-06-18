@@ -51,6 +51,8 @@ secrets/
 *.backup
 *.sql.gz
 *.tar.gz
+*.bak
+*.orig
 
 # n8n workflow exports (kept tracked, used as backup)
 # n8n/flows/*.json

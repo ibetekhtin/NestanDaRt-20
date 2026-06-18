@@ -18,13 +18,13 @@ import logging
 import os
 import sys
 
-# Structured JSON logging
+# Structured logging (единственная конфигурация на весь процесс)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[logging.StreamHandler(sys.stdout)],
 )
-logger = logging.getLogger("kote-bot")
+log = logging.getLogger("kote")
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
@@ -52,9 +52,6 @@ PORT = int(os.getenv("BOT_PORT", "8080"))
 
 if not BOT_TOKEN:
     raise SystemExit("TELEGRAM_BOT_TOKEN обязателен в .env")
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-log = logging.getLogger("kote")
 
 bot = Bot(token=BOT_TOKEN, parse_mode=ParseMode.HTML)
 dp = Dispatcher()

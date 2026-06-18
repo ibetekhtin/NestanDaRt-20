@@ -12,17 +12,6 @@
       "position": [200, 300]
     },
     {
-      "name": "Get Booking",
-      "type": "n8n-nodes-base.supabase",
-      "parameters": {
-        "operation": "get",
-        "tableId": "booking_details",
-        "filters": "booking_id=eq.{{ $json.booking_id }}",
-        "returnFirst": true
-      },
-      "position": [400, 300]
-    },
-    {
       "name": "Switch Action",
       "type": "n8n-nodes-base.switch",
       "parameters": {
@@ -81,9 +70,6 @@
   ],
   "connections": {
     "Webhook": {
-      "main": [[{ "node": "Get Booking", "type": "main", "index": 0 }]]
-    },
-    "Get Booking": {
       "main": [[{ "node": "Switch Action", "type": "main", "index": 0 }]]
     },
     "Switch Action": {

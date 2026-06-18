@@ -5,12 +5,14 @@ const AppContext = createContext();
 
 const DEFAULT_MARKET = import.meta.env.VITE_DEFAULT_MARKET || 'phuket';
 
-// City → market mapping (tours use 'city' field)
+// City → market mapping — синхронизировано с shared/markets.js и DB
 const MARKET_CITY = {
   phuket: 'Пхукет',
   pattaya: 'Паттайя',
   bali: 'Бали',
   dubai: 'Дубай',
+  vietnam: 'Вьетнам',
+  srilanka: 'Шри-Ланка',
 };
 
 export const AppProvider = ({ children }) => {

@@ -18,6 +18,8 @@ const MARKETS = [
   { id: 'pattaya', label: '🌅 Паттайя' },
   { id: 'bali', label: '🌿 Бали' },
   { id: 'dubai', label: '🏙️ Дубай' },
+  { id: 'vietnam', label: '🌏 Вьетнам' },
+  { id: 'srilanka', label: '🏝️ Шри-Ланка' },
 ];
 
 function AppContent() {
