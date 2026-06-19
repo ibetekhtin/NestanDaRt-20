@@ -1,0 +1,167 @@
+[
+  {
+    "name": "КотЭ — Новые заявки: уведомление менеджеру",
+    "nodes": [
+      {
+        "parameters": { "rule": { "interval": [ { "field": "minutes", "minutesInterval": 5 } ] } },
+        "name": "Каждые 5 минут",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [0, 0]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/rpc/get_new_leads",
+          "sendHeaders": true,
+          "headerParameters": { "parameters": [
+            { "name": "apikey", "value": "__SUPABASE_ANON_KEY__" },
+            { "name": "Authorization", "value": "Bearer __SUPABASE_ANON_KEY__" },
+            { "name": "Content-Type", "value": "application/json" }
+          ] },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={ \"p_minutes\": 6, \"p_secret\": \"{{ $env.KOTE_SECRET }}\" }"
+        },
+        "name": "Получить новые лиды",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [224, 0]
+      },
+      {
+        "parameters": {
+          "resource": "message",
+          "operation": "sendMessage",
+          "chatId": "8943048058",
+          "text": "=🆕 <b>Новый лид!</b>\n\n👤 {{ $json.name || \"Без имени\" }}\n📞 {{ $json.phone || \"не указан\" }}\n💬 TG: {{ $json.tg_chat_id || \"нет\" }}\n📡 Источник: {{ $json.source || \"неизвестен\" }}",
+          "additionalFields": { "parse_mode": "HTML", "appendAttribution": false }
+        },
+        "name": "Уведомить менеджера",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [448, 0]
+      }
+    ],
+    "connections": {
+      "Каждые 5 минут": { "main": [[{ "node": "Получить новые лиды", "type": "main", "index": 0 }]] },
+      "Получить новые лиды": { "main": [[{ "node": "Уведомить менеджера", "type": "main", "index": 0 }]] }
+    },
+    "settings": { "executionOrder": "v1" }
+  },
+  {
+    "name": "📅 КотЭ — Напоминание о туре за день",
+    "nodes": [
+      {
+        "parameters": { "rule": { "interval": [ { "field": "cronExpression", "expression": "0 11 * * *" } ] } },
+        "name": "⏰ Каждый день 18:00 Бангкок",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [0, 0]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/rpc/get_tour_reminders",
+          "sendHeaders": true,
+          "headerParameters": { "parameters": [
+            { "name": "apikey", "value": "__SUPABASE_ANON_KEY__" },
+            { "name": "Authorization", "value": "Bearer __SUPABASE_ANON_KEY__" },
+            { "name": "Content-Type", "value": "application/json" }
+          ] },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={ \"p_days_ahead\": 1, \"p_secret\": \"{{ $env.KOTE_SECRET }}\" }"
+        },
+        "name": "🗓 Туры на завтра (Supabase)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [224, 0]
+      },
+      {
+        "parameters": { "batchSize": 1 },
+        "name": "🔄 По каждому клиенту",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [448, 0]
+      },
+      {
+        "parameters": {
+          "resource": "message",
+          "operation": "sendMessage",
+          "chatId": "={{ $json.tg_chat_id }}",
+          "text": "=👋 Привет, {{ $json.client_name }}!\n\nНапоминаем: завтра у вас тур «{{ $json.tour_name }}» 🌴\n\n📅 Дата: {{ $json.date_start }}\n👥 Гостей: {{ $json.people_count }} чел.\n\nЕсть вопросы — пишите прямо сюда, мы на связи 24/7. До встречи! 🤝",
+          "additionalFields": { "appendAttribution": false, "disable_web_page_preview": true }
+        },
+        "name": "📲 Напомнить клиенту",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [672, 0]
+      }
+    ],
+    "connections": {
+      "⏰ Каждый день 18:00 Бангкок": { "main": [[{ "node": "🗓 Туры на завтра (Supabase)", "type": "main", "index": 0 }]] },
+      "🗓 Туры на завтра (Supabase)": { "main": [[{ "node": "🔄 По каждому клиенту", "type": "main", "index": 0 }]] },
+      "🔄 По каждому клиенту": { "main": [[], [{ "node": "📲 Напомнить клиенту", "type": "main", "index": 0 }]] },
+      "📲 Напомнить клиенту": { "main": [[{ "node": "🔄 По каждому клиенту", "type": "main", "index": 0 }]] }
+    },
+    "settings": { "executionOrder": "v1" }
+  },
+  {
+    "name": "⭐ КотЭ — Запрос отзыва после тура",
+    "nodes": [
+      {
+        "parameters": { "rule": { "interval": [ { "field": "cronExpression", "expression": "0 3 * * *" } ] } },
+        "name": "⏰ Каждый день 10:00 Бангкок",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [0, 0]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/rpc/get_review_requests",
+          "sendHeaders": true,
+          "headerParameters": { "parameters": [
+            { "name": "apikey", "value": "__SUPABASE_ANON_KEY__" },
+            { "name": "Authorization", "value": "Bearer __SUPABASE_ANON_KEY__" },
+            { "name": "Content-Type", "value": "application/json" }
+          ] },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={ \"p_days_ago\": 1, \"p_secret\": \"{{ $env.KOTE_SECRET }}\" }"
+        },
+        "name": "✅ Туры вчера (Supabase)",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [224, 0]
+      },
+      {
+        "parameters": { "batchSize": 1 },
+        "name": "🔄 По каждому клиенту",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [448, 0]
+      },
+      {
+        "parameters": {
+          "resource": "message",
+          "operation": "sendMessage",
+          "chatId": "={{ $json.tg_chat_id }}",
+          "text": "=👋 {{ $json.client_name }}, привет!\n\nВы вчера были в туре «{{ $json.tour_name }}» 🌴 Надеемся, всё прошло отлично!\n\nОставьте отзыв — это помогает другим туристам нас найти 🙏\n\nИли напишите пару слов прямо здесь — мы читаем каждый отзыв и отвечаем ⭐",
+          "additionalFields": { "appendAttribution": false, "disable_web_page_preview": true }
+        },
+        "name": "⭐ Запросить отзыв",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [672, 0]
+      }
+    ],
+    "connections": {
+      "⏰ Каждый день 10:00 Бангкок": { "main": [[{ "node": "✅ Туры вчера (Supabase)", "type": "main", "index": 0 }]] },
+      "✅ Туры вчера (Supabase)": { "main": [[{ "node": "🔄 По каждому клиенту", "type": "main", "index": 0 }]] },
+      "🔄 По каждому клиенту": { "main": [[], [{ "node": "⭐ Запросить отзыв", "type": "main", "index": 0 }]] },
+      "⭐ Запросить отзыв": { "main": [[{ "node": "🔄 По каждому клиенту", "type": "main", "index": 0 }]] }
+    },
+    "settings": { "executionOrder": "v1" }
+  }
+]
