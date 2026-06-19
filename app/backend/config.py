@@ -2,7 +2,6 @@
 KOTЭ Backend — Configuration (pydantic-settings)
 """
 from pydantic_settings import BaseSettings
-import os
 
 
 class Settings(BaseSettings):
@@ -15,6 +14,9 @@ class Settings(BaseSettings):
     OPENROUTER_MODEL: str = "google/gemini-2.0-flash-exp:free"
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
+    TELEGRAM_BOT_TOKEN: str = ""
+    MANAGER_CHAT_ID: str = ""
+    KOTE_RPC_SECRET: str = ""
     BACKEND_PORT: int = 8000
     N8N_HOST: str = "http://localhost:5678"
 

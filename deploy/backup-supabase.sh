@@ -11,6 +11,7 @@
 # ============================================================================
 
 set -euo pipefail
+umask 077   # backups contain secrets — owner-only (rw-------)
 
 BACKUP_DIR="/opt/kote/backups"
 KEEP_DAYS=30
@@ -30,6 +31,7 @@ log() { echo -e "${GREEN}[$(date '+%H:%M:%S')]${NC} $1" | tee -a "$LOG_FILE"; }
 error() { echo -e "${RED}[ERROR]${NC} $1" | tee -a "$LOG_FILE"; }
 
 mkdir -p "$BACKUP_DIR"
+chmod 700 "$BACKUP_DIR"
 
 # ─── Prerequisites ─────────────────────────────────────────────
 if [ -z "${SUPABASE_DB_URL:-}" ]; then

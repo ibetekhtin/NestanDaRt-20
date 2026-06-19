@@ -1,49 +1,46 @@
 """
-Memory Router — client memory (client_memory table)
+Memory Router — client_memory table
+Схема: interests[], budget_level, travel_style, last_intent,
+       last_tour_viewed, tours_viewed[], tours_booked[],
+       arrival_date, group_size, has_children
 """
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Optional
-from datetime import datetime
-from config import settings
-from supabase import create_client
+from typing import Optional, List
+from db import sb
 
 router = APIRouter()
-sb = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
 
 
-class MemoryUpdate(BaseModel):
-    market_id: str
-    key: str
-    value: str
-    importance: int = 5
-    expires_at: Optional[datetime] = None
+class MemoryUpsert(BaseModel):
+    interests: Optional[List[str]] = None
+    budget_level: Optional[str] = None     # low | medium | high | vip
+    travel_style: Optional[str] = None
+    last_intent: Optional[str] = None
+    last_tour_viewed: Optional[str] = None
+    tours_viewed: Optional[List[str]] = None
+    arrival_date: Optional[str] = None
+    group_size: Optional[int] = None
+    has_children: Optional[bool] = None
 
 
 @router.get("/clients/{client_id}/memory")
-async def get_memory(client_id: str, market_id: Optional[str] = None):
-    """Получить память клиента."""
-    query = sb.table("client_memory").select("key, value, importance").eq("client_id", client_id)
-    if market_id:
-        query = query.eq("market_id", market_id)
-    query = query.order("importance", desc=True).limit(20)
-    result = query.execute()
-    if result.error:
-        raise HTTPException(status_code=500, detail=str(result.error))
-    return result.data or []
+async def get_memory(client_id: str):
+    try:
+        result = sb.table("client_memory").select("*").eq("client_id", client_id).maybe_single().execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return (result.data if result else None) or {}
 
 
 @router.post("/clients/{client_id}/memory")
-async def update_memory(client_id: str, mem: MemoryUpdate):
-    """Обновить память клиента (upsert)."""
-    result = sb.rpc("app_update_memory", {
-        "p_client_id": client_id,
-        "p_market_id": mem.market_id,
-        "p_key": mem.key,
-        "p_value": mem.value,
-        "p_importance": mem.importance,
-        "p_expires_at": mem.expires_at.isoformat() if mem.expires_at else None,
-    }).execute()
-    if result.data is None:
-        raise HTTPException(status_code=500, detail="Failed to update memory")
-    return {"id": result.data, "status": "ok"}
+async def upsert_memory(client_id: str, mem: MemoryUpsert):
+    # updated_at проставляется server-side (DB default) — не передаём вручную
+    payload = {"client_id": client_id, **mem.model_dump(exclude_none=True)}
+    try:
+        result = sb.table("client_memory").upsert(
+            payload, on_conflict="client_id"
+        ).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return result.data[0] if result.data else {"status": "ok"}

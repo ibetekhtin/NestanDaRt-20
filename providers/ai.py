@@ -1,11 +1,8 @@
 """
 AI Providers — fallback chain: Gemini → OpenRouter → Groq
 """
-import os
 import logging
 import time
-from typing import Optional
-
 from .gemini import call_gemini
 from .openrouter import call_openrouter
 from .groq import call_groq

@@ -1,63 +1,40 @@
 #!/bin/bash
 # Healthcheck script for KOTЭ system
-# Checks: backend API, n8n, Docker, SSL
-
-set -e
+# Runs every 5 minutes via cron (*/5 * * * *)
 
 LOG_FILE="/var/log/kote-health.log"
+BACKEND_URL="http://127.0.0.1:8000/health"
 API_URL="https://nestandart.online"
-N8N_URL="http://localhost:5678/healthz"
-BACKEND_URL="http://localhost:8000/health"
 
-log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $1" >> "$LOG_FILE"; }
+
+check_nginx() {
+    if ! systemctl is-active --quiet nginx; then
+        log "❌ nginx DOWN — restarting"
+        systemctl restart nginx && log "✅ nginx restarted" || log "❌ nginx restart failed"
+    fi
 }
 
 check_backend() {
-    if curl -sf "$BACKEND_URL" > /dev/null; then
-        log "✅ Backend OK"
-        return 0
-    else
-        log "❌ Backend DOWN - restarting"
-        cd /opt/kote && docker compose restart kote-backend
-        sleep 5
-        if curl -sf "$BACKEND_URL" > /dev/null; then
-            log "✅ Backend recovered"
-            return 0
+    if ! curl -sf --max-time 5 "$BACKEND_URL" > /dev/null 2>&1; then
+        log "❌ kote-backend DOWN — restarting"
+        cd /opt/kote && docker compose restart kote-backend 2>/dev/null
+        sleep 8
+        if curl -sf --max-time 5 "$BACKEND_URL" > /dev/null 2>&1; then
+            log "✅ kote-backend recovered"
         else
-            log "❌ Backend still down"
-            return 1
+            log "❌ kote-backend still down after restart"
         fi
     fi
 }
 
-check_api() {
-    if curl -sf "$API_URL/api/v1/tours" > /dev/null; then
-        log "✅ API OK"
-        return 0
-    else
-        log "❌ API unreachable"
-        return 1
+check_n8n() {
+    if ! curl -sf --max-time 5 "http://127.0.0.1:5678/healthz" > /dev/null 2>&1; then
+        log "❌ kote-n8n DOWN — restarting"
+        cd /opt/kote && docker compose restart kote-n8n 2>/dev/null && log "✅ kote-n8n restarted"
     fi
 }
-
-check_nginx() {
-    if systemctl is-active --quiet nginx; then
-        log "✅ Nginx running"
-        return 0
-    else
-        log "❌ Nginx stopped - restarting"
-        systemctl restart nginx
-        return 1
-    fi
-}
-
-# Main
-log "=== Healthcheck started ==="
 
 check_nginx
 check_backend
-check_api
-
-log "=== Healthcheck complete ==="
-echo "" >> "$LOG_FILE"
+check_n8n

@@ -1,48 +1,73 @@
 """
-Webhooks Router — relay for n8n callbacks
+Webhooks Router — входящие вызовы от n8n
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
 from typing import Optional
 from config import settings
-from supabase import create_client
+from db import sb
 
 router = APIRouter()
-sb = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
 
 
-class WebhookPayload(BaseModel):
-    booking_id: Optional[str] = None
-    client_id: Optional[str] = None
-    market_id: Optional[str] = None
-    action: Optional[str] = None
-    data: Optional[dict] = None
+def _check_secret(x_kote_secret: Optional[str]) -> None:
+    expected = settings.KOTE_RPC_SECRET
+    # fail-closed: незаданный секрет — это мисконфигурация сервера, а не «всем можно»
+    if not expected:
+        raise HTTPException(status_code=503, detail="KOTE_RPC_SECRET not configured")
+    if x_kote_secret != expected:
+        raise HTTPException(status_code=403, detail="Invalid secret")
 
 
-@router.post("/webhook/lead-intake")
-async def webhook_lead_intake(payload: WebhookPayload):
-    """Relay: создание лида → n8n"""
-    result = sb.rpc("app_upsert_lead", {
-        "p_market_id": payload.market_id or "unknown",
-        "p_name": payload.data.get("name", "Unknown") if payload.data else "Unknown",
-        "p_telegram_id": payload.data.get("telegram_id") if payload.data else None,
-        "p_phone": payload.data.get("phone") if payload.data else None,
-        "p_source": payload.data.get("source", "manual") if payload.data else "manual",
-    }).execute()
-    return {"status": "ok", "lead_id": result.data}
+class LeadWebhook(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    telegram: Optional[str] = None
+    tg_chat_id: Optional[str] = None
+    source: str = "webhook"
+    tour_slug: Optional[str] = None
+    comment: Optional[str] = None
 
 
-@router.post("/webhook/booking-confirm")
-async def webhook_booking_confirm(payload: WebhookPayload):
-    """Relay: подтверждение брони → n8n"""
-    if not payload.booking_id:
-        raise HTTPException(status_code=400, detail="booking_id required")
-
-    result = sb.table("bookings").update({"status": "confirmed"}).eq("id", payload.booking_id).execute()
-    return {"status": "confirmed", "booking_id": payload.booking_id}
+class BookingWebhook(BaseModel):
+    booking_id: str
+    status: str
 
 
-@router.post("/webhook/sos")
-async def webhook_sos(payload: WebhookPayload):
-    """Relay: SOS → n8n"""
-    return {"status": "received", "message": "SOS will be processed by n8n"}
+@router.post("/webhook/lead")
+async def webhook_lead(payload: LeadWebhook, x_kote_secret: Optional[str] = Header(None)):
+    _check_secret(x_kote_secret)
+    try:
+        result = sb.rpc("app_upsert_lead", {
+            "p_name":        payload.name,
+            "p_phone":       payload.phone,
+            "p_telegram":    payload.telegram,
+            "p_tg_chat_id":  payload.tg_chat_id,
+            "p_source":      payload.source,
+            "p_tour_slug":   payload.tour_slug,
+            "p_comment":     payload.comment,
+            "p_external_id": None,
+            "p_email":       None,
+            "p_whatsapp":    None,
+            "p_instagram":   None,
+            "p_vk":          None,
+            "p_tour_name":   None,
+            "p_date_start":  None,
+            "p_people":      None,
+            "p_budget":      None,
+            "p_total":       None,
+            "p_status":      "Новый",
+        }).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return {"ok": True, "data": result.data}
+
+
+@router.post("/webhook/booking")
+async def webhook_booking(payload: BookingWebhook, x_kote_secret: Optional[str] = Header(None)):
+    _check_secret(x_kote_secret)
+    try:
+        sb.table("bookings").update({"status": payload.status}).eq("id", payload.booking_id).execute()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return {"ok": True, "booking_id": payload.booking_id, "status": payload.status}

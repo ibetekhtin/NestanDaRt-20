@@ -3,7 +3,6 @@ Gemini AI Provider — прямой вызов через REST API
 """
 import httpx
 import logging
-import time
 import os
 
 logger = logging.getLogger(__name__)
