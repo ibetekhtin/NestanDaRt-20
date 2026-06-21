@@ -1,5 +1,7 @@
 # 🏗️ Architecture — KOTЭ SYSTEM
 
+> **Актуально на 21.06.2026:** боевой бот КотЭ работает как **n8n workflow** (`doCUKEZQpLQjDmxP`), не как отдельный JS/Telegraf-сервис (тот — легаси, не развёрнут). Мозг — **Groq `llama-3.3-70b-versatile`** (не Gemini), но с 21.06 n8n зовёт его **через backend** (`/api/v1/ai/chat`), а не напрямую — это даёт боту весь каскад резерва: groq→aitunnel→openrouter→gemini (см. `AI_ARCHITECTURE.md`).
+
 ## System Overview
 
 ```
@@ -16,8 +18,8 @@
               ┌──────────┴──────────┐
               ▼                     ▼
       ┌──────────────┐     ┌──────────────┐
-      │   Gemini AI  │     │   Supabase   │
-      │  (2.0 Flash) │     │  (Postgres)  │
+      │   Groq AI    │     │   Supabase   │
+      │ (llama-3.3)  │     │  (Postgres)  │
       └──────────────┘     └──────┬───────┘
                                   │
                            ┌──────┴───────┐
@@ -40,7 +42,7 @@
 - **Role:** Primary client interface
 - **Features:** Market selection, service browsing, booking, AI chat, SOS
 - **State:** Stateless — all data in Supabase
-- **AI:** Gemini 2.0 Flash via `@google/generative-ai`
+- **AI:** Groq `llama-3.3-70b-versatile` (live-бот в n8n зовёт backend `/api/v1/ai/chat` → каскад groq→aitunnel→openrouter→gemini)
 
 ### 2. Backend API (`app/backend/`)
 - **Stack:** Python + FastAPI
@@ -71,7 +73,7 @@
 |-------|-----------|---------|
 | Bot | Node.js + Telegraf | 20.x / 4.16 |
 | Backend | Python + FastAPI | 3.12 / 0.115 |
-| AI | Google Gemini | 2.0 Flash |
+| AI | Groq (+ aitunnel/openrouter/gemini fallback) | llama-3.3-70b |
 | Database | Supabase (PostgreSQL) | 15+ |
 | Automation | n8n | latest |
 | Mobile | Expo + TypeScript | SDK 52 |
