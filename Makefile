@@ -1,4 +1,4 @@
-.PHONY: up down logs restart bot backend validate deploy clean
+.PHONY: up down logs restart bot backend validate deploy clean status ship
 
 up:
 	docker compose up -d
@@ -27,6 +27,12 @@ validate:
 
 deploy:
 	bash deploy/deploy.sh
+
+status:        ## сходятся ли GitHub ↔ VPS ↔ локаль + здоровье контейнеров
+	@bash scripts/status.sh
+
+ship:          ## деплой: push main → git pull на VPS → пересборка backend (с подтверждением)
+	@bash scripts/ship.sh
 
 clean:
 	docker system prune -f
