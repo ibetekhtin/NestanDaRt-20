@@ -1,5 +1,7 @@
 """
-OpenRouter AI Provider — единый API для разных моделей
+AITUNNEL AI Provider — российский API-агрегатор (OpenAI-совместимый)
+216+ моделей: GPT, Claude, Gemini, DeepSeek, Groq и др.
+Endpoint: https://api.aitunnel.ru/v1/chat/completions
 """
 import httpx
 import logging
@@ -8,29 +10,24 @@ import os
 logger = logging.getLogger(__name__)
 
 
-async def call_openrouter(
+async def call_aitunnel(
     prompt: str,
     system: str = "",
     max_tokens: int = 600,
     temperature: float = 0.85,
-    online: bool = False,
 ) -> str:
     """
-    Вызов через OpenRouter API.
-    Поддерживает любые модели (Gemini, Claude, Llama, etc.)
-    online=True — добавляет ":online" (встроенный веб-поиск OpenRouter).
+    Вызов через AITUNNEL API (OpenAI-совместимый).
+    Доступные модели: gemini-2.5-flash, gpt-4o-mini, deepseek-chat,
+    claude-haiku-4.5 и 200+ других.
     """
-    api_key = os.getenv("OPENROUTER_API_KEY", "")
-    model = os.getenv(
-        "OPENROUTER_MODEL", "google/gemini-2.5-flash-lite"
-    )
-    if online:
-        model = os.getenv("OPENROUTER_ONLINE_MODEL", model + ":online")
+    api_key = os.getenv("AITUNNEL_API_KEY", "")
+    model = os.getenv("AITUNNEL_MODEL", "gemini-2.5-flash")
 
     if not api_key:
-        raise RuntimeError("OPENROUTER_API_KEY не найден в ENV")
+        raise RuntimeError("AITUNNEL_API_KEY не найден в ENV")
 
-    endpoint = "https://openrouter.ai/api/v1/chat/completions"
+    endpoint = "https://api.aitunnel.ru/v1/chat/completions"
 
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -57,11 +54,11 @@ async def call_openrouter(
         data = response.json()
 
         if "error" in data:
-            raise RuntimeError(f"OpenRouter error: {data['error']}")
+            raise RuntimeError(f"AITUNNEL error: {data['error']}")
 
         choices = data.get("choices", [])
         if not choices:
-            raise RuntimeError("OpenRouter: пустой ответ")
+            raise RuntimeError("AITUNNEL: пустой ответ")
 
         text = choices[0].get("message", {}).get("content", "")
         return text.strip()

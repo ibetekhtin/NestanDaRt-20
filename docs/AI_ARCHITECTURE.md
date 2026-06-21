@@ -1,417 +1,194 @@
-# AI_ARCHITECTURE.md
-## Архитектура AI-слоя проекта «Нестандартный Отдых»
-**Версия:** 1.0  
-**Дата:** 2025-06-18
+# AI_ARCHITECTURE.md — Схема AI-инфраструктуры
+> Проект: Нестандартный Отдых® / КотЭ
+> Обновлено: 2026-06-20
 
 ---
 
-## 1. ОБЩАЯ СХЕМА
+## 🎯 Цель
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    ПОЛЬЗОВАТЕЛЬ                          │
-│              (Telegram / Мобильное приложение)           │
-└───────────────────────┬─────────────────────────────────┘
-                        │
-        ┌───────────────┴───────────────┐
-        │                               │
-   ┌────▼────┐                    ┌────▼────┐
-   │ n8n     │                    │Backend  │
-   │ Cloud   │                    │FastAPI  │
-   └────┬────┘                    └────┬────┘
-        │                               │
-        └───────────────┬───────────────┘
-                        │
-                   ┌────▼────┐
-                   │providers│
-                   │   ai.py │
-                   └────┬────┘
-                        │
-        ┌───────────────┼───────────────┐
-        │               │               │
-   ┌────▼────┐    ┌────▼────┐    ┌────▼────┐
-   │ Gemini  │ →  │OpenRouter│ → │  Groq   │
-   │ (осн.)  │    │ (резерв) │    │ (авар.)  │
-   └─────────┘    └─────────┘    └─────────┘
-```
+Надёжный AI-слой для Telegram-бота КотЭ с автоматическим переключением между провайдерами при сбоях.
+
+**Принцип:** минимум лишнего, максимум надёжности.
 
 ---
 
-## 2. КОМПОНЕНТЫ
-
-### 2.1. providers/ — Единый AI-слой
-
-#### `providers/__init__.py`
-Точка входа. Экспортирует только `ask()`.
-
-#### `providers/ai.py` — Оркестратор
-- Принимает `prompt`, `system`, `max_tokens`, `temperature`
-- Итерирует по провайдерам в порядке fallback chain
-- Логирует попытки и ошибки
-- Возвращает первый успешный ответ или FALLBACK_MESSAGE
-
-#### `providers/gemini.py` — Провайдер Gemini
-- Прямой вызов через REST API
-- Поддержка `gemini-2.0-flash` и других моделей
-- Обработка 429 (rate limit), 503 (недоступен)
-
-#### `providers/openrouter.py` — Провайдер OpenRouter
-- Единый API для любых моделей
-- Поддержка Claude, Llama, Gemini через OpenRouter
-- Модель по умолчанию: `google/gemini-2.0-flash-exp:free`
-
-#### `providers/groq.py` — Провайдер Groq
-- Ультрабыстрый inference
-- Модель по умолчанию: `llama-3.3-70b-versatile`
-- Fallback на случай недоступности Gemini и OpenRouter
-
----
-
-## 3. ПОСЛЕДОВАТЕЛЬНОСТЬ РАБОТЫ
-
-### 3.1. Порядок вызовов
-
-1. **Gemini** (основной)
-   - Если ответ получен → вернуть пользователю
-   - Если ошибка 429/503/timeout → перейти к #2
-
-2. **OpenRouter** (резерв 1)
-   - Если ответ получен → вернуть пользователю
-   - Если ошибка → перейти к #3
-
-3. **Groq** (аварийный)
-   - Если ответ получен → вернуть пользователю
-   - Если ошибка → вернуть FALLBACK_MESSAGE
-
-### 3.2. Критерии переключения
-
-| Код/Ошибка | Действие |
-|------------|----------|
-| HTTP 429 | Переход к следующему провайдеру |
-| HTTP 503 | Переход к следующему провайдеру |
-| Timeout > 30s | Переход к следующему провайдеру |
-| HTTP 401/403 | Переход к следующему провайдеру |
-| Ошибка JSON | Переход к следующему провайдеру |
-| Пустой ответ | Переход к следующему провайдеру |
-
----
-
-## 4. ТОЧКИ ОТКАЗА
-
-### 4.1. Полная схема отказов
+## 🔄 Схема работы (Fallback Chain)
 
 ```
-User Request
-    ↓
-┌──────────────────────────────────────────┐
-│ 1. Telegram Bot (n8n Cloud)              │ ← Single point of failure
-│    Если падает — бот не отвечает         │
-└──────────────────────────────────────────┘
-    ↓
-┌──────────────────────────────────────────┐
-│ 2. Backend API (Docker)                  │ ← Single point of failure
-│    Если падает — приложение не работает   │
-└──────────────────────────────────────────┘
-    ↓
-┌──────────────────────────────────────────┐
-│ 3. Supabase                              │ ← Single point of failure
-│    Если падает — останов всего            │
-└──────────────────────────────────────────┘
-```
-
-### 4.2. AI-отказы (улучшено)
-
-```
-User Message
-    ↓
-┌────────────────────────────────────────────────┐
-│ 1. Gemini API                                   │
-│    ┌──────────────────────────────────┐        │
-│    │ Ошибки: 429, 503, timeout, 401   │        │
-│    └──────────────────────────────────┘        │
-│    Если ошибка → Переход к #2                   │
-└────────────────────────────────────────────────┘
-    ↓
-┌────────────────────────────────────────────────┐
-│ 2. OpenRouter API                               │
-│    ┌──────────────────────────────────┐        │
-│    │ Ошибки: rate limit, 503, empty   │        │
-│    └──────────────────────────────────┘        │
-│    Если ошибка → Переход к #3                   │
-└────────────────────────────────────────────────┘
-    ↓
-┌────────────────────────────────────────────────┐
-│ 3. Groq API                                     │
-│    ┌──────────────────────────────────┐        │
-│    │ Ошибки: rate limit, 503, empty   │        │
-│    └──────────────────────────────────┘        │
-│    Если ошибка → Fallback-сообщение             │
-└────────────────────────────────────────────────┘
-    ↓
-return FALLBACK_MESSAGE
+┌─────────────────────────────────────────────────────────────┐
+│                    ЗАПРОС ОТ КЛИЕНТА                         │
+│              (Telegram → n8n → AI Router)                   │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+              ┌────────────────────────┐
+              │   1. AITUNNEL (primary) │  ← российский агрегатор
+              │   gemini-2.5-flash      │     216+ моделей
+              │   api.aitunnel.ru       │     600₽ на балансе
+              └────────────┬───────────┘
+                           │ ✗ ошибка / timeout
+                           ▼
+              ┌────────────────────────┐
+              │   2. GROQ (backup 1)    │  ← бесплатный, ultra-fast
+              │   llama-3.3-70b         │     llama-3.3-70b-versatile
+              │   api.groq.com          │     ~500ms latency
+              └────────────┬───────────┘
+                           │ ✗ ошибка / timeout
+                           ▼
+              ┌────────────────────────┐
+              │   3. OPENROUTER (backup 2) │  ← международный
+              │   gemini-2.5-flash-lite │     openrouter.ai
+              │   openrouter.ai/api     │     веб-поиск (:online)
+              └────────────┬───────────┘
+                           │ ✗ ошибка / timeout
+                           ▼
+              ┌────────────────────────┐
+              │   4. GEMINI (emergency) │  ← прямой API Google
+              │   gemini-2.0-flash      │     aistudio.google.com
+              │   generativelanguage   │     бесплатно
+              └────────────┬───────────┘
+                           │ ✗ все упали
+                           ▼
+              ┌────────────────────────┐
+              │   FALLBACK MESSAGE      │
+              │   "🐾 Секунду, я немного│
+              │    перегружен..."       │
+              └────────────────────────┘
 ```
 
 ---
 
-## 5. КОНФИГУРАЦИЯ
+## 📡 Провайдеры — детали
 
-### 5.1. ENV переменные
+### 1. AITUNNEL (основной)
 
-```env
-# ─── AI Fallback Chain ─────────────────────────────────
-GEMINI_API_KEY=            # Обязательно для основного провайдера
-GEMINI_MODEL=gemini-2.0-flash
+| Параметр | Значение |
+|----------|----------|
+| API Endpoint | `https://api.aitunnel.ru/v1/chat/completions` |
+| Модель | `gemini-2.5-flash` (настраивается через ENV) |
+| Файл | `providers/aitunnel.py` |
+| ENV | `AITUNNEL_API_KEY`, `AITUNNEL_MODEL` |
+| Стоимость | 600₽ на балансе |
+| Преимущества | Российский сервис, 216+ моделей, OpenAI-совместимый |
+| Риски | Платный — нужен баланс |
 
-OPENROUTER_API_KEY=        # Обязательно для резервного
-OPENROUTER_MODEL=google/gemini-2.0-flash-exp:free
+**Доступные модели (примеры):**
+- `gemini-2.5-flash` — дёшево, быстро (по умолчанию)
+- `gpt-4o-mini` — OpenAI, бюджетный
+- `deepseek-chat` — DeepSeek, дёшево
+- `claude-haiku-4.5` — Anthropic, бюджетный
+- `gemini-2.5-pro` — Google, мощный
 
-GROQ_API_KEY=              # Обязательно для аварийного
-GROQ_MODEL=llama-3.3-70b-versatile
-```
+### 2. Groq (запасной 1)
 
-### 5.2. Приоритет (по умолчанию)
+| Параметр | Значение |
+|----------|----------|
+| API Endpoint | `https://api.groq.com/openai/v1/chat/completions` |
+| Модель | `llama-3.3-70b-versatile` |
+| Файл | `providers/groq.py` |
+| ENV | `GROQ_API_KEY`, `GROQ_MODEL` |
+| Стоимость | Бесплатно (с лимитами) |
+| Преимущества | Ultra-fast (~500ms), OpenAI-совместимый |
+| Риски | Rate limits на бесплатном тарифе |
 
-```
-1. Gemini
-2. OpenRouter
-3. Groq
-```
+### 3. OpenRouter (запасной 2)
 
-Можно изменить порядок, отредактировав список `PROVIDERS` в `providers/ai.py`.
+| Параметр | Значение |
+|----------|----------|
+| API Endpoint | `https://openrouter.ai/api/v1/chat/completions` |
+| Модель | `google/gemini-2.5-flash-lite` |
+| Файл | `providers/openrouter.py` |
+| ENV | `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` |
+| Стоимость | Платный (баланс) |
+| Преимущества | Веб-поиск (`:online`), любые модели |
+| Риски | Международный — может быть заблокирован |
 
----
+### 4. Gemini (аварийный)
 
-## 6. БЕЗОПАСНОСТЬ
-
-### 6.1. Ключи API
-- Все ключи хранятся только в `.env` файле
-- `.env` в `.gitignore`
-- Никакие ключи не логируются
-- Доступ только через environment variables
-
-### 6.2. Защита от утечек
-- Ключи не передаются в ответы API
-- Ключи не логируются
-- Используется `os.getenv()` с дефолтом `""`
-- Проверка наличия ключа перед вызовом
-
----
-
-## 7. МОНИТОРИНГ
-
-### 7.1. Логирование
-
-Формат логов:
-```
-[AI] Trying provider: gemini
-[AI] gemini responded in 1234ms
-[AI] Provider openrouter failed: Rate limited: 429
-[AI] All providers failed: gemini(RuntimeError), openrouter(RuntimeError), groq(RuntimeError)
-```
-
-### 7.2. Где смотреть
-
-```bash
-# Backend
-docker compose logs kote-backend -f
-
-# Bot (если включен)
-docker compose logs kote-bot -f
-
-# n8n
-docker compose logs kote-n8n -f
-```
+| Параметр | Значение |
+|----------|----------|
+| API Endpoint | `https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent` |
+| Модель | `gemini-2.0-flash` |
+| Файл | `providers/gemini.py` |
+| ENV | `GEMINI_API_KEY`, `GEMINI_MODEL` |
+| Стоимость | Бесплатно (с лимитами) |
+| Преимущества | Прямой API Google, не зависит от агрегаторов |
+| Риски | Rate limits, другой формат API (не OpenAI-совместимый) |
 
 ---
 
-## 8. ТЕСТИРОВАНИЕ
+## ⚡ Точки отказа и митигация
 
-### 8.1. Юнит-тесты (рекомендуется)
-
-```python
-# tests/test_providers.py
-import pytest
-from providers import ai
-
-@pytest.mark.asyncio
-async def test_gemini():
-    reply = await ai.ask("Привет!", system="Ты — КотЭ")
-    assert reply
-
-@pytest.mark.asyncio
-async def test_fallback():
-    # Имитация падения Gemini
-    ...
-```
-
-### 8.2. Интеграционное тестирование
-
-```bash
-# Проверка импортов
-python -c "from providers import ask; print('OK')"
-
-# Проверка синтаксиса
-python -m py_compile providers/*.py
-
-# Проверка docker
-docker compose build kote-backend
-docker compose config
-```
+| Точка отказа | Вероятность | Влияние | Митигация |
+|-------------|-------------|---------|-----------|
+| AITUNNEL баланс = 0 | Средняя | Потеря основного провайдера | Автоматический fallback на Groq |
+| AITUNNEL API down | Низкая | Временный сбой | Fallback на Groq |
+| Groq rate limit | Средняя | Лимит запросов | Fallback на OpenRouter |
+| Groq API down | Низкая | Временный сбой | Fallback на OpenRouter |
+| OpenRouter заблокирован | Средняя | Недоступность | Fallback на Gemini |
+| Gemini rate limit | Низкая | Лимит запросов | Fallback message |
+| Все провайдеры упали | Очень низкая | Полный сбой AI | Клиент получает сообщение о перегрузке |
+| VPS недоступен | Низкая | Всё падает | Мониторинг (UptimeRobot) |
 
 ---
 
-## 9. ОБНОВЛЕНИЯ И ПОДДЕРЖКА
+## 🔧 Как добавить нового провайдера
 
-### 9.1. Добавление нового провайдера
-
-1. Создать `providers/newprovider.py`:
-```python
-async def call_newprovider(prompt, system, max_tokens, temperature):
-    # Реализация
-    pass
-```
-
+1. Создать `providers/new_provider.py` с функцией `call_new_provider(prompt, system, max_tokens, temperature) -> str`
 2. Добавить в `providers/ai.py`:
-```python
-from .newprovider import call_newprovider
-PROVIDERS = [
-    ("gemini", call_gemini),
-    ("openrouter", call_openrouter),
-    ("groq", call_groq),
-    ("newprovider", call_newprovider),  # Новый
-]
-```
-
-### 9.2. Изменение порядка провайдеров
-
-Отредактировать список `PROVIDERS` в `providers/ai.py`.
-
-### 9.3. Обновление моделей
-
-Изменить ENV переменные:
-```env
-GEMINI_MODEL=gemini-2.0-flash
-OPENROUTER_MODEL=google/gemini-2.0-flash-exp:free
-GROQ_MODEL=llama-3.3-70b-versatile
-```
+   - `from .new_provider import call_new_provider`
+   - Добавить в список `PROVIDERS` на нужную позицию
+3. Добавить ENV-переменные в `.env` и `.env.example`
+4. Пересобрать бэкенд: `docker compose build kote-backend && docker compose up -d --force-recreate kote-backend`
 
 ---
 
-## 10. ПРОИЗВОДИТЕЛЬНОСТЬ
+## 📊 Мониторинг AI
 
-### 10.1. Задержки
-
-- **Gemini:** ~500-2000ms
-- **OpenRouter:** ~1000-3000ms
-- **Groq:** ~100-500ms (самый быстрый)
-
-### 10.2. Timeout
-
-- Каждый провайдер: 30s
-- Максимальная задержка при полном fallback: ~90s
-- Рекомендуется: показать "загрузку" пользователю
-
-### 10.3. Рекомендации
-
-- Использовать `asyncio` для параллельных операций (уже реализовано)
-- Кэшировать частые запросы (Redis, в будущем)
-- Мониторить latency в production
-
----
-
-## 11. ОТКАТ (ROLLBACK)
-
-### Сценарий 1: Критическая ошибка
+### Логи
 
 ```bash
-# Откат к backup
-cp app/backend/routers/ai.py.bak app/backend/routers/ai.py
-cp platform/bot/main.py.bak platform/bot/main.py
+# Логи AI-вызовов (latency + fallback)
+docker logs kote-backend --tail 100 | grep "\[AI\]"
 
-# Перезапуск
-docker compose build kote-backend
-docker compose restart kote-backend
+# Пример вывода:
+# [AI] Trying provider: aitunnel
+# [AI] aitunnel responded in 1200ms
 ```
 
-### Сценарий 2: Удаление providers/
+### Метрики для отслеживания
 
-```bash
-rm -rf providers/
-# Восстановить backup'ы конфигов
-```
-
-### Сценарий 3: Отключение fallback
-
-В `app/backend/routers/ai.py` вместо:
-```python
-reply = await ai_ask(...)
-```
-Использовать:
-```python
-reply = await call_gemini_directly(...)
-```
+- **Latency** — время ответа каждого провайдера
+- **Fallback rate** — как часто основной провайдер падает
+- **Error rate** — количество ошибок по провайдерам
 
 ---
 
-## 12. СТОИМОСТЬ
+## 🔄 Порядок переключения (для оператора)
 
-### 12.1. Тарифы (примерные)
+### Если нужно сменить основного провайдера
 
-| Провайдер | Модель | Стоимость за 1K токенов |
-|------------|--------|------------------------|
-| Gemini | gemini-2.0-flash | ~$0.0002-0.0004 |
-| OpenRouter | google/gemini-2.0-flash-exp:free | Бесплатно |
-| Groq | llama-3.3-70b-versatile | ~$0.0001 |
+1. Изменить порядок в `providers/ai.py` (список `PROVIDERS`)
+2. Обновить ENV-переменные в `.env`
+3. Пересобрать: `docker compose build kote-backend && docker compose up -d --force-recreate kote-backend`
+4. Проверить: `docker logs kote-backend --tail 20 | grep "\[AI\]"`
 
-### 12.2. Оптимизация
+### Если нужно сменить модель
 
-- Использовать бесплатные модели в OpenRouter как резерв
-- Groq — самый дешёвый для bulk-запросов
-- Gemini — основной (баланс цена/качество)
-
----
-
-## 13. БУДУЩИЕ УЛУЧШЕНИЯ
-
-1. **Кэширование** — Redis для частых запросов
-2. **Очередь** —Celery для фоновой обработки
-3. **Метрики** — Prometheus + Grafana для мониторинга
-4. **A/B тесты** — сравнение качества моделей
-5. **Fine-tuning** — кастомная модель на основе диалогов
-6. **Мультиязычность** — автоматическое определение языка
+1. Изменить ENV-переменную (например, `AITUNNEL_MODEL=gpt-4o-mini`)
+2. Перезапустить: `docker compose up -d --force-recreate kote-backend`
+3. Проверить логи
 
 ---
 
-## 14. ИНТЕГРАЦИЯ С CI/CD
+## 💡 Рекомендации
 
-### 14.1. GitHub Actions (рекомендуется)
-
-```yaml
-name: Deploy AI Layer
-on:
-  push:
-    paths:
-      - 'providers/**'
-      - 'app/backend/routers/ai.py'
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Test Python
-        run: python -m py_compile providers/*.py
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to VPS
-        run: ssh user@vps 'cd /path && docker compose build kote-backend && docker compose restart kote-backend'
-```
+1. **Мониторить баланс AITUNNEL** — основной провайдер платный
+2. **Проверять лимиты Groq** — бесплатный тариф имеет ограничения
+3. **Обновлять модели** — регулярно проверять новые версии
+4. **Тестировать fallback** — периодически проверять работу цепочки
+5. **Логировать latency** — для оптимизации выбора провайдера
 
 ---
 
-## 15. КОНТАКТЫ
-
-**Ответственный:** DevOps Team  
-**Документация:** `docs/AI_ARCHITECTURE.md`  
-**Исходный код:** `providers/`
+*Документ создан 2026-06-20. Обновлять при изменении AI-инфраструктуры.*
