@@ -1,6 +1,6 @@
 # CLAUDE.md — МАСТЕР-ФАЙЛ ПРОЕКТА
 # Нестандартный Отдых® / КотЭ System
-> Последнее обновление: 2026-06-19 · v2 — полный аудит + вылизывание системы
+> Последнее обновление: 2026-06-21 · v3 — VPS↔GitHub сведены (прод под git), AI-каскад groq-first, структура репо почищена
 > Этот файл — единственный источник истины для Claude Code и любого AI-агента.
 > Читать полностью перед любой работой с проектом.
 
@@ -76,7 +76,7 @@
 │   ├── Dockerfile
 │   ├── requirements.txt
 │   └── routers/               ← ВСЕ ПОДКЛЮЧЕНЫ через include_router в main.py
-│       ├── ai.py              ← POST /api/v1/ai/ask
+│       ├── ai.py              ← POST /api/v1/ai/ask + /ai/chat (passthrough для n8n-бота)
 │       ├── bookings.py        ← POST/GET/PATCH /api/v1/bookings
 │       ├── clients.py         ← GET /api/v1/clients/{tg_chat_id}
 │       ├── leads.py           ← POST/GET /api/v1/leads
@@ -87,12 +87,13 @@
 │       ├── webhooks.py        ← POST /api/v1/webhook/{lead,booking}
 │       └── __init__.py
 │
-├── providers/                 ← AI fallback chain (Gemini→OpenRouter→Groq)
+├── providers/                 ← AI fallback chain (groq→aitunnel→openrouter→gemini)
 │   ├── __init__.py
-│   ├── ai.py                  ← главный роутер с fallback
-│   ├── gemini.py
-│   ├── openrouter.py
-│   └── groq.py
+│   ├── ai.py                  ← роутер: AI_PROVIDER_ORDER + авто-пропуск без ключа
+│   ├── groq.py                ← основной (ultra-fast)
+│   ├── aitunnel.py            ← 2-й
+│   ├── openrouter.py          ← 3-й
+│   └── gemini.py              ← финальный резерв (gemini-2.5-flash)
 │
 ├── platform/
 │   ├── app.html               ← PWA (Telegram Mini App), 230 KB self-contained
@@ -152,10 +153,13 @@ TELEGRAM_BOT_TOKEN=...            # @phuket_nestandart_bot от @BotFather
 TELEGRAM_ADMIN_CHAT_ID=8943048058
 MANAGER_CHAT_ID=8943048058
 
-# AI Providers (fallback chain)
-GEMINI_API_KEY=...                # Google AI Studio (основной)
-GROQ_API_KEY=...                  # Groq (третий запасной)
-CLAUDE_MODEL=claude-sonnet-4-6
+# AI Providers (каскад, порядок: groq→aitunnel→openrouter→gemini)
+AI_PROVIDER_ORDER=groq,aitunnel,openrouter,gemini   # опционально; дефолт такой же
+GROQ_API_KEY=...                  # основной (ultra-fast)
+AITUNNEL_API_KEY=...              # 2-й
+OPENROUTER_API_KEY=...            # 3-й (⏳ требует оплаты)
+GEMINI_API_KEY=...                # финальный резерв
+GEMINI_MODEL=gemini-2.5-flash     # 2.0-flash упирался в 429-квоту
 
 # n8n
 N8N_USER=admin
@@ -320,27 +324,28 @@ curl -X POST https://nestandart.online/api/v1/lead \
 # → {"ok":true,"data":{"client_id":"...","booking_id":"...","is_new_client":true}}
 ```
 
-### Заглушки (routers/ — НЕ подключены в main.py)
+### Роутеры (все подключены в main.py, v2.0.0)
 
-Файлы `routers/ai.py`, `routers/bookings.py`, `routers/clients.py`, `routers/leads.py`,
-`routers/memory.py`, `routers/sos.py`, `routers/webhooks.py` существуют, но **не импортируются**.
-Перед подключением надо:
-1. Проверить сигнатуры RPC (суточная схема в Supabase может не совпасть)
-2. `routers/leads.py` использует `p_market_id` → RPC не принимает этот параметр
-3. `routers/webhooks.py` — та же проблема
-4. `result.error` в supabase-py v2 не работает → нужен try/except
+Все 9 роутеров (`ai`, `bookings`, `clients`, `leads`, `markets`, `memory`, `sos`, `tours`, `webhooks`)
+импортируются через `include_router`. `routers/ai.py` отдаёт два эндпоинта:
+- `POST /api/v1/ai/ask` — backend сам строит system prompt (для PWA/приложения).
+- `POST /api/v1/ai/chat` — passthrough в OpenAI-формате (`messages[]` → `choices[0].message.content`),
+  его зовёт n8n-бот; промпт собирает n8n, fallback обеспечивает backend.
 
-### AI Fallback Chain (providers/)
+### AI Fallback Chain (providers/) — порядок через `AI_PROVIDER_ORDER`
 
 ```
-Запрос → Gemini (основной)
-         ↓ если упал
-         OpenRouter (запасной)
-         ↓ если упал
-         Groq (третий)
+Запрос → groq (основной, ultra-fast)
+         ↓ если упал / нет ключа
+         aitunnel
+         ↓
+         openrouter
+         ↓
+         gemini (gemini-2.5-flash, финальный резерв)
          ↓ если все упали
          "🐾 Секунду, я немного перегружен..."
 ```
+> Провайдер без своего ключа в env автоматически пропускается. Ключи AI — только в backend, не в kote-n8n.
 
 ---
 
@@ -354,7 +359,7 @@ curl -X POST https://nestandart.online/api/v1/lead \
 
 | Workflow | Триггер | Действие |
 |----------|---------|----------|
-| **КотЭ — AI Агент с памятью** | Telegram message | 13 нод: извлечь → upsert клиент → контекст → Gemini → ответ → сохранить |
+| **КотЭ — AI Агент с памятью** (`doCUKEZQpLQjDmxP`) | Telegram message | 17 нод: извлечь → upsert клиент → контекст → собрать промпт → **backend `/api/v1/ai/chat`** (каскад) → ответ → сохранить |
 | **КотЭ — Новые заявки: уведомление** | Webhook | Уведомить менеджера в Telegram |
 | **📅 Напоминание о туре за день** | Schedule | Напомнить клиенту о туре |
 | **⭐ Запрос отзыва после тура** | Schedule | Попросить оставить отзыв |
@@ -369,10 +374,11 @@ curl -X POST https://nestandart.online/api/v1/lead \
 ### n8n переменные окружения (из .env через override)
 
 ```
-KOTE_SECRET, GEMINI_API_KEY, GROQ_API_KEY, N8N_USER, N8N_PASSWORD
+KOTE_SECRET, N8N_USER, N8N_PASSWORD
 N8N_HOST=n8n.nestandart.online, N8N_PROTOCOL=https, N8N_PROXY_HOPS=1
 N8N_BLOCK_ENV_ACCESS_IN_NODE=false
 ```
+> С 21.06 AI-ключи (GROQ/GEMINI/…) в kote-n8n больше не нужны — модель-нода зовёт backend `/ai/chat`, ключи держит только backend.
 
 ---
 
@@ -391,7 +397,7 @@ Telegram → n8n trigger
       • живой каталог туров (отфильтрован под вопрос)
       • знания о Пхукете (84+ записи)
       • память клиента (бюджет, стиль, прошлые туры)
-  → Gemini с промптом из prompt.txt
+  → backend POST /api/v1/ai/chat → каскад (groq→aitunnel→openrouter→gemini), личность из prompt.txt
   → отправить ответ в Telegram
   → сохранить диалог + обновить память
 ```
@@ -619,7 +625,7 @@ ls /root/backups/supabase/$(date +%F)/
 | n8n Editor | https://n8n.nestandart.online (admin / из .env) |
 | Telegram Bot | @phuket_nestandart_bot |
 | Telegram Manager | chat_id: 8943048058 |
-| GitHub | github.com/ibetekhtin/NestanDaRt-20 |
+| GitHub | github.com/ibetekhtin/kote-system (прод под git; деплой = `git pull` на VPS) |
 | Домены | nestandart.online, nestandart-phuket.ru |
 
 ---
