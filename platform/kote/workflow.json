@@ -1,6 +1,6 @@
 [
   {
-    "updatedAt": "2026-06-21T19:00:59.000Z",
+    "updatedAt": "2026-06-21T19:27:42.000Z",
     "createdAt": "2026-06-19T04:59:12.329Z",
     "id": "doCUKEZQpLQjDmxP",
     "name": "КотЭ — AI Агент с памятью",
@@ -484,7 +484,7 @@
           },
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={\n  \"p_external_id\": \"{{ $json.booking.external_id }}\",\n  \"p_source\": \"Telegram (КотЭ)\",\n  \"p_name\": \"{{ $json.booking.name }}\",\n  \"p_phone\": \"{{ $json.booking.phone }}\",\n  \"p_tg_chat_id\": \"{{ $json.tg_chat_id }}\",\n  \"p_tour_name\": \"{{ $json.booking.tour }}\",\n  \"p_tour_slug\": \"{{ $json.booking.tour_slug }}\",\n  \"p_date_start\": {{ $json.booking.date_iso ? ('\"' + $json.booking.date_iso + '\"') : 'null' }},\n  \"p_people\": {{ $json.booking.total }},\n  \"p_comment\": \"Дата: {{ $json.booking.date }}. Отель: {{ $json.booking.hotel }}, комната {{ $json.booking.room }}. Взрослых: {{ $json.booking.adults }}, детей: {{ $json.booking.children }}, младенцев до 4 (беспл.): {{ $json.booking.infants }}.\",\n  \"p_status\": \"Новый\"\n}",
+          "jsonBody": "={\n  \"p_external_id\": \"{{ $json.booking.external_id }}\",\n  \"p_source\": \"Telegram (КотЭ)\",\n  \"p_name\": \"{{ $json.booking.name }}\",\n  \"p_phone\": \"{{ $json.booking.phone }}\",\n  \"p_tg_chat_id\": \"{{ $json.tg_chat_id }}\",\n  \"p_tour_name\": \"{{ $json.booking.tour }}\",\n  \"p_tour_slug\": \"{{ $json.booking.tour_slug }}\",\n  \"p_date_start\": {{ $json.booking.date_iso ? ('\"' + $json.booking.date_iso + '\"') : 'null' }},\n  \"p_people\": {{ $json.booking.total }},\n  \"p_adults\": {{ $json.booking.adults }},\n  \"p_children\": {{ $json.booking.children }},\n  \"p_comment\": \"Дата: {{ $json.booking.date }}. Отель: {{ $json.booking.hotel }}, комната {{ $json.booking.room }}. Взрослых: {{ $json.booking.adults }}, детей: {{ $json.booking.children }}, младенцев до 4 (беспл.): {{ $json.booking.infants }}.\",\n  \"p_status\": \"Новый\"\n}",
           "options": {}
         },
         "id": "kote-crm-booking-0001",
@@ -786,9 +786,9 @@
     "meta": null,
     "nodeGroups": [],
     "pinData": null,
-    "versionId": "0ff183ac-4d72-45ba-8f36-e4ad4c4d6bff",
-    "activeVersionId": "0ff183ac-4d72-45ba-8f36-e4ad4c4d6bff",
-    "versionCounter": 15,
+    "versionId": "ee4bd8b5-ddf6-4135-a9d3-1b6078ec0cf7",
+    "activeVersionId": "ee4bd8b5-ddf6-4135-a9d3-1b6078ec0cf7",
+    "versionCounter": 16,
     "triggerCount": 1,
     "sourceWorkflowId": null,
     "tags": [],
