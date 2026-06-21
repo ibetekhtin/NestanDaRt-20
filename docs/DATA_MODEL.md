@@ -22,10 +22,11 @@
 **Параметры (передавать одинаково со всех поверхностей):**
 `p_external_id`(ключ), `p_source`, `p_name`, `p_phone`, `p_email`, `p_telegram`, `p_tg_chat_id`,
 `p_whatsapp`, `p_instagram`, `p_vk`, `p_tour_name`, `p_tour_slug`, `p_date_start`(date/ISO),
-`p_people`(всего), `p_adults`, `p_children`, `p_budget`, `p_total`(₽), `p_comment`, `p_status`.
+`p_people`(всего), `p_adults`, `p_children`, `p_infants`, `p_budget`, `p_total`(₽), `p_comment`, `p_status`.
 
-> С миграции 011 `p_adults`/`p_children` заполняют колонки `bookings.adults/children`.
-> Младенцы до 4 лет — бесплатно, отдельной колонки нет: `infants = people_count − adults − children`.
+> Миграции 011–012: `p_adults`/`p_children`/`p_infants` заполняют колонки `bookings.adults/children/infants`.
+> **Младенцы = дети до 4 лет (груднички/малыши) — бесплатно.** Это отдельная колонка `bookings.infants`,
+> её собирают и сайт, и приложение, и бот. `people_count` = всего (взрослые + дети + младенцы).
 
 ---
 
