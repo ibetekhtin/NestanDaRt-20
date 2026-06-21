@@ -7,14 +7,18 @@
 ## Карта системы
 
 ```
-NestanDaRt-20/                       ← github.com/ibetekhtin/NestanDaRt-20
+kote-system/                         ← github.com/ibetekhtin/kote-system
 ├── nestandart-phuket/   САЙТ        HTML/CSS/JS → VPS 77.42.93.187 (nginx + SSL)
 ├── hq/                  ШТАБ        React + Vite → Supabase (вход только для админа)
-├── platform/            ПЛАТФОРМА
-│   ├── kote/            🐾 КотЭ: prompt.txt (личность) + workflow.json (n8n)
-│   ├── supabase/        schema.sql — справочник реальной схемы БД
-│   └── docs/            STACK, SUPABASE, MULTI_MARKET, ROADMAP, KOTE_SYSTEM
-└── shared/              константы рынков и бренда
+├── app/backend/         BACKEND     FastAPI (роутеры ai/bookings/clients/leads/…)
+├── providers/           AI-КАСКАД   groq → aitunnel → openrouter → gemini
+├── platform/            ПЛАТФОРМА   kote/ (prompt.txt + workflow.json), bot/ (легаси), docs/
+├── supabase/            БАЗА        schema.sql + миграции
+├── shared/              константы рынков и бренда
+├── deploy/              VPS-скрипты + nginx-конфиги
+├── scripts/             утилиты (generate_tours.py, health-check.sh)
+├── docs/                каноны и аудиты
+└── docker-compose.yml · Makefile · CLAUDE.md · set-secret.sh
 ```
 
 ## Где что живёт (источники истины)
@@ -37,7 +41,9 @@ Telegram → n8n → get_kote_context(chat_id, вопрос) → Supabase
                        ↓ один запрос отдаёт всё:
               память клиента + живой каталог туров + знания под вопрос
                        ↓
-                 Gemini (личность из prompt.txt) → ответ
+        backend /ai/chat → каскад (groq → aitunnel → openrouter → gemini)
+                       ↓ личность из prompt.txt
+                     ответ
 ```
 
 Новый тур или факт = insert в базу. Воркфлоу не трогается.
