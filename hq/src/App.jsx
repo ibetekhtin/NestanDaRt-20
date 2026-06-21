@@ -3,10 +3,11 @@ import { AppProvider, useApp } from './context/AppContext';
 import { supabase, isSupabaseConfigured } from './supabase';
 import {
   LayoutDashboard, Users, FolderKanban, Megaphone,
-  DollarSign, BookOpen, LogOut
+  DollarSign, BookOpen, LogOut, Filter
 } from 'lucide-react';
 
 import DashboardView from './components/DashboardView';
+import FunnelView from './components/FunnelView';
 import CRMView from './components/CRMView';
 import KanbanView from './components/KanbanView';
 import ContentFactoryView from './components/ContentFactoryView';
@@ -111,6 +112,9 @@ function AppContent() {
         <button className={`btn ${activeTab === 'wiki' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('wiki')}>
           <BookOpen size={20} /> Wiki База знаний
         </button>
+        <button className={`btn ${activeTab === 'funnel' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('funnel')}>
+          <Filter size={20} /> Воронка
+        </button>
 
         <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--glass-border)' }}>
           {isSupabaseConfigured && session && (
@@ -132,6 +136,7 @@ function AppContent() {
         {activeTab === 'content' && <ContentFactoryView />}
         {activeTab === 'finance' && <FinanceView />}
         {activeTab === 'wiki' && <WikiView />}
+        {activeTab === 'funnel' && <FunnelView />}
       </main>
     </div>
   );
