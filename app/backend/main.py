@@ -27,7 +27,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from db import sb
-from routers import ai, bookings, clients, leads, markets, memory, sos, tours, webhooks
+from routers import ai, bookings, clients, leads, markets, memory, payments, sos, tours, webhooks
 
 app = FastAPI(
     title="Нестандартный Отдых — API",
@@ -56,6 +56,7 @@ app.include_router(leads.router,    prefix=PREFIX, tags=["leads"])
 app.include_router(bookings.router, prefix=PREFIX, tags=["bookings"])
 app.include_router(clients.router,  prefix=PREFIX, tags=["clients"])
 app.include_router(memory.router,   prefix=PREFIX, tags=["memory"])
+app.include_router(payments.router, prefix=PREFIX, tags=["payments"])
 app.include_router(ai.router,       prefix=PREFIX, tags=["ai"])
 app.include_router(sos.router,      prefix=PREFIX, tags=["sos"])
 app.include_router(webhooks.router, prefix=PREFIX, tags=["webhooks"])

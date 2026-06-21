@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     KOTE_RPC_SECRET: str = ""
     BACKEND_PORT: int = 8000
     N8N_HOST: str = "http://localhost:5678"
+    # YooKassa (оплата). Пустые ключи → платежи мягко отключены.
+    YOOKASSA_SHOP_ID: str = ""
+    YOOKASSA_SECRET_KEY: str = ""
+    YOOKASSA_RETURN_URL: str = "https://nestandart.online/"
+    YOOKASSA_BAHT_TO_RUB: float = 2.6   # курс ฿→₽ для расчёта суммы (правится без кода)
 
     class Config:
         env_file = ".env"
