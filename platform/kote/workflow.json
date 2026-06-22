@@ -1,6 +1,6 @@
 [
   {
-    "updatedAt": "2026-06-21T19:52:09.000Z",
+    "updatedAt": "2026-06-22T03:35:28.000Z",
     "createdAt": "2026-06-19T04:59:12.329Z",
     "id": "doCUKEZQpLQjDmxP",
     "name": "КотЭ — AI Агент с памятью",
@@ -33,7 +33,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const tg = $input.first().json;\nconst msg = tg.message || tg.edited_message;\nif (!msg) return [];\nconst text = (msg.text || msg.caption || '').trim();\nif (!text || (msg.from && msg.from.is_bot)) return [];\nconst from = msg.from || {};\nreturn [{ json: {\n  tg_chat_id: String(msg.chat.id),\n  message_text: text,\n  name: [from.first_name, from.last_name].filter(Boolean).join(' ') || 'Гость',\n  language: from.language_code || 'ru'\n}}];"
+          "jsCode": "const tg = $input.first().json;\nconst msg = tg.message || tg.edited_message;\nif (!msg) return [];\nif (msg.from && msg.from.is_bot) return [];\nconst text = (msg.text || msg.caption || '').trim();\n// Не-текст (фото/голос/стикер/гео): не молчим — даём КотЭ дружелюбно ответить\nconst message_text = text || '(клиент прислал НЕ текстовое сообщение — фото/голос/стикер/гео, текста нет. Ответь мило и по-кошачьи, что пока понимаешь только текст, и мягко попроси написать словами)';\nconst from = msg.from || {};\nreturn [{ json: {\n  tg_chat_id: String(msg.chat.id),\n  message_text: message_text,\n  name: [from.first_name, from.last_name].filter(Boolean).join(' ') || 'Гость',\n  language: from.language_code || 'ru'\n}}];"
         },
         "id": "879792fa-9072-44df-a54e-a4af6233481a",
         "name": "📝 Извлечь",
@@ -786,9 +786,9 @@
     "meta": null,
     "nodeGroups": [],
     "pinData": null,
-    "versionId": "495eb1bf-b2e9-47aa-bb94-b84e528ee4e9",
-    "activeVersionId": "495eb1bf-b2e9-47aa-bb94-b84e528ee4e9",
-    "versionCounter": 18,
+    "versionId": "b4d68144-f27f-473e-83ef-4529f321b850",
+    "activeVersionId": "b4d68144-f27f-473e-83ef-4529f321b850",
+    "versionCounter": 19,
     "triggerCount": 1,
     "sourceWorkflowId": null,
     "tags": [],
