@@ -7,8 +7,8 @@
 -- Основной МотоТур (slug=moto): цена 2500→3000, полное описание
 UPDATE tours SET
   title       = 'МотоТур по Пхукету — Авторский тур',
-  price_adult = 3000,
-  price_child = 3000,
+  price_adult = 2500,
+  price_child = 2500,
   duration    = '7–9 часов',
   description = 'Индивидуальный авторский тур по острову. Вы — пассажир на нашем мотоцикле. Основные достопримечательности + дикие пляжи, водопады, буддийские храмы и обзорные площадки. Глазами тех, кто живёт здесь и любит этот остров.',
   program     = 'Начало в 07:00. Выбирайте маршрут: Юг (Karon Viewpoint, Big Buddha, Wat Chalong, Promthep Cape, слоны) или Север (Laem Sing, Banana Beach, Mai Khao, водопад Bang Pae). Возможна комбинация.',
@@ -23,7 +23,7 @@ WHERE slug = 'moto' AND market_id = 'phuket';
 INSERT INTO tours (slug, title, city, category, price_adult, price_child, duration, description, program, tags, included, not_included, sort_order, active, market_id)
 VALUES (
   'moto-south', 'МотоТур: Юг Пхукета',
-  'Пхукет', 'Авторские', 3000, 3000, '7–9 часов',
+  'Пхукет', 'Авторские', 2500, 2500, '7–9 часов',
   'Авторский мото-тур по южной части острова. Самые красивые смотровые площадки, символы Пхукета и тайский быт.',
   'Начало 07:00 | Karon Viewpoint (площадка трёх пляжей) → Big Buddha Phuket → Wat Chalong → Обзорная Hai Leng Ong Statue → Promthep Cape (место закатов) → дикий пляж → Слоновья ферма + обезьянки → Windmill Viewpoint',
   ARRAY['мото','юг','авторский','Big Buddha','Promthep','слоны'],
@@ -41,7 +41,7 @@ ON CONFLICT (slug) DO UPDATE SET
 INSERT INTO tours (slug, title, city, category, price_adult, price_child, duration, description, program, tags, included, not_included, sort_order, active, market_id)
 VALUES (
   'moto-north', 'МотоТур: Север Пхукета',
-  'Пхукет', 'Авторские', 3000, 3000, '7–9 часов',
+  'Пхукет', 'Авторские', 2500, 2500, '7–9 часов',
   'Авторский мото-тур по северной части острова. Дикие пляжи, самолёты у кромки воды, водопад и мост на материк.',
   'Начало 07:00 | Laem Sing Viewpoint → дикий Banana Beach → Wat Mongkol Wararam → Mai Khao Beach (фото с самолётами!) → мост Sarasin Bridge (граница острова) → купание у водопада Bang Pae',
   ARRAY['мото','север','авторский','Banana Beach','Mai Khao','водопад'],
@@ -59,7 +59,7 @@ ON CONFLICT (slug) DO UPDATE SET
 INSERT INTO tours (slug, title, city, category, price_adult, price_child, duration, description, program, tags, sort_order, active, market_id)
 VALUES (
   'moto-sunrise', 'МотоТур: Рассвет',
-  'Пхукет', 'Авторские', 3000, 3000, '3–4 часа',
+  'Пхукет', 'Авторские', 2500, 2500, '3–4 часа',
   'Встречаем рассвет на лучших смотровых точках острова. Ранний выезд — минимум туристов, максимум впечатлений.',
   'Старт 05:00–05:30. Лучшие точки рассвета: Promthep Cape, Karon Viewpoint или Laem Sing — в зависимости от погоды и пожеланий. Возвращение к 09:00–10:00.',
   ARRAY['мото','рассвет','sunrise','ранний','романтика','смотровая'],
@@ -74,7 +74,7 @@ ON CONFLICT (slug) DO UPDATE SET
 INSERT INTO tours (slug, title, city, category, price_adult, price_child, duration, description, program, tags, sort_order, active, market_id)
 VALUES (
   'moto-sunset', 'МотоТур: Закат',
-  'Пхукет', 'Авторские', 3000, 3000, '3–4 часа',
+  'Пхукет', 'Авторские', 2500, 2500, '3–4 часа',
   'Провожаем закат на самых красивых точках острова. Promthep Cape — лучшее место на Пхукете для заката.',
   'Старт за 3–4 часа до заката. Windmill Viewpoint → Karon Viewpoint → Promthep Cape (встречаем закат). Возможна комбинация с вечерним купанием или ужином.',
   ARRAY['мото','закат','sunset','романтика','Promthep','вечер'],
