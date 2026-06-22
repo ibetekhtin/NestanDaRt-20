@@ -3,7 +3,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import { supabase, isSupabaseConfigured } from './supabase';
 import {
   LayoutDashboard, Users, FolderKanban, Megaphone,
-  DollarSign, BookOpen, LogOut, Filter
+  DollarSign, BookOpen, LogOut, Filter, Map
 } from 'lucide-react';
 
 import DashboardView from './components/DashboardView';
@@ -13,6 +13,7 @@ import KanbanView from './components/KanbanView';
 import ContentFactoryView from './components/ContentFactoryView';
 import FinanceView from './components/FinanceView';
 import WikiView from './components/WikiView';
+import ToursView from './components/ToursView';
 
 const MARKETS = [
   { id: 'phuket', label: '🏝️ Пхукет' },
@@ -112,6 +113,9 @@ function AppContent() {
         <button className={`btn ${activeTab === 'wiki' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('wiki')}>
           <BookOpen size={20} /> Wiki База знаний
         </button>
+        <button className={`btn ${activeTab === 'tours' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('tours')}>
+          <Map size={20} /> Экскурсии
+        </button>
         <button className={`btn ${activeTab === 'funnel' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('funnel')}>
           <Filter size={20} /> Воронка
         </button>
@@ -136,6 +140,7 @@ function AppContent() {
         {activeTab === 'content' && <ContentFactoryView />}
         {activeTab === 'finance' && <FinanceView />}
         {activeTab === 'wiki' && <WikiView />}
+        {activeTab === 'tours' && <ToursView />}
         {activeTab === 'funnel' && <FunnelView />}
       </main>
     </div>
