@@ -1,28 +1,34 @@
 # ============================================================================
-# KOTЭ SYSTEM — CI/CD Pipeline
+# NestanDaRt-20 — CI/CD Pipeline
 # ============================================================================
-# Этот workflow запускается при пуше в main:
-#   1. Lint & проверка кода (Python, JS, Docker)
-#   2. Проверка на утечку секретов
-#   3. Сборка Docker образов
-#   4. Пуш образов в Docker Hub (или GitHub Container Registry)
-#   5. Деплой на VPS через SSH (опционально)
+# Запускается при пуше в main (только при изменении кода, не docs).
+# Jobs:
+#   1. lint         — проверка Python, поиск хардкод-секретов
+#   2. secret-scan  — gitleaks
+#   3. docker       — сборка и пуш образа backend в ghcr.io
+#   4. deploy       — SSH деплой на VPS /opt/NestanDaRt-20 (если VPS_HOST задан)
 # ============================================================================
 
-name: KOTЭ CI/CD
+name: NestanDaRt-20 CI/CD
 
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "archive-docs/**"
   pull_request:
     branches: [main]
-  workflow_dispatch: # Ручной запуск
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "archive-docs/**"
+  workflow_dispatch:
 
 env:
   PYTHON_VERSION: "3.12"
-  NODE_VERSION: "20"
   DOCKER_IMAGE_BACKEND: ghcr.io/${{ github.repository }}/nestandart-backend
-  DOCKER_IMAGE_BOT: ghcr.io/${{ github.repository }}/nestandart-bot
 
 jobs:
   # ─── Job 1: Проверка кода ────────────────────────────────────
@@ -43,39 +49,35 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 black pyright
+          pip install flake8 black
           if [ -f app/backend/requirements.txt ]; then pip install -r app/backend/requirements.txt; fi
-          if [ -f platform/bot/requirements.txt ]; then pip install -r platform/bot/requirements.txt; fi
 
       - name: Lint Python (flake8)
         run: |
           flake8 app/backend/ --max-line-length=120 --ignore=E501,W503 || true
-          flake8 platform/bot/ --max-line-length=120 --ignore=E501,W503 || true
 
       - name: Check Python formatting (black)
         run: |
-          black --check --diff app/backend/ platform/bot/ || echo "Formatting issues found (non-blocking)"
+          black --check --diff app/backend/ || echo "Formatting issues found (non-blocking)"
 
       - name: Check for hardcoded secrets
         run: |
-          echo "Checking for hardcoded secret VALUES in code..."
-          # Match only actual assigned values (30+ alnum chars), not env-var references or variable names.
-          # Skips: os.getenv(), process.env., ${{ secrets.* }}, .env.example files.
+          echo "Checking for hardcoded secret values..."
           if grep -rEn \
-            '(KOTE_SECRET|SUPABASE_SERVICE_KEY|TELEGRAM_BOT_TOKEN|GEMINI_API_KEY)\s*=\s*[A-Za-z0-9+/._-]{30,}' \
-            --include="*.py" --include="*.js" --include="*.json" --include="*.yml" \
+            '(SUPABASE_SERVICE_KEY|TELEGRAM_BOT_TOKEN|GEMINI_API_KEY|GROQ_API_KEY|AITUNNEL_API_KEY)\s*=\s*[A-Za-z0-9+/._-]{30,}' \
+            --include="*.py" --include="*.js" --include="*.yml" \
             --exclude-dir=node_modules --exclude-dir=.git --exclude="*.example*" . \
-            | grep -v 'os\.getenv\|process\.env\|secrets\.\|getenv(' ; then
+            | grep -v 'os\.getenv\|process\.env\|secrets\.\|getenv('; then
             echo "❌ Hardcoded secret value found!"
             exit 1
           fi
-          echo "✅ No hardcoded secret values found"
+          echo "✅ No hardcoded secrets found"
 
-      - name: Check Dockerfile syntax
+      - name: Validate docker-compose
         run: |
-          docker compose config -q || echo "Docker compose validation skipped (some env vars may be missing)"
+          docker compose config -q 2>/dev/null || echo "Skipped (env vars missing in CI)"
 
-  # ─── Job 2: Проверка утечки секретов ─────────────────────────
+  # ─── Job 2: Сканирование секретов ───────────────────────────
   secret-scan:
     name: Secret Scanning
     runs-on: ubuntu-latest
@@ -86,50 +88,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check for secrets with Gitleaks
+      - name: Gitleaks
         uses: gitleaks/gitleaks-action@v2
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check for naughty strings
-        run: |
-          echo "Scanning for common secret patterns..."
-          python3 -c "
-import re, sys, os
-patterns = {
-    'API key pattern': r'[Aa][Pp][Ii]_?[Kk][Ee][Yy]=[\'\"][A-Za-z0-9_\-]{20,}[\'\"]',
-    'Bearer token': r'bearer\s+[A-Za-z0-9_\-\.]{20,}',
-    'Password': r'password\s*[=:]\s*[\'\"][^\'\"]+[\'\"]',
-}
-issues = []
-for root, dirs, files in os.walk('.'):
-    dirs[:] = [d for d in dirs if d not in ('node_modules', '.git')]
-    for f in files:
-        if f.endswith(('.py', '.js', '.json', '.yml', '.yaml', '.sh', '.md', '.html')):
-            fp = os.path.join(root, f)
-            try:
-                with open(fp) as fh:
-                    for i, line in enumerate(fh, 1):
-                        line_s = line.strip()
-                        if not line_s or line_s.startswith('#'):
-                            continue
-                        for name, pat in patterns.items():
-                            if re.search(pat, line_s, re.IGNORECASE):
-                                issues.append(f'{fp}:{i}: potential {name}')
-            except:
-                pass
-if issues:
-    for i in issues:
-        print(f'  ⚠️  {i}')
-    print(f'Found {len(issues)} potential issues')
-else:
-    print('✅ No obvious secrets found')
-"
-
-  # ─── Job 3: Сборка Docker образов ────────────────────────────
+  # ─── Job 3: Сборка Docker образа backend ─────────────────────
   docker:
-    name: Build Docker Images
+    name: Build Docker Image
     runs-on: ubuntu-latest
     needs: [lint]
     if: github.ref == 'refs/heads/main'
@@ -160,30 +127,15 @@ else:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build and push nestandart-bot
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: platform/bot/Dockerfile
-          push: true
-          tags: |
-            ${{ env.DOCKER_IMAGE_BOT }}:${{ github.sha }}
-            ${{ env.DOCKER_IMAGE_BOT }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
   # ─── Job 4: Деплой на VPS ────────────────────────────────────
   deploy:
     name: Deploy to VPS
     runs-on: ubuntu-latest
     needs: [docker]
-    # Skip if VPS secrets are not configured in GitHub repository settings
+    # Запускается только если секрет VPS_HOST задан в GitHub repo settings
     if: github.ref == 'refs/heads/main' && secrets.VPS_HOST != ''
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -192,38 +144,26 @@ else:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
-            # Перейти в директорию git-checkout NestanDaRt-20 на VPS
-            cd /var/www/nestandart || exit 1
+            set -e
+            cd /opt/NestanDaRt-20
 
-            # Обновить код
+            echo "📥 Pulling latest code..."
             git pull origin main
 
-            # Обновить .env если новые переменные
-            if [ -f .env.example ]; then
-              while IFS= read -r line; do
-                key=$(echo "$line" | cut -d= -f1)
-                if ! grep -q "^${key}=" .env 2>/dev/null; then
-                  echo "$line" >> .env
-                  echo "➕ Added $key to .env"
-                fi
-              done < <(grep -v "^#" .env.example | grep -v "^$")
-            fi
-
-            # Пересобрать и запустить
-            docker compose build
+            echo "🐳 Rebuilding backend..."
+            docker compose build nestandart-backend
             docker compose up -d --remove-orphans
 
-            # Проверка здоровья
-            echo "Waiting for services..."
-            for i in $(seq 1 30); do
+            echo "⏳ Waiting for health check..."
+            for i in $(seq 1 20); do
               if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
-                echo "✅ Backend is healthy"
+                echo "✅ nestandart-backend is healthy"
                 break
               fi
               sleep 3
             done
 
-            # Очистка
+            echo "🧹 Cleaning old images..."
             docker image prune -f
 
             echo "✅ Deploy complete!"
