@@ -64,8 +64,8 @@ function AppContent() {
     return (
       <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
         <form onSubmit={handleLogin} className="glass-card" style={{ width: '360px', textAlign: 'center' }}>
-          <h2 style={{ marginBottom: '8px', color: 'var(--accent-cyan)' }}>ШТАБ</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Нестандартный Отдых®</p>
+          <h2 style={{ marginBottom: '8px', color: 'var(--accent-cyan)' }}>БАЗА</h2>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Нестандартный Отдых® · Войти</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <input type="email" placeholder="Email администратора" required value={emailInput} onChange={e => setEmailInput(e.target.value)} />
             <input type="password" placeholder="Пароль" required value={passInput} onChange={e => setPassInput(e.target.value)} />
@@ -82,8 +82,8 @@ function AppContent() {
       {/* Боковая панель навигации */}
       <aside style={{ width: '280px', background: 'var(--bg-secondary)', borderRight: '1px solid var(--glass-border)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <div style={{ padding: '0 8px 24px 8px', borderBottom: '1px solid var(--glass-border)', marginBottom: '16px' }}>
-          <h2 style={{ color: 'var(--accent-cyan)', fontSize: '20px', fontWeight: '800' }}>ШТАБ</h2>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Операционный центр</span>
+          <h2 style={{ color: 'var(--accent-cyan)', fontSize: '20px', fontWeight: '800' }}>БАЗА</h2>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Центр управления проектом</span>
           <select
             value={activeMarket}
             onChange={e => setActiveMarket(e.target.value)}
@@ -108,7 +108,7 @@ function AppContent() {
           <Megaphone size={20} /> Контент-завод
         </button>
         <button className={`btn ${activeTab === 'finance' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('finance')}>
-          <DollarSign size={20} /> Финансовый штаб
+          <DollarSign size={20} /> Финансы
         </button>
         <button className={`btn ${activeTab === 'wiki' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('wiki')}>
           <BookOpen size={20} /> Wiki База знаний
@@ -127,7 +127,7 @@ function AppContent() {
             </button>
           )}
           <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center' }}>
-            nestandart.online © 2026
+            БАЗА · nestandart.online © 2026
           </div>
         </div>
       </aside>

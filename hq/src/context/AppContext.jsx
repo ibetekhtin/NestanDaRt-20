@@ -63,7 +63,7 @@ export const AppProvider = ({ children }) => {
       p_phone: client.phone || '',
       p_telegram: client.telegram || '',
       p_tg_chat_id: client.tg_chat_id || client.telegram || '',
-      p_source: client.source || 'hq',
+      p_source: client.source || 'baza',
       p_market_id: activeMarket,
     });
     if (error) { console.error('[HQ] addClient RPC error:', error); return null; }

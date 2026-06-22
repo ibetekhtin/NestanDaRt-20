@@ -17,7 +17,7 @@ export default function DashboardView() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
         <div>
           <h1 style={{ fontSize: '28px', fontWeight: '700' }}>Дашборд CEO</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Нестандартный Отдых® — оперативная сводка</p>
+          <p style={{ color: 'var(--text-muted)' }}>БАЗА · Нестандартный Отдых® — оперативная сводка</p>
         </div>
         <div className="glass-card" style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <TrendingUp color="var(--accent-cyan)" size={18} />

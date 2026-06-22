@@ -22,7 +22,7 @@ export default function FinanceView() {
   return (
     <div>
       <div style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: '700' }}>Финансовый штаб 💰</h1>
+        <h1 style={{ fontSize: '28px', fontWeight: '700' }}>Финансы 💰</h1>
         <p style={{ color: 'var(--text-muted)' }}>
           Платежи через YooKassa · {loading ? 'обновление...' : 'live из Supabase'}
         </p>
