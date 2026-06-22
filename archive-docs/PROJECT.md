@@ -4,7 +4,7 @@
 
 | Ресурс | URL |
 |--------|-----|
-| **Repository** | `github.com/<YOUR_GITHUB>/kote-system` *(настроить remote)* |
+| **Repository** | `github.com/<YOUR_GITHUB>/NestanDaRt-20` *(настроить remote)* |
 | **Supabase Dashboard** | `supabase.com/dashboard` → проект asurrubnbvetkvnskcdu |
 | **n8n (self-hosted)** | `http://<VPS_IP>:5678` |
 | **Backend API** | `http://<VPS_IP>:8000/docs` (Swagger) |
@@ -90,7 +90,7 @@
 ## 📁 Структура проекта
 
 ```
-kote-system/
+NestanDaRt-20/
 ├── bot/                    # Telegram bot (Node.js + Telegraf)
 │   ├── index.js            # Main bot logic
 │   ├── ai.js               # Gemini AI integration
@@ -355,8 +355,8 @@ INSERT INTO services (market_id, type, title, price, currency) VALUES
 
 ```bash
 # 1. Клонировать
-git clone github.com/<YOUR_GITHUB>/kote-system
-cd kote-system
+git clone github.com/<YOUR_GITHUB>/NestanDaRt-20
+cd NestanDaRt-20
 
 # 2. Настроить
 npm install

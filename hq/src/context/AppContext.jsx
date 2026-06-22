@@ -25,6 +25,8 @@ export const AppProvider = ({ children }) => {
   const [payments, setPayments] = useState([]);
   const [knowledge, setKnowledge] = useState([]);
   const [contentPlan, setContentPlan] = useState([]);
+  const [conversations, setConversations] = useState([]);
+  const [partners, setPartners] = useState([]);
 
   const city = MARKET_CITY[activeMarket] || 'Пхукет';
 
@@ -32,20 +34,24 @@ export const AppProvider = ({ children }) => {
     if (!isSupabaseConfigured) return;
     setLoading(true);
     try {
-      const [toursRes, clientsRes, bookingsRes, paymentsRes, knowledgeRes, contentRes] = await Promise.all([
+      const [toursRes, clientsRes, bookingsRes, paymentsRes, knowledgeRes, contentRes, convsRes, partnersRes] = await Promise.all([
         supabase.from('tours').select('*').eq('city', city).order('sort_order'),
         supabase.from('clients').select('*').order('created_at', { ascending: false }),
         supabase.from('bookings').select('*, clients(name, phone, telegram), tours(title, city)').order('created_at', { ascending: false }),
         supabase.from('payments').select('*, bookings(tour_name, total)').order('created_at', { ascending: false }),
         supabase.from('knowledge').select('*').eq('city', city).eq('active', true).order('priority', { ascending: false }),
         supabase.from('content_plan').select('*').eq('city', city).order('date'),
+        supabase.from('conversations').select('*, clients(name, telegram)').order('created_at', { ascending: false }).limit(100),
+        supabase.from('partner_stats').select('*').order('total_sales', { ascending: false }),
       ]);
-      if (toursRes.data)    setTours(toursRes.data);
-      if (clientsRes.data)  setClients(clientsRes.data);
-      if (bookingsRes.data) setBookings(bookingsRes.data);
-      if (paymentsRes.data) setPayments(paymentsRes.data);
+      if (toursRes.data)     setTours(toursRes.data);
+      if (clientsRes.data)   setClients(clientsRes.data);
+      if (bookingsRes.data)  setBookings(bookingsRes.data);
+      if (paymentsRes.data)  setPayments(paymentsRes.data);
       if (knowledgeRes.data) setKnowledge(knowledgeRes.data);
-      if (contentRes.data)  setContentPlan(contentRes.data);
+      if (contentRes.data)   setContentPlan(contentRes.data);
+      if (convsRes.data)     setConversations(convsRes.data);
+      if (partnersRes.data)  setPartners(partnersRes.data);
     } finally {
       setLoading(false);
     }
@@ -122,19 +128,22 @@ export const AppProvider = ({ children }) => {
   };
 
   // --- Stats (derived) ---
+  const KPT_STATUSES = ['Подтверждён', 'Активный', 'Завершён', 'Оплачен', 'done', 'confirmed', 'active', 'completed'];
   const stats = {
+    kpt: bookings.filter(b => KPT_STATUSES.includes(b.status)).length,
     totalClients: clients.length,
     activeBookings: bookings.filter(b => b.status === 'Подтверждён' || b.status === 'Активный').length,
     newLeads: clients.filter(c => c.stage === 'new' || c.stage === 'interest').length,
     totalRevenue: payments.filter(p => p.status === 'succeeded').reduce((sum, p) => sum + (p.amount || 0), 0),
     totalTours: tours.filter(t => t.active).length,
+    completedTours: bookings.filter(b => b.status === 'Завершён' || b.status === 'completed').length,
   };
 
   return (
     <AppContext.Provider value={{
       activeMarket, setActiveMarket,
       loading, refetch: fetchAll,
-      tours, clients, bookings, payments, knowledge, contentPlan,
+      tours, clients, bookings, payments, knowledge, contentPlan, conversations, partners,
       stats,
       addClient, updateClient, updateClientStage,
       addBooking, updateBookingStatus,

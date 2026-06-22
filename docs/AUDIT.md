@@ -2,7 +2,7 @@
 
 **Date:** 18 June 2026  
 **System:** Нестандартный Отдых (Non-Standart Travel)  
-**Repository:** ibetekhtin/kote-system  
+**Repository:** ibetekhtin/NestanDaRt-20  
 **VPS:** Hetzner 77.42.93.187  
 **Supabase:** cmmdrhususjuadqzyssc (us-east-1)  
 **n8n Cloud:** ibetekhtin.app.n8n.cloud  
@@ -291,10 +291,10 @@ The Python bot (`platform/bot/`) is **disabled** (`profiles: bot`) — productio
 ### Recommended Crontab
 ```bash
 # Daily backup at 3 AM
-0 3 * * * /opt/kote/deploy/backup-supabase.sh
+0 3 * * * /opt/NestanDaRt-20/deploy/backup-supabase.sh
 
 # Monitoring every 5 minutes
-*/5 * * * * /opt/kote/deploy/monitoring.sh
+*/5 * * * * /opt/NestanDaRt-20/deploy/monitoring.sh
 ```
 
 ---
@@ -455,8 +455,8 @@ sudo systemctl reload nginx
 # 4. Set up crontab
 crontab -e
 # Add:
-0 3 * * * /opt/kote/deploy/backup-supabase.sh
-*/5 * * * * /opt/kote/deploy/monitoring.sh
+0 3 * * * /opt/NestanDaRt-20/deploy/backup-supabase.sh
+*/5 * * * * /opt/NestanDaRt-20/deploy/monitoring.sh
 ```
 
 ---

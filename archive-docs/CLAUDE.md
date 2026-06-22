@@ -1,5 +1,5 @@
 # CLAUDE.md — Нестандартный Отдых + AI КотЭ
-# Репозиторий: github.com/ibetekhtin/kote-system | Обновлено: 18.06.2026
+# Репозиторий: github.com/ibetekhtin/NestanDaRt-20 | Обновлено: 18.06.2026
 
 ## Архитектура
 
@@ -134,9 +134,9 @@ GEMINI_API_KEY=    # AIza… (не OAuth токен!)
 
 - **nginx** — nestandart.online (HTTPS), /app/ → PWA, /api/* → pm2
 - **pm2: nestandart-api** — `/opt/nestandart-api/server.js` (порт 3055) — `/api/leads`
-- **Docker: kote-backend** — `/opt/kote/app/backend/` (FastAPI, порт 8000) — `/api/v1/`
+- **Docker: kote-backend** — `/opt/NestanDaRt-20/app/backend/` (FastAPI, порт 8000) — `/api/v1/`
 - **Docker: kote-n8n** — локальный n8n (порт 5678; бот НЕ использует его — бот в n8n Cloud)
-- **git checkout** — `/var/www/nestandart` (origin = kote-system; VPS пуллит оттуда)
+- **git checkout** — `/var/www/nestandart` (origin = NestanDaRt-20; VPS пуллит оттуда)
 - **Бэкапы** — cron 3:00 (Supabase JSON) + 3:30 (nginx/configs tarball), 7–14 дней
 
 ## Запрещено

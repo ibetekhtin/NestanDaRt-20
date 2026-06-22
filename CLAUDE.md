@@ -73,10 +73,10 @@
 
 ---
 
-## 📁 СТРУКТУРА МОНОРЕПО (/opt/kote/)
+## 📁 СТРУКТУРА МОНОРЕПО (/opt/NestanDaRt-20/)
 
 ```
-/opt/kote/
+/opt/NestanDaRt-20/
 ├── CLAUDE.md                  ← ЭТОТ ФАЙЛ (мастер-документ)
 ├── docker-compose.yml         ← базовый compose
 ├── docker-compose.override.yml← порты + env overrides
@@ -153,7 +153,7 @@
 
 ---
 
-## 🔑 ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ (/opt/kote/.env)
+## 🔑 ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ (/opt/NestanDaRt-20/.env)
 
 ```bash
 # Supabase
@@ -279,7 +279,7 @@ app_get_client_context(p_client_id, p_market_id) → memory[]
 ### Команды управления
 
 ```bash
-cd /opt/kote
+cd /opt/NestanDaRt-20
 
 # Статус
 docker compose ps
@@ -379,7 +379,7 @@ curl -X POST https://nestandart.online/api/v1/lead \
 | **📦 Статус брони → клиенту** (`kotestatusnt0001`) | Schedule 5 мин | `bot_booking_status_changes` → при смене статуса брони уведомить клиента (#3) |
 | **🐾 Дожим зависших броней** (`kotenudge000001`) | Schedule 1/день | `bot_abandoned_bookings(24ч)` → мягкий пинг клиенту по брони, застрявшей в «Новый» (#6) |
 
-### Flows в /opt/kote/n8n/flows/ (документация, не активны)
+### Flows в /opt/NestanDaRt-20/n8n/flows/ (документация, не активны)
 
 `booking-flow.json`, `booking-confirm.json`, `daily-report.json`, `lead-intake.json`,
 `market-sync.json`, `memory-update.json`, `reminder.json`, `sos.json`
@@ -495,8 +495,8 @@ Telegram → n8n trigger
 
 ```bash
 0  3  * * *  /root/backup-supabase.sh   # JSON-дамп 12 таблиц через REST API
-30 3  * * *  /root/backup-vps.sh        # tar.gz конфигов nginx + /opt/kote
-*/5 * * * *  /opt/kote/deploy/healthcheck.sh  # мониторинг + авто-рестарт
+30 3  * * *  /root/backup-vps.sh        # tar.gz конфигов nginx + /opt/NestanDaRt-20
+*/5 * * * *  /opt/NestanDaRt-20/deploy/healthcheck.sh  # мониторинг + авто-рестарт
 ```
 
 **Хранение:** `/root/backups/supabase/` (14 дней), `/root/backups/vps/` (7 дней)
@@ -537,7 +537,7 @@ S3_BUCKET=nestandart-backups
 ### Изменение Python кода бэкенда
 
 ```bash
-cd /opt/kote
+cd /opt/NestanDaRt-20
 # 1. Внести изменения в app/backend/
 git add . && git commit -m "fix: ..."
 # 2. Ребилд образа (обязательно!)
@@ -552,7 +552,7 @@ curl https://nestandart.online/api/v1/markets
 ### Изменение env переменных
 
 ```bash
-nano /opt/kote/.env
+nano /opt/NestanDaRt-20/.env
 docker compose up -d --force-recreate kote-backend
 # Для n8n:
 docker compose up -d --force-recreate kote-n8n
@@ -570,7 +570,7 @@ nginx -t && systemctl reload nginx
 ```bash
 # СНАЧАЛА зафиксировать версию в docker-compose.yml!
 # image: n8nio/n8n:НОВАЯ_ВЕРСИЯ
-cd /opt/kote
+cd /opt/NestanDaRt-20
 docker compose pull kote-n8n
 docker compose up -d --force-recreate kote-n8n
 ```
@@ -654,7 +654,7 @@ ls /root/backups/supabase/$(date +%F)/
 | n8n Editor | https://n8n.nestandart.online (admin / из .env) |
 | Telegram Bot | @phuket_nestandart_bot |
 | Telegram Manager | chat_id: 8943048058 |
-| GitHub | github.com/ibetekhtin/kote-system (прод под git; деплой = `git pull` на VPS) |
+| GitHub | github.com/ibetekhtin/NestanDaRt-20 (прод под git; деплой = `git pull` на VPS) |
 | Домены | nestandart.online, nestandart-phuket.ru |
 
 ---

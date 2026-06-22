@@ -33,8 +33,8 @@
 
 ## 1. Идентичность репозитория
 
-- **Remote:** `github.com/ibetekhtin/kote-system.git` (origin).
-- **Имена:** `README.md` и `CLAUDE.md` теперь оба зовут репо **`kote-system`** (исправлено в `1ffdf3b`). Локальная папка на диске пока `Desktop/папка с проектом` — рекомендуется переименовать в `kote-system` для полного совпадения (по согласованию с владельцем).
+- **Remote:** `github.com/ibetekhtin/NestanDaRt-20.git` (origin).
+- **Имена:** `README.md` и `CLAUDE.md` теперь оба зовут репо **`NestanDaRt-20`** (исправлено в `1ffdf3b`). Локальная папка на диске пока `Desktop/папка с проектом` — рекомендуется переименовать в `NestanDaRt-20` для полного совпадения (по согласованию с владельцем).
 - **Тип:** монорепо (один бренд, один код, одна база, много рынков).
 - **Ветки:** `main` (944379c) и `chore/audit-fixes-and-track-sources` (058d0fc) — обе от 19.06. PR'ов нет (gh CLI не установлен; ветки сравниваются через `git`).
 - **Объём:** 199 отслеживаемых файлов.
@@ -112,4 +112,4 @@
 - `nestandart-phuket/vercel.json` + `netlify.toml` — канон запрещает Vercel/Netlify (хостинг = свой VPS). Удалить/заархивировать.
 - `roadmap.html` (root) дублирует `nestandart-phuket/roadmap.html`.
 - `platform/app.html` / `app-hyper.html` / `app/index.html` — несколько версий PWA, выбрать одну.
-- Имя репо: `NestanDaRt-20` (README) vs `kote-system` (remote/CLAUDE) — унифицировать.
+- Имя репо: `NestanDaRt-20` (README) vs `NestanDaRt-20` (remote/CLAUDE) — унифицировать.
