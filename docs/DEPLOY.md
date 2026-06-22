@@ -53,4 +53,4 @@ make validate                   # Проверка кода
 
 ## Systemd (fallback)
 
-Без Docker: `deploy/systemd/kote-bot.service`
+Без Docker: `deploy/systemd/nestandart-bot.service`

@@ -5,7 +5,7 @@
 # Usage: bash deploy/monitoring.sh (or add to crontab)
 #
 # Suggested crontab:
-#   * * * * * /opt/kote/deploy/monitoring.sh >/dev/null 2>&1
+#   * * * * * /opt/NestanDaRt-20/deploy/monitoring.sh >/dev/null 2>&1
 # ============================================================================
 
 set -euo pipefail
@@ -23,7 +23,7 @@ DISK_THRESHOLD=85
 BACKUP_AGE_MAX_HOURS=28
 
 # Paths
-DEPLOY_DIR="/opt/kote"
+DEPLOY_DIR="/opt/NestanDaRt-20"
 BACKUP_DIR="${DEPLOY_DIR}/backups"
 LOG_FILE="${DEPLOY_DIR}/logs/monitoring.log"
 STATE_FILE="${DEPLOY_DIR}/logs/.monitor_state"
@@ -110,7 +110,7 @@ check_docker() {
     fi
     
     # Check each container
-    for container in kote-backend kote-n8n; do
+    for container in nestandart-backend nestandart-n8n; do
         local status=$(docker inspect --format='{{.State.Status}}' "$container" 2>/dev/null || echo "not-found")
         local health=$(docker inspect --format='{{.State.Health.Status}}' "$container" 2>/dev/null || echo "no-healthcheck")
         

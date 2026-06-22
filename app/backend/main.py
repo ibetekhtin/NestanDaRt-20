@@ -1,5 +1,5 @@
 """
-kote-backend — FastAPI REST API
+nestandart-backend — FastAPI REST API
 Нестандартный Отдых® / ПХУКЕТИК
 
 Эндпоинты:

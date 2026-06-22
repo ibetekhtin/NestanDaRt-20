@@ -23,8 +23,8 @@ curl -L "https://github.com/docker/compose/releases/latest/download/docker-compo
 chmod +x /usr/local/bin/docker-compose
 
 # Create project directory
-mkdir -p /opt/kote
-mkdir -p /opt/kote/logs
+mkdir -p /opt/NestanDaRt-20
+mkdir -p /opt/NestanDaRt-20/logs
 
 # Firewall (UFW)
 apt-get install -y ufw
@@ -48,7 +48,7 @@ echo ""
 echo "✅ VPS setup complete!"
 echo ""
 echo "Next steps:"
-echo "  1. Clone repo: cd /opt/kote && git clone <repo> ."
+echo "  1. Clone repo: cd /opt/NestanDaRt-20 && git clone <repo> ."
 echo "  2. Configure: cp .env.example .env && nano .env"
 echo "  3. Deploy: docker compose up -d"
 echo ""

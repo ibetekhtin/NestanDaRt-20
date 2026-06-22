@@ -41,4 +41,4 @@
 - `SUPABASE_SERVICE_KEY` — **никогда** не публикуй, обходит RLS
 - `TELEGRAM_BOT_TOKEN`, `GROQ_API_KEY` и прочие AI-ключи — **никогда** не публикуй (в т.ч. в чате)
 - `.env` в `.gitignore` — не коммить. Секреты живут только в `.env` (локально) и env контейнеров на VPS
-- Новый ключ на VPS: вписать в `/opt/kote/.env`, затем `docker compose up -d <service>` (recreate, не restart)
+- Новый ключ на VPS: вписать в `/opt/NestanDaRt-20/.env`, затем `docker compose up -d <service>` (recreate, не restart)

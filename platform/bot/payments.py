@@ -16,7 +16,7 @@ import uuid
 
 import httpx
 
-log = logging.getLogger("kote.payments")
+log = logging.getLogger("nestandart.payments")
 
 SHOP_ID = os.getenv("YOOKASSA_SHOP_ID", "")
 SECRET_KEY = os.getenv("YOOKASSA_SECRET_KEY", "")

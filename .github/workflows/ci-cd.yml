@@ -21,8 +21,8 @@ on:
 env:
   PYTHON_VERSION: "3.12"
   NODE_VERSION: "20"
-  DOCKER_IMAGE_BACKEND: ghcr.io/${{ github.repository }}/kote-backend
-  DOCKER_IMAGE_BOT: ghcr.io/${{ github.repository }}/kote-bot
+  DOCKER_IMAGE_BACKEND: ghcr.io/${{ github.repository }}/nestandart-backend
+  DOCKER_IMAGE_BOT: ghcr.io/${{ github.repository }}/nestandart-bot
 
 jobs:
   # ─── Job 1: Проверка кода ────────────────────────────────────
@@ -148,7 +148,7 @@ else:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push kote-backend
+      - name: Build and push nestandart-backend
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -160,7 +160,7 @@ else:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build and push kote-bot
+      - name: Build and push nestandart-bot
         uses: docker/build-push-action@v5
         with:
           context: .

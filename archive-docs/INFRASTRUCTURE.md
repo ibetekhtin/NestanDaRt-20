@@ -134,7 +134,7 @@ nestandart-api/
 | js/app.js | /var/www/.../nestandart-phuket/js/ | /opt/kote/js/ | корневой + nestandart-phuket/ |
 | tours/*.html | ❌ НЕТ | /var/www/nestandart/tours/ (не сервится!), /opt/kote/tours/ | корневой |
 | bot/main.py | Нигде | /var/www/.../platform/bot/ + /opt/kote/bot/ | корневой bot/ + platform/bot/ |
-| kote/prompt.txt | /var/www/.../platform/kote/ | /opt/kote/ai/kote_prompt.txt | ai/ + platform/kote/ |
+| kote/prompt.txt | /var/www/.../platform/nestandart-20/ | /opt/kote/ai/kote_prompt.txt | ai/ + platform/nestandart-20/ |
 | supabase/schema.sql | Supabase (prod) | /var/www/.../platform/supabase/ + /opt/kote/supabase/ + migrations | корневой + platform/ |
 | app/backend/ | /opt/kote/app/backend/ (Docker) | /var/www/nestandart/app/backend/ (стаб) | app/backend/ (стаб) |
 | docker-compose.yml | /opt/kote/ | /var/www/nestandart/ (не используется) | корневой |

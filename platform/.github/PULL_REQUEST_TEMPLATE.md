@@ -14,7 +14,7 @@
 | Файл | Что изменилось |
 |------|---------------|
 | `public/index.html` | |
-| `kote/workflow.json` | |
+| `nestandart-20/workflow.json` | |
 | `kote/prompt.txt` | |
 
 ### Тест план

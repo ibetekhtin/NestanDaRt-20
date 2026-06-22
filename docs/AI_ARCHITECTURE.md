@@ -4,7 +4,7 @@
 **Дата:** 2026-06-21
 
 > **С 21.06.2026 оба входа идут через ОДИН каскад.** Два endpoint'а backend, одна цепочка `providers/`:
-> 1. **Live-бот** = n8n workflow `doCUKEZQpLQjDmxP` → модель-нода зовёт backend **`POST /api/v1/ai/chat`** (passthrough: принимает готовый OpenAI-формат `messages[]`, возвращает `choices[0].message.content`). Промпт собирает n8n, fallback обеспечивает backend. Ключи AI — только в backend, не в `kote-n8n`.
+> 1. **Live-бот** = n8n workflow `doCUKEZQpLQjDmxP` → модель-нода зовёт backend **`POST /api/v1/ai/chat`** (passthrough: принимает готовый OpenAI-формат `messages[]`, возвращает `choices[0].message.content`). Промпт собирает n8n, fallback обеспечивает backend. Ключи AI — только в backend, не в `nestandart-n8n`.
 > 2. **PWA / приложение** → backend **`POST /api/v1/ai/ask`** (backend сам строит простой system prompt).
 > Оба зовут `providers.ask()` → каскад **groq → aitunnel → openrouter → gemini**.
 
@@ -231,13 +231,13 @@ GEMINI_MODEL=gemini-2.0-flash
 
 ```bash
 # Backend
-docker compose logs kote-backend -f
+docker compose logs nestandart-backend -f
 
 # Bot (если включен)
-docker compose logs kote-bot -f
+docker compose logs nestandart-bot -f
 
 # n8n
-docker compose logs kote-n8n -f
+docker compose logs nestandart-n8n -f
 ```
 
 ---
@@ -272,7 +272,7 @@ python -c "from providers import ask; print('OK')"
 python -m py_compile providers/*.py
 
 # Проверка docker
-docker compose build kote-backend
+docker compose build nestandart-backend
 docker compose config
 ```
 
@@ -349,8 +349,8 @@ cp app/backend/routers/ai.py.bak app/backend/routers/ai.py
 cp platform/bot/main.py.bak platform/bot/main.py
 
 # Перезапуск
-docker compose build kote-backend
-docker compose restart kote-backend
+docker compose build nestandart-backend
+docker compose restart nestandart-backend
 ```
 
 ### Сценарий 2: Удаление providers/
@@ -425,7 +425,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to VPS
-        run: ssh user@vps 'cd /path && docker compose build kote-backend && docker compose restart kote-backend'
+        run: ssh user@vps 'cd /path && docker compose build nestandart-backend && docker compose restart nestandart-backend'
 ```
 
 ---

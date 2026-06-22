@@ -4,12 +4,12 @@
 set -euo pipefail
 umask 077
 
-set -a; source /opt/kote/.env; set +a
+set -a; source /opt/NestanDaRt-20/.env; set +a
 
 BOT_TOKEN="${TELEGRAM_BOT_TOKEN:?}"
 CHAT_ID="${TELEGRAM_ADMIN_CHAT_ID:?}"
 TODAY=$(date +%F)
-TMP="/tmp/kote-backup-$TODAY"
+TMP="/tmp/nestandart-backup-$TODAY"
 mkdir -p "$TMP"
 
 # 1. Pack Supabase JSON dump

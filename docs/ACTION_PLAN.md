@@ -40,8 +40,8 @@ end $$;
 ssh root@77.42.93.187
 crontab -e
 # Добавьте:
-0 3 * * * /opt/kote/deploy/backup-supabase.sh >> /var/log/kote-backup.log 2>&1
-*/5 * * * * /opt/kote/deploy/healthcheck.sh >> /var/log/kote-health.log 2>&1
+0 3 * * * /opt/NestanDaRt-20/deploy/backup-supabase.sh >> /var/log/nestandart-backup.log 2>&1
+*/5 * * * * /opt/NestanDaRt-20/deploy/healthcheck.sh >> /var/log/nestandart-health.log 2>&1
 # Ctrl+O, Enter, Ctrl+X
 ```
 
@@ -86,7 +86,7 @@ UPDATE tours SET image_url = 'ВАШ_URL' WHERE slug = 'tur-slug';
 ```bash
 # На VPS проверить, что n8n Cloud workflow активен
 # Или переключиться на локальный n8n:
-# docker compose --profile bot up -d kote-bot
+# docker compose --profile bot up -d nestandart-bot
 ```
 
 ### 8. Проверить API

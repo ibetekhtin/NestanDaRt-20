@@ -19,7 +19,7 @@ import os
 
 import httpx
 
-log = logging.getLogger("kote.crypto")
+log = logging.getLogger("nestandart.crypto")
 
 API_KEY = os.getenv("NOWPAYMENTS_API_KEY", "")
 IPN_SECRET = os.getenv("NOWPAYMENTS_IPN_SECRET", "")

@@ -1,11 +1,11 @@
 #!/bin/bash
-# Healthcheck + Telegram alerts for КОТЭ system
+# Healthcheck + Telegram alerts for NESTANDART-20
 # Runs every 5 minutes via cron (*/5 * * * *)
 
-LOG_FILE="/var/log/kote-health.log"
+LOG_FILE="/var/log/nestandart-health.log"
 BACKEND_URL="http://127.0.0.1:8000/health"
 
-set -a; source /opt/kote/.env 2>/dev/null; set +a
+set -a; source /opt/NestanDaRt-20/.env 2>/dev/null; set +a
 
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $1" >> "$LOG_FILE"; }
 
@@ -32,24 +32,24 @@ check_nginx() {
 
 check_backend() {
   if ! curl -sf --max-time 5 "$BACKEND_URL" > /dev/null 2>&1; then
-    cd /opt/kote && docker compose restart kote-backend > /dev/null 2>&1
+    cd /opt/NestanDaRt-20 && docker compose restart nestandart-backend > /dev/null 2>&1
     sleep 10
     if curl -sf --max-time 5 "$BACKEND_URL" > /dev/null 2>&1; then
-      alert "⚠️ <b>kote-backend</b> упал и перезапущен"
+      alert "⚠️ <b>nestandart-backend</b> упал и перезапущен"
     else
-      alert "🚨 <b>kote-backend DOWN</b> — перезапуск не помог! VPS: 77.42.93.187"
+      alert "🚨 <b>nestandart-backend DOWN</b> — перезапуск не помог! VPS: 77.42.93.187"
     fi
   fi
 }
 
 check_n8n() {
   if ! curl -sf --max-time 5 "http://127.0.0.1:5678/healthz" > /dev/null 2>&1; then
-    cd /opt/kote && docker compose restart kote-n8n > /dev/null 2>&1
+    cd /opt/NestanDaRt-20 && docker compose restart nestandart-n8n > /dev/null 2>&1
     sleep 10
     if curl -sf --max-time 5 "http://127.0.0.1:5678/healthz" > /dev/null 2>&1; then
-      alert "⚠️ <b>kote-n8n</b> (бот) упал и перезапущен"
+      alert "⚠️ <b>nestandart-n8n</b> (автоматизации) упал и перезапущен"
     else
-      alert "🚨 <b>kote-n8n DOWN</b> — перезапуск не помог! Бот не отвечает. VPS: 77.42.93.187"
+      alert "🚨 <b>nestandart-n8n DOWN</b> — перезапуск не помог! VPS: 77.42.93.187"
     fi
   fi
 }

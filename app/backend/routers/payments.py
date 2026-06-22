@@ -25,7 +25,7 @@ from pydantic import BaseModel
 from config import settings
 from db import sb
 
-log = logging.getLogger("kote.payments")
+log = logging.getLogger("nestandart.payments")
 router = APIRouter()
 
 YK_API = "https://api.yookassa.ru/v3/payments"

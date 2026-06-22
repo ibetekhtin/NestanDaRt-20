@@ -15,7 +15,7 @@ from typing import Optional
 
 import httpx
 
-log = logging.getLogger("kote.places")
+log = logging.getLogger("nestandart.places")
 
 OVERPASS_URL = "https://lz4.overpass-api.de/api/interpreter"
 TIMEOUT = 10.0

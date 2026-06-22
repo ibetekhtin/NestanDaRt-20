@@ -1,36 +1,35 @@
 # ═══════════════════════════════════════════════════════════════
-# Нестандартный Отдых® — Docker Compose
+# NestanDaRt-20 — Docker Compose
 # VPS: 77.42.93.187
 #
 # Сервисы:
-#   kote-backend  FastAPI REST API для мобильного приложения
-#   kote-bot      Python бот КотЭ (aiogram + Gemini) — ВЫКЛЮЧЕН
-#   kote-n8n      Локальный n8n для автоматизаций
+#   nestandart-backend  FastAPI REST API для мобильного приложения
+#   nestandart-n8n      Локальный n8n для автоматизаций
 #
-# Бот сейчас живёт в n8n Cloud — kote-bot выключен (profiles: bot)
-# Чтобы включить: docker compose --profile bot up -d kote-bot
-# СНАЧАЛА остановить n8n Cloud workflow во избежание конфликта!
+# Бот КотЭ живёт в n8n (workflow) — nestandart-bot выключен (profiles: bot)
+# Чтобы включить: docker compose --profile bot up -d nestandart-bot
+# СНАЧАЛА остановить n8n workflow во избежание конфликта!
 #
 # Запуск:  docker compose up -d
-# Логи:    docker compose logs -f kote-backend
+# Логи:    docker compose logs -f nestandart-backend
 # Стоп:    docker compose down
 # ═══════════════════════════════════════════════════════════════
-# (атрибут version: удалён — устарел в Compose v2, выдаёт warning)
+name: nestandart-20
 
 services:
 
   # ─── FastAPI бэкенд для мобильного приложения ───────────────
-  kote-backend:
+  nestandart-backend:
     build:
       context: .
       dockerfile: app/backend/Dockerfile
-    container_name: kote-backend
+    container_name: nestandart-backend
     restart: unless-stopped
     env_file: .env
     expose:
       - "8000"          # внутри сети — nginx проксирует
     networks:
-      - kote-net
+      - nestandart-net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -49,14 +48,14 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # ─── Python бот КотЭ (выключен: production = n8n Cloud) ────
-  kote-bot:
+  # ─── Python бот КотЭ (выключен: production = n8n workflow) ──
+  nestandart-bot:
     build:
       context: .
       dockerfile: platform/bot/Dockerfile
-    container_name: kote-bot
+    container_name: nestandart-bot
     restart: unless-stopped
-    profiles: ["bot"]     # запускать вручную: docker compose --profile bot up -d
+    profiles: ["bot"]     # запускать вручную: docker compose --profile bot up -d nestandart-bot
     env_file: .env
     environment:
       - WEBHOOK_URL=https://nestandart.online
@@ -64,7 +63,7 @@ services:
     ports:
       - "127.0.0.1:8081:8081"
     networks:
-      - kote-net
+      - nestandart-net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
       interval: 30s
@@ -84,9 +83,9 @@ services:
         max-file: "3"
 
   # ─── Локальный n8n (автоматизации) ──────────────────────────
-  kote-n8n:
+  nestandart-n8n:
     image: n8nio/n8n:2.25.7
-    container_name: kote-n8n
+    container_name: nestandart-n8n
     restart: unless-stopped
     environment:
       - N8N_HOST=0.0.0.0
@@ -98,11 +97,11 @@ services:
       - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
       - N8N_LOG_LEVEL=warn
     expose:
-      - "5678"          # внутри сети — nginx проксирует (только по IP)
+      - "5678"          # внутри сети — nginx проксирует
     volumes:
       - n8n_data:/home/node/.n8n
     networks:
-      - kote-net
+      - nestandart-net
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:5678/healthz"]
       interval: 30s
@@ -124,10 +123,10 @@ services:
 # ─── Тома ───────────────────────────────────────────────────────
 volumes:
   n8n_data:
-    name: kote-n8n-data
+    name: kote-n8n-data    # имя тома НЕ меняем — там живут workflows n8n
 
 # ─── Сеть ───────────────────────────────────────────────────────
 networks:
-  kote-net:
-    name: kote-network
+  nestandart-net:
+    name: nestandart-network
     driver: bridge

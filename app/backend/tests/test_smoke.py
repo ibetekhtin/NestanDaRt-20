@@ -1,5 +1,5 @@
 """
-Smoke-тесты API kote-backend.
+Smoke-тесты API nestandart-backend.
 
 Бьют по работающему сервису (по умолчанию http://127.0.0.1:8000).
 Переопределить: KOTE_API_BASE=https://nestandart.online pytest

@@ -3,7 +3,7 @@
 # Rollback Script — KOTЭ SYSTEM
 # ============================================================================
 # Usage: bash deploy/rollback.sh [backup_dir]
-# Example: bash deploy/rollback.sh /opt/kote-backups/20260618_120000
+# Example: bash deploy/rollback.sh /opt/nestandart-backups/20260618_120000
 # ============================================================================
 
 set -euo pipefail
@@ -17,12 +17,12 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 log() { echo -e "${GREEN}[INFO]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 
-DEPLOY_DIR="/opt/kote"
+DEPLOY_DIR="/opt/NestanDaRt-20"
 
 if [ $# -lt 1 ]; then
     echo "Usage: $0 [backup_dir]"
     echo "Available backups:"
-    ls -d /opt/kote-backups/*/ 2>/dev/null | head -10 || echo "  No backups found"
+    ls -d /opt/nestandart-backups/*/ 2>/dev/null | head -10 || echo "  No backups found"
     exit 1
 fi
 
@@ -46,7 +46,7 @@ fi
 # ─── Restore n8n data ──────────────────────────────────────────
 if [ -f "$BACKUP_DIR/n8n-db.sqlite" ]; then
     log "🗄️  Restoring n8n database..."
-    docker compose cp "$BACKUP_DIR/n8n-db.sqlite" kote-n8n:/home/node/.n8n/database.sqlite 2>/dev/null || \
+    docker compose cp "$BACKUP_DIR/n8n-db.sqlite" nestandart-n8n:/home/node/.n8n/database.sqlite 2>/dev/null || \
         warn "   ⚠️ Could not restore n8n DB (container may not be running)"
     log "   ✅ n8n data restored"
 fi
@@ -78,7 +78,7 @@ log "  📅 $(date '+%Y-%m-%d %H:%M:%S')"
 log "═══════════════════════════════════════════════════════════════"
 log ""
 log "Next steps if issues persist:"
-log "  1. Check logs: docker compose logs kote-backend"
-log "  2. Check n8n logs: docker compose logs kote-n8n"
+log "  1. Check logs: docker compose logs nestandart-backend"
+log "  2. Check n8n logs: docker compose logs nestandart-n8n"
 log "  3. Revert code: git revert HEAD~1 && git push"
 log "  4. Full redeploy: bash deploy/deploy.sh"

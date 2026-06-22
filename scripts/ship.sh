@@ -4,13 +4,13 @@
 set -euo pipefail
 VPS="${KOTE_VPS:-root@77.42.93.187}"
 
-echo "Деплой: локальный main → GitHub → VPS ($VPS) → пересборка kote-backend."
+echo "Деплой: локальный main → GitHub → VPS ($VPS) → пересборка nestandart-backend."
 read -rp "Продолжить? [y/N] " ok
 [ "$ok" = "y" ] || { echo "отмена"; exit 0; }
 
 git push origin HEAD:main
 ssh "$VPS" 'cd /opt/kote \
   && git pull --ff-only origin main \
-  && docker compose up -d --build kote-backend \
+  && docker compose up -d --build nestandart-backend \
   && docker compose ps --format "{{.Name}} {{.Status}}"'
 echo "✅ задеплоено"

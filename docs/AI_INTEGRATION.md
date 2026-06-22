@@ -163,7 +163,7 @@ cd app/backend && python -c "from routers import ai; print('AI router OK')"
 
 ```bash
 # Сборка образа
-docker compose build kote-backend
+docker compose build nestandart-backend
 
 # Проверка конфигурации
 docker compose config
@@ -172,7 +172,7 @@ docker compose config
 docker compose up -d
 
 # Проверка логов
-docker compose logs kote-backend -f
+docker compose logs nestandart-backend -f
 ```
 
 ### 5.3. Проверка .env
