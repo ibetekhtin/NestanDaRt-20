@@ -3,12 +3,8 @@
 # VPS: 77.42.93.187
 #
 # Сервисы:
-#   nestandart-backend  FastAPI REST API для мобильного приложения
-#   nestandart-n8n      Локальный n8n для автоматизаций
-#
-# Бот КотЭ живёт в n8n (workflow) — nestandart-bot выключен (profiles: bot)
-# Чтобы включить: docker compose --profile bot up -d nestandart-bot
-# СНАЧАЛА остановить n8n workflow во избежание конфликта!
+#   nestandart-backend  FastAPI REST API
+#   nestandart-n8n      n8n автоматизации (бот КотЭ живёт здесь)
 #
 # Запуск:  docker compose up -d
 # Логи:    docker compose logs -f nestandart-backend
@@ -18,7 +14,6 @@ name: nestandart-20
 
 services:
 
-  # ─── FastAPI бэкенд для мобильного приложения ───────────────
   nestandart-backend:
     build:
       context: .
@@ -27,7 +22,7 @@ services:
     restart: unless-stopped
     env_file: .env
     expose:
-      - "8000"          # внутри сети — nginx проксирует
+      - "8000"
     networks:
       - nestandart-net
     healthcheck:
@@ -48,41 +43,6 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # ─── Python бот КотЭ (выключен: production = n8n workflow) ──
-  nestandart-bot:
-    build:
-      context: .
-      dockerfile: platform/bot/Dockerfile
-    container_name: nestandart-bot
-    restart: unless-stopped
-    profiles: ["bot"]     # запускать вручную: docker compose --profile bot up -d nestandart-bot
-    env_file: .env
-    environment:
-      - WEBHOOK_URL=https://nestandart.online
-      - BOT_PORT=8081
-    ports:
-      - "127.0.0.1:8081:8081"
-    networks:
-      - nestandart-net
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 64M
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  # ─── Локальный n8n (автоматизации) ──────────────────────────
   nestandart-n8n:
     image: n8nio/n8n:2.25.7
     container_name: nestandart-n8n
@@ -97,7 +57,7 @@ services:
       - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
       - N8N_LOG_LEVEL=warn
     expose:
-      - "5678"          # внутри сети — nginx проксирует
+      - "5678"
     volumes:
       - n8n_data:/home/node/.n8n
     networks:
@@ -120,12 +80,10 @@ services:
         max-size: "10m"
         max-file: "3"
 
-# ─── Тома ───────────────────────────────────────────────────────
 volumes:
   n8n_data:
-    name: kote-n8n-data    # имя тома НЕ меняем — там живут workflows n8n
+    name: kote-n8n-data    # НЕ переименовывать — там workflows n8n
 
-# ─── Сеть ───────────────────────────────────────────────────────
 networks:
   nestandart-net:
     name: nestandart-network

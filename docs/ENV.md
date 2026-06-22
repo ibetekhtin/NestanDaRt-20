@@ -1,44 +1,52 @@
-# 🔑 Environment Variables — KOTЭ SYSTEM
+# 🔑 Environment Variables — NestanDaRt-20
 
 ## Required
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `SUPABASE_URL` | Supabase project URL | `https://xxx.supabase.co` |
-| `SUPABASE_SERVICE_KEY` | Supabase service_role key (bot/backend) | `eyJ...` |
-| `SUPABASE_ANON_KEY` | Supabase anon key (website) | `eyJ...` |
-| `TELEGRAM_BOT_TOKEN` | Telegram Bot API token | `123456:ABC...` |
-| `GROQ_API_KEY` | Groq API key — основной AI (live-бот + backend) | `gsk_...` |
-| `MANAGER_CHAT_ID` | Telegram chat ID менеджера | `8943048058` |
+| Variable | Description |
+|----------|-------------|
+| `SUPABASE_URL` | `https://your-project-id.supabase.co` |
+| `SUPABASE_SERVICE_KEY` | service_role key — обходит RLS, не светить |
+| `SUPABASE_ANON_KEY` | anon key (сайт, PWA) |
+| `TELEGRAM_BOT_TOKEN` | токен @phuket_nestandart_bot |
+| `TELEGRAM_ADMIN_CHAT_ID` | chat_id для алертов (= `MANAGER_CHAT_ID`) |
+| `MANAGER_CHAT_ID` | chat_id менеджера для уведомлений о лидах |
+| `KOTE_RPC_SECRET` | общий секрет n8n↔backend (защита /ai/chat, /pay/create, /bookings PATCH) |
+| `GROQ_API_KEY` | основной AI (бесплатный, быстрый) |
 
-## AI Fallback Chain (backend `providers/`)
+## AI Fallback Chain
 
-Порядок перебора задаётся `AI_PROVIDER_ORDER`. Провайдер без ключа пропускается.
+Порядок: `AI_PROVIDER_ORDER=groq,aitunnel,openrouter,gemini`. Провайдер без ключа — пропускается.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `AI_PROVIDER_ORDER` | `groq,aitunnel,openrouter,gemini` | Порядок перебора провайдеров |
-| `GROQ_API_KEY` | — | Groq (основной, бесплатный). Тот же ключ читает live-бот в n8n (`$env.GROQ_API_KEY`) |
-| `GROQ_MODEL` | `llama-3.3-70b-versatile` | Модель Groq |
-| `AITUNNEL_API_KEY` | — | AITUNNEL (резерв 1, ₽). aitunnel.ru |
-| `AITUNNEL_MODEL` | `gpt-4o-mini` | Модель AITUNNEL |
-| `AITUNNEL_BASE_URL` | `https://api.aitunnel.ru/v1` | OpenAI-совместимый endpoint |
-| `OPENROUTER_API_KEY` | — | OpenRouter (резерв 2, $) |
-| `OPENROUTER_MODEL` | `google/gemini-2.0-flash-exp:free` | Модель OpenRouter |
-| `GEMINI_API_KEY` | — | Gemini (финальный резерв, бесплатный) |
-| `GEMINI_MODEL` | `gemini-2.0-flash` | Модель Gemini |
+| Variable | Default |
+|----------|---------|
+| `AI_PROVIDER_ORDER` | `groq,aitunnel,openrouter,gemini` |
+| `GROQ_API_KEY` | — |
+| `GROQ_MODEL` | `llama-3.3-70b-versatile` |
+| `AITUNNEL_API_KEY` | — |
+| `AITUNNEL_MODEL` | `gemini-2.5-flash` |
+| `OPENROUTER_API_KEY` | — |
+| `OPENROUTER_MODEL` | `google/gemini-2.5-flash-lite` |
+| `GEMINI_API_KEY` | — |
+| `GEMINI_MODEL` | `gemini-2.5-flash` |
 
-## Optional
+## YooKassa (платежи)
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `BACKEND_PORT` | `8000` | FastAPI port |
-| `N8N_HOST` | `http://localhost:5678` | n8n base URL |
-| `BOT_LOG_LEVEL` | `info` | Log level (debug/info/warn/error) |
+| Variable | Description |
+|----------|-------------|
+| `YOOKASSA_SHOP_ID` | ID магазина (без него платежи мягко отключены) |
+| `YOOKASSA_SECRET_KEY` | секретный ключ магазина |
+| `YOOKASSA_RETURN_URL` | `https://nestandart.online/` |
+| `YOOKASSA_BAHT_TO_RUB` | `2.6` — курс ฿→₽ (правится без кода) |
 
-## Security Notes
+## n8n
 
-- `SUPABASE_SERVICE_KEY` — **никогда** не публикуй, обходит RLS
-- `TELEGRAM_BOT_TOKEN`, `GROQ_API_KEY` и прочие AI-ключи — **никогда** не публикуй (в т.ч. в чате)
-- `.env` в `.gitignore` — не коммить. Секреты живут только в `.env` (локально) и env контейнеров на VPS
-- Новый ключ на VPS: вписать в `/opt/NestanDaRt-20/.env`, затем `docker compose up -d <service>` (recreate, не restart)
+| Variable | Description |
+|----------|-------------|
+| `N8N_USER` | логин basic auth n8n |
+| `N8N_PASSWORD` | пароль basic auth n8n |
+
+## Security
+
+- **Новый ключ на VPS:** `bash /opt/NestanDaRt-20/set-secret.sh VARNAME` → пересоздать контейнер `docker compose up -d nestandart-backend`
+- `.env` в `.gitignore` — не коммитить
+- `TELEGRAM_ADMIN_CHAT_ID` = `MANAGER_CHAT_ID` (один чат для простоты; можно разделить)

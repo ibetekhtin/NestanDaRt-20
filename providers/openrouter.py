@@ -1,67 +1,18 @@
-"""
-OpenRouter AI Provider — единый API для разных моделей
-"""
-import httpx
-import logging
+"""OpenRouter — единый API для множества моделей, поддерживает online-поиск"""
 import os
-
-logger = logging.getLogger(__name__)
+from .openai_compat import call_openai_compat
 
 
 async def call_openrouter(
-    prompt: str,
-    system: str = "",
-    max_tokens: int = 600,
-    temperature: float = 0.85,
-    online: bool = False,
+    prompt: str, system: str = "", max_tokens: int = 600, temperature: float = 0.85, online: bool = False
 ) -> str:
-    """
-    Вызов через OpenRouter API.
-    Поддерживает любые модели (Gemini, Claude, Llama, etc.)
-    online=True — добавляет ":online" (встроенный веб-поиск OpenRouter).
-    """
-    api_key = os.getenv("OPENROUTER_API_KEY", "")
-    model = os.getenv(
-        "OPENROUTER_MODEL", "google/gemini-2.5-flash-lite"
-    )
+    model = os.getenv("OPENROUTER_MODEL", "google/gemini-2.5-flash-lite")
     if online:
         model = os.getenv("OPENROUTER_ONLINE_MODEL", model + ":online")
-
-    if not api_key:
-        raise RuntimeError("OPENROUTER_API_KEY не найден в ENV")
-
-    endpoint = "https://openrouter.ai/api/v1/chat/completions"
-
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://nestandart.online",
-        "X-Title": "KoteE Bot",
-    }
-
-    messages = []
-    if system:
-        messages.append({"role": "system", "content": system})
-    messages.append({"role": "user", "content": prompt})
-
-    payload = {
-        "model": model,
-        "messages": messages,
-        "max_tokens": max_tokens,
-        "temperature": temperature,
-    }
-
-    async with httpx.AsyncClient(timeout=30) as client:
-        response = await client.post(endpoint, headers=headers, json=payload)
-        response.raise_for_status()
-        data = response.json()
-
-        if "error" in data:
-            raise RuntimeError(f"OpenRouter error: {data['error']}")
-
-        choices = data.get("choices", [])
-        if not choices:
-            raise RuntimeError("OpenRouter: пустой ответ")
-
-        text = choices[0].get("message", {}).get("content", "")
-        return text.strip()
+    return await call_openai_compat(
+        endpoint="https://openrouter.ai/api/v1/chat/completions",
+        api_key=os.environ["OPENROUTER_API_KEY"],
+        model=model,
+        prompt=prompt, system=system, max_tokens=max_tokens, temperature=temperature,
+        extra_headers={"HTTP-Referer": "https://nestandart.online", "X-Title": "Nestandart Bot"},
+    )

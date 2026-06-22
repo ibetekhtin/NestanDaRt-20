@@ -45,7 +45,7 @@ def _provider_order():
     return [n for n in names if n in REGISTRY]
 
 
-async def ask(prompt: str, system: str = "", max_tokens: int = 600, temperature: float = 0.85) -> str:
+async def ask(prompt: str, system: str = "", max_tokens: int = 600, temperature: float = 0.85, online: bool = False) -> str:
     errors = []
     tried = 0
     for name in _provider_order():
@@ -57,7 +57,10 @@ async def ask(prompt: str, system: str = "", max_tokens: int = 600, temperature:
         try:
             logger.info(f"[AI] Trying provider: {name}")
             start = time.time()
-            reply = await provider(prompt=prompt, system=system, max_tokens=max_tokens, temperature=temperature)
+            kwargs = dict(prompt=prompt, system=system, max_tokens=max_tokens, temperature=temperature)
+            if name == "openrouter":
+                kwargs["online"] = online
+            reply = await provider(**kwargs)
             latency = int((time.time() - start) * 1000)
             if reply and reply.strip():
                 logger.info(f"[AI] {name} responded in {latency}ms")

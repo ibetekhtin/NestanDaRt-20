@@ -19,7 +19,7 @@ import uuid
 from typing import Optional
 
 import httpx
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Header, HTTPException, Request
 from pydantic import BaseModel
 
 from config import settings
@@ -30,6 +30,12 @@ router = APIRouter()
 
 YK_API = "https://api.yookassa.ru/v3/payments"
 TIMEOUT = 15.0
+
+
+def _check_secret(x_kote_secret: Optional[str]) -> None:
+    secret = settings.KOTE_RPC_SECRET
+    if secret and x_kote_secret != secret:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 
 def _enabled() -> bool:
@@ -59,7 +65,8 @@ def _amount_rub(tour: dict, adults: int, children: int) -> int:
 
 
 @router.post("/pay/create")
-async def pay_create(body: PayCreate):
+async def pay_create(body: PayCreate, x_kote_secret: Optional[str] = Header(None)):
+    _check_secret(x_kote_secret)
     # 1) цена тура из БД (источник истины)
     try:
         tr = sb.table("tours").select("price_adult,price_child,title").eq("slug", body.tour_slug).limit(1).execute()

@@ -2,6 +2,7 @@
 # Healthcheck + Telegram alerts for NESTANDART-20
 # Runs every 5 minutes via cron (*/5 * * * *)
 
+VPS_IP="77.42.93.187"
 LOG_FILE="/var/log/nestandart-health.log"
 BACKEND_URL="http://127.0.0.1:8000/health"
 
@@ -25,7 +26,7 @@ check_nginx() {
     if systemctl is-active --quiet nginx; then
       alert "⚠️ <b>nginx</b> упал и перезапущен — проверь логи"
     else
-      alert "🚨 <b>nginx DOWN</b> — перезапуск не помог! VPS: 77.42.93.187"
+      alert "🚨 <b>nginx DOWN</b> — перезапуск не помог! VPS: $VPS_IP"
     fi
   fi
 }
@@ -37,7 +38,7 @@ check_backend() {
     if curl -sf --max-time 5 "$BACKEND_URL" > /dev/null 2>&1; then
       alert "⚠️ <b>nestandart-backend</b> упал и перезапущен"
     else
-      alert "🚨 <b>nestandart-backend DOWN</b> — перезапуск не помог! VPS: 77.42.93.187"
+      alert "🚨 <b>nestandart-backend DOWN</b> — перезапуск не помог! VPS: $VPS_IP"
     fi
   fi
 }
@@ -49,7 +50,7 @@ check_n8n() {
     if curl -sf --max-time 5 "http://127.0.0.1:5678/healthz" > /dev/null 2>&1; then
       alert "⚠️ <b>nestandart-n8n</b> (автоматизации) упал и перезапущен"
     else
-      alert "🚨 <b>nestandart-n8n DOWN</b> — перезапуск не помог! VPS: 77.42.93.187"
+      alert "🚨 <b>nestandart-n8n DOWN</b> — перезапуск не помог! VPS: $VPS_IP"
     fi
   fi
 }
@@ -57,7 +58,7 @@ check_n8n() {
 check_disk() {
   local usage=$(df / --output=pcent | tail -1 | tr -d ' %')
   if [ "$usage" -ge 85 ]; then
-    alert "🚨 <b>Диск ${usage}% заполнен</b> — срочно освободи место! VPS: 77.42.93.187"
+    alert "🚨 <b>Диск ${usage}% заполнен</b> — срочно освободи место! VPS: $VPS_IP"
   fi
 }
 

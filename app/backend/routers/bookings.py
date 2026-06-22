@@ -1,13 +1,24 @@
 """
 Bookings Router
 """
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import Optional
+from typing import Literal, Optional
 from datetime import date
+
+from fastapi import APIRouter, Header, HTTPException
+from pydantic import BaseModel
+
+from config import settings
 from db import sb
 
 router = APIRouter()
+
+BookingStatus = Literal["Новый", "Подтверждён", "Оплачено", "Завершён", "Отменён"]
+
+
+def _check_secret(x_kote_secret: Optional[str]) -> None:
+    secret = settings.KOTE_RPC_SECRET
+    if secret and x_kote_secret != secret:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 
 class BookingCreate(BaseModel):
@@ -25,7 +36,7 @@ class BookingCreate(BaseModel):
 
 
 class BookingUpdate(BaseModel):
-    status: str
+    status: BookingStatus
 
 
 @router.post("/bookings")
@@ -53,7 +64,8 @@ async def create_booking(booking: BookingCreate):
 
 
 @router.patch("/bookings/{booking_id}")
-async def update_booking(booking_id: str, update: BookingUpdate):
+async def update_booking(booking_id: str, update: BookingUpdate, x_kote_secret: Optional[str] = Header(None)):
+    _check_secret(x_kote_secret)
     try:
         sb.table("bookings").update({"status": update.status}).eq("id", booking_id).execute()
     except Exception as e:

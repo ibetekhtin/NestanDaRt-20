@@ -1,22 +1,30 @@
 """
-AI Router — proxy to AI providers via KOTE.
+AI Router — proxy to AI providers.
 
-/ai/ask  — stateless, backend строит простой system prompt (для PWA/мобилки).
-/ai/chat — passthrough: принимает готовый OpenAI-формат (messages[]) и прогоняет
-           через каскад провайдеров (groq -> aitunnel -> openrouter -> gemini).
-           Использует n8n-бот: вся сборка промпта (персона/память/история/каталог)
-           остаётся в n8n, backend только обеспечивает fallback между провайдерами.
+/ai/ask  — stateless, для PWA/мобилки (публичный, CORS-защищён)
+/ai/chat — passthrough OpenAI-формат для n8n-бота (требует X-Kote-Secret)
 """
-from fastapi import APIRouter
+from typing import List, Literal, Optional
+
+from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List
+
+from config import settings
 from providers import ask as ai_ask
 
 router = APIRouter()
 
+MARKETS = Literal["phuket", "pattaya", "vietnam", "bali", "dubai"]
+
+
+def _check_secret(x_kote_secret: Optional[str]) -> None:
+    secret = settings.KOTE_RPC_SECRET
+    if secret and x_kote_secret != secret:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
 
 class AIRequest(BaseModel):
-    market_id: str
+    market_id: MARKETS
     session_id: str
     message: str
     client_id: Optional[str] = None
@@ -29,13 +37,14 @@ class AIResponse(BaseModel):
 
 @router.post("/ai/ask", response_model=AIResponse)
 async def ask_ai(req: AIRequest):
-    system_prompt = f"Ты — КотЭ, AI-помощник туристической компании. Рынок: {req.market_id}. Отвечай кратко и по делу."
+    system_prompt = f"Ты — КотЭ, AI-помощник туристической компании «Нестандартный Отдых». Рынок: {req.market_id}. Отвечай кратко и по делу."
     try:
         reply = await ai_ask(prompt=req.message, system=system_prompt, max_tokens=600, temperature=0.85)
         if not reply:
             reply = "🐾 Извини, не смог ответить. Попробуй ещё раз."
     except Exception:
         reply = "🐾 Техническая пауза. Попробуй позже!"
+
     lower_msg = req.message.lower()
     if any(w in lower_msg for w in ["sos", "помощь", "тревога", "экстрен"]):
         intent = "sos"
@@ -50,7 +59,6 @@ async def ask_ai(req: AIRequest):
     return AIResponse(reply=reply, intent=intent)
 
 
-# Passthrough для n8n-бота: OpenAI-формат на входе и выходе, внутри — каскад.
 class ChatMessage(BaseModel):
     role: str
     content: str
@@ -64,7 +72,8 @@ class ChatRequest(BaseModel):
 
 
 @router.post("/ai/chat")
-async def ai_chat(req: ChatRequest):
+async def ai_chat(req: ChatRequest, x_kote_secret: Optional[str] = Header(None)):
+    _check_secret(x_kote_secret)
     system = "\n".join(m.content for m in req.messages if m.role == "system")
     prompt = "\n".join(m.content for m in req.messages if m.role != "system")
     try:

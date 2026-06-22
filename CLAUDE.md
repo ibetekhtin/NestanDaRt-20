@@ -263,7 +263,7 @@ groq (основной) → aitunnel → openrouter → gemini (резерв)
 
 ## 🏠 БАЗА (Штаб / HQ)
 
-**URL:** https://baza.nestandart.online | **Пароль:** PhuketNinja2
+**URL:** https://baza.nestandart.online | **Пароль:** `<в .env — BAZA_PASSWORD>` ⚠️ не хранить в git
 
 | Раздел | Данные |
 |--------|--------|

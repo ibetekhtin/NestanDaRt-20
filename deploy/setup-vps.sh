@@ -26,13 +26,12 @@ chmod +x /usr/local/bin/docker-compose
 mkdir -p /opt/NestanDaRt-20
 mkdir -p /opt/NestanDaRt-20/logs
 
-# Firewall (UFW)
+# Firewall (UFW) — только публичные порты; n8n и backend только через nginx
 apt-get install -y ufw
 ufw allow 22      # SSH
 ufw allow 80      # HTTP
 ufw allow 443     # HTTPS
-ufw allow 5678    # n8n
-ufw allow 8000    # Backend
+# НЕ открывать 5678 (n8n) и 8000 (backend) — доступны только через nginx reverse proxy
 ufw --force enable
 
 # Swap file (if not present)
