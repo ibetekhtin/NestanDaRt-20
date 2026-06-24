@@ -53,6 +53,7 @@ async def create_lead(lead: LeadCreate):
             "p_people":     None,
             "p_total":      None,
             "p_status":     "Новый",
+            "p_secret":     settings.KOTE_RPC_SECRET,
         }).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

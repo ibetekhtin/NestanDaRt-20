@@ -22,6 +22,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from config import settings
 from db import sb
 from routers import ai, bookings, clients, leads, markets, memory, payments, sos, tours, webhooks
 
@@ -96,6 +97,7 @@ async def upsert_lead_legacy(lead: LeadIn):
         "p_total":       None,
         "p_comment":     None,
         "p_status":      "Новый",
+        "p_secret":      settings.KOTE_RPC_SECRET,
     }).execute()
     return {"ok": True, "data": res.data}
 

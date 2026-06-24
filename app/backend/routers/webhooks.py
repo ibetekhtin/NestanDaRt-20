@@ -57,6 +57,7 @@ async def webhook_lead(payload: LeadWebhook, x_kote_secret: Optional[str] = Head
             "p_budget":      None,
             "p_total":       None,
             "p_status":      "Новый",
+            "p_secret":      settings.KOTE_RPC_SECRET,
         }).execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
