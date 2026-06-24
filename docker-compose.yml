@@ -54,6 +54,7 @@ services:
       - N8N_BASIC_AUTH_USER=${N8N_USER}
       - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
       - N8N_LOG_LEVEL=warn
+      - KOTE_SECRET=${KOTE_SECRET}   # передаётся в workflow как {{ $env.KOTE_SECRET }}
     expose:
       - "5678"
     volumes:
