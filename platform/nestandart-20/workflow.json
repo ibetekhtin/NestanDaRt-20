@@ -137,6 +137,10 @@
               {
                 "name": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "name": "X-Kote-Secret",
+                "value": "={{ $env.KOTE_SECRET }}"
               }
             ]
           },
@@ -506,6 +510,10 @@
               {
                 "name": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "name": "X-Kote-Secret",
+                "value": "={{ $env.KOTE_SECRET }}"
               }
             ]
           },
