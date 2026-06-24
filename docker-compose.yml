@@ -41,7 +41,7 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  nestandart-n8n:
+  kote-n8n:
     image: n8nio/n8n:2.25.7
     container_name: nestandart-n8n
     restart: unless-stopped
