@@ -40,7 +40,8 @@ class BookingUpdate(BaseModel):
 
 
 @router.post("/bookings")
-async def create_booking(booking: BookingCreate):
+async def create_booking(booking: BookingCreate, x_kote_secret: Optional[str] = Header(None)):
+    _check_secret(x_kote_secret)
     try:
         result = sb.table("bookings").insert({
             "client_id":    booking.client_id,

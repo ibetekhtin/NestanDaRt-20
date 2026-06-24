@@ -7,7 +7,6 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     SUPABASE_URL: str = ""
     SUPABASE_SERVICE_KEY: str = ""
-    SUPABASE_ANON_KEY: str = ""
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-2.5-flash"
     OPENROUTER_API_KEY: str = ""
@@ -17,8 +16,6 @@ class Settings(BaseSettings):
     TELEGRAM_BOT_TOKEN: str = ""
     MANAGER_CHAT_ID: str = ""
     KOTE_RPC_SECRET: str = ""
-    BACKEND_PORT: int = 8000
-    N8N_HOST: str = "http://localhost:5678"
     # YooKassa (оплата). Пустые ключи → платежи мягко отключены.
     YOOKASSA_SHOP_ID: str = ""
     YOOKASSA_SECRET_KEY: str = ""

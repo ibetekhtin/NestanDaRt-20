@@ -16,6 +16,7 @@ Payments Router — YooKassa (ЮKassa).
 import base64
 import logging
 import uuid
+from datetime import datetime, timezone
 from typing import Optional
 
 import httpx
@@ -176,7 +177,7 @@ async def pay_webhook(request: Request):
 
     # payments → succeeded
     try:
-        sb.table("payments").update({"status": "succeeded", "paid_at": "now()"}).eq("payment_id", pay_id).execute()
+        sb.table("payments").update({"status": "succeeded", "paid_at": datetime.now(timezone.utc).isoformat()}).eq("payment_id", pay_id).execute()
     except Exception as e:
         log.warning("payments update failed: %s", e)
 

@@ -6,7 +6,7 @@ NestanDaRt-20 / Нестандартный Отдых®
   GET   /health
   GET   /api/v1/markets, /api/v1/markets/{id}
   GET   /api/v1/tours[?market_id&active], /api/v1/tours/{id|slug}
-  POST  /api/v1/leads              — создать/обновить лид (X-Kote-Secret)
+  POST  /api/v1/leads              — создать/обновить лид
   GET   /api/v1/bookings/{id}      — бронь
   PATCH /api/v1/bookings/{id}      — сменить статус (X-Kote-Secret)
   GET   /api/v1/clients/{tg_chat_id}
@@ -100,8 +100,3 @@ async def upsert_lead_legacy(lead: LeadIn):
     return {"ok": True, "data": res.data}
 
 
-@app.get("/api/v1/bookings", tags=["bookings"], include_in_schema=False)
-async def get_bookings_by_phone(phone: str):
-    """Legacy: get bookings by phone. Use GET /api/v1/bookings/{id} instead."""
-    res = sb.rpc("get_bookings_by_phone", {"p_phone": phone}).execute()
-    return res.data

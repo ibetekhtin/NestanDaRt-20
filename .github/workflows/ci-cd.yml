@@ -155,13 +155,16 @@ jobs:
             docker compose up -d --remove-orphans
 
             echo "⏳ Waiting for health check..."
+            HEALTHY=0
             for i in $(seq 1 20); do
               if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
                 echo "✅ nestandart-backend is healthy"
+                HEALTHY=1
                 break
               fi
               sleep 3
             done
+            [ $HEALTHY -eq 1 ] || { echo "❌ Health check failed after 60s!"; exit 1; }
 
             echo "🧹 Cleaning old images..."
             docker image prune -f

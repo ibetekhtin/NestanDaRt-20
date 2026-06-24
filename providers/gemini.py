@@ -18,7 +18,7 @@ async def call_gemini(
     Вызов Gemini через REST API.
     """
     api_key = os.getenv("GEMINI_API_KEY", "")
-    model = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+    model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY не найден в ENV")
