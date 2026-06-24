@@ -3,8 +3,8 @@
 # VPS: 77.42.93.187
 #
 # Сервисы:
-#   nestandart-backend  FastAPI REST API
-#   nestandart-n8n      n8n автоматизации (бот КотЭ живёт здесь)
+#   kote-backend   FastAPI REST API (container: nestandart-backend)
+#   kote-n8n       n8n автоматизации (бот КотЭ живёт здесь)
 #
 # Запуск:  docker compose up -d
 # Логи:    docker compose logs -f nestandart-backend
@@ -14,7 +14,7 @@ name: nestandart-20
 
 services:
 
-  nestandart-backend:
+  kote-backend:
     build:
       context: .
       dockerfile: app/backend/Dockerfile
@@ -24,9 +24,7 @@ services:
     expose:
       - "8000"
     networks:
-      nestandart-net:
-        aliases:
-          - kote-backend   # n8n workflow использует это имя — не менять без обновления workflow
+      - nestandart-net
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
