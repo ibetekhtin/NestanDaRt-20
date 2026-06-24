@@ -75,7 +75,7 @@ cd app/backend && pip install -r requirements.txt && uvicorn main:app --reload
 ```bash
 # Синхронизировать VPS:
 ssh root@77.42.93.187 "cd /opt/NestanDaRt-20 && git pull && \
-  docker compose build nestandart-backend && docker compose up -d"
+  docker compose build kote-backend && docker compose up -d"
 
 # Проверить:
 curl -s https://nestandart.online/api/v1/markets

@@ -75,7 +75,7 @@ echo "▸ VPS + КотЭ"
 if ssh -o BatchMode=yes -o ConnectTimeout=10 "$VPS" 'true' 2>/dev/null; then
   ok "SSH доступен"
   remote=$(ssh -o BatchMode=yes "$VPS" '
-    for c in nestandart-n8n nestandart-backend; do
+    for c in kote-n8n kote-backend; do
       s=$(docker inspect -f "{{.State.Status}}" $c 2>/dev/null)
       [ "$s" = "running" ] && echo "  ✅ $c: running" || echo "  ❌ $c: ${s:-нет}"
     done

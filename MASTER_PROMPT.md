@@ -11,7 +11,7 @@
 ## Архитектура (VPS 77.42.93.187, Ubuntu 22.04)
 
 ```
-Telegram → n8n (nestandart-n8n, :5678) → FastAPI (nestandart-backend, :8000) → Supabase
+Telegram → n8n (kote-n8n, :5678) → FastAPI (kote-backend, :8000) → Supabase
 Сайт: nestandart.online → nginx → /var/www/nestandart/
 Штаб: baza.nestandart.online → nginx → React/Vite (hq/)
 PWA:  app.nestandart.online → nginx → platform/app.html
@@ -27,14 +27,14 @@ PWA:  app.nestandart.online → nginx → platform/app.html
 - **GitHub**: `github.com/ibetekhtin/NestanDaRt-20`
 - **Локально**: `/Users/soloplayer/Desktop/NestanDaRt-20/`
 - **VPS**: `/opt/NestanDaRt-20/` (симлинк `/opt/kote → /opt/NestanDaRt-20` для совместимости)
-- **Деплой**: `ssh root@77.42.93.187 "cd /opt/NestanDaRt-20 && git pull && docker compose build nestandart-backend && docker compose up -d"`
+- **Деплой**: `ssh root@77.42.93.187 "cd /opt/NestanDaRt-20 && git pull && docker compose build kote-backend && docker compose up -d"`
 
 ## Ключевые файлы
 
 | Файл | Назначение |
 |------|-----------|
 | `CLAUDE.md` | Главный канон — читать перед любой работой |
-| `docker-compose.yml` | Два сервиса: nestandart-backend, nestandart-n8n |
+| `docker-compose.yml` | Два сервиса: kote-backend, kote-n8n |
 | `app/backend/` | FastAPI (роутеры: ai, bookings, clients, leads, markets, memory, payments, sos, tours, webhooks) |
 | `providers/` | AI fallback chain (groq, aitunnel, openrouter, gemini + общий openai_compat.py) |
 | `platform/nestandart-20/prompt.txt` | Промпт-личность КотЭ |
@@ -45,7 +45,7 @@ PWA:  app.nestandart.online → nginx → platform/app.html
 ## Архитектурный нюанс (ВАЖНО — не ломать)
 
 n8n workflow `doCUKEZQpLQjDmxP` шлёт запросы на `http://kote-backend:8000` (старое имя).
-В `docker-compose.yml` добавлен alias `kote-backend` для сервиса `nestandart-backend` — менять не нужно.
+В `docker-compose.yml` добавлен alias `kote-backend` для сервиса `kote-backend` — менять не нужно.
 Если убрать alias — бот перестанет получать AI-ответы.
 
 ## Безопасность
@@ -92,7 +92,7 @@ n8n workflow `doCUKEZQpLQjDmxP` шлёт запросы на `http://kote-backen
 8. YooKassa IP whitelist в nginx для `/api/v1/pay/webhook`
 9. Закрыть `/api/docs` в prod (nginx basic auth или `docs_url=None`)
 10. Offsite backup (S3/Cloudflare R2) — сейчас данные только на VPS
-11. Бэкап n8n workflows (`docker exec nestandart-n8n n8n export:workflow --all --backup`)
+11. Бэкап n8n workflows (`docker exec kote-n8n n8n export:workflow --all --backup`)
 12. Внешний мониторинг UptimeRobot
 
 ## Ручные действия на VPS (не в коде)

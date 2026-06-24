@@ -26,13 +26,13 @@ crontab -l
 ```bash
 ssh root@77.42.93.187
 
-# Текущий docker-compose уже содержит nestandart-backend
+# Текущий docker-compose уже содержит kote-backend
 # Просто перезапускаем:
 cd /opt/NestanDaRt-20
-docker compose up -d nestandart-backend
+docker compose up -d kote-backend
 
 # Проверить:
-docker logs nestandart-backend
+docker logs kote-backend
 docker compose ps
 ```
 

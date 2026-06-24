@@ -114,10 +114,10 @@ fi
 # ── 5. Перезапустить оба сервиса ────────────────────────────
 echo ""
 echo "🔄 Перезапускаю backend..."
-docker compose up -d --force-recreate nestandart-backend
+docker compose up -d --force-recreate kote-backend
 
 echo "🔄 Перезапускаю n8n..."
-docker compose up -d --force-recreate nestandart-n8n
+docker compose up -d --force-recreate kote-n8n
 
 echo ""
 echo "⏳ Жду backend..."

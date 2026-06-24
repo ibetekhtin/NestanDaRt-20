@@ -3,11 +3,11 @@
 # VPS: 77.42.93.187
 #
 # Сервисы:
-#   kote-backend   FastAPI REST API (container: nestandart-backend)
+#   kote-backend   FastAPI REST API (container: kote-backend)
 #   kote-n8n       n8n автоматизации (бот КотЭ живёт здесь)
 #
 # Запуск:  docker compose up -d
-# Логи:    docker compose logs -f nestandart-backend
+# Логи:    docker compose logs -f kote-backend
 # Стоп:    docker compose down
 # ═══════════════════════════════════════════════════════════════
 name: nestandart-20
@@ -18,7 +18,7 @@ services:
     build:
       context: .
       dockerfile: app/backend/Dockerfile
-    container_name: nestandart-backend
+    container_name: kote-backend
     restart: unless-stopped
     env_file: .env
     expose:
@@ -41,7 +41,7 @@ services:
 
   kote-n8n:
     image: n8nio/n8n:2.25.7
-    container_name: nestandart-n8n
+    container_name: kote-n8n
     restart: unless-stopped
     environment:
       - N8N_HOST=0.0.0.0

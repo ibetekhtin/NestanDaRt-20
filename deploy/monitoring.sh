@@ -110,7 +110,7 @@ check_docker() {
     fi
     
     # Check each container
-    for container in nestandart-backend nestandart-n8n; do
+    for container in kote-backend kote-n8n; do
         local status=$(docker inspect --format='{{.State.Status}}' "$container" 2>/dev/null || echo "not-found")
         local health=$(docker inspect --format='{{.State.Health.Status}}' "$container" 2>/dev/null || echo "no-healthcheck")
         

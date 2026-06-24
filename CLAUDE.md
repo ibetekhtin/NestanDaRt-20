@@ -132,8 +132,8 @@ NestanDaRt-20/
 
 | Сервис | Порт | Управление |
 |--------|------|-----------|
-| nestandart-backend (FastAPI) | 127.0.0.1:8000 | Docker (project: nestandart-20) |
-| nestandart-n8n | 127.0.0.1:5678 | Docker (project: nestandart-20) |
+| kote-backend (FastAPI) | 127.0.0.1:8000 | Docker (project: nestandart-20) |
+| kote-n8n | 127.0.0.1:5678 | Docker (project: nestandart-20) |
 | nestandart-api (Node.js) | 127.0.0.1:3055 | PM2 |
 
 > ⚠️ Volume `kote-n8n-data` — имя НЕ МЕНЯТЬ (там живут все workflows n8n). Объявлен в docker-compose.yml как `name: kote-n8n-data` — это намеренно.
@@ -298,9 +298,9 @@ groq (основной) → aitunnel → openrouter → gemini (резерв)
 cd /opt/NestanDaRt-20
 
 docker compose ps                              # статус
-docker compose logs -f nestandart-backend           # логи
-docker compose build nestandart-backend && \
-  docker compose up -d --force-recreate nestandart-backend  # ребилд после изменений кода
+docker compose logs -f kote-backend           # логи
+docker compose build kote-backend && \
+  docker compose up -d --force-recreate kote-backend  # ребилд после изменений кода
 ```
 
 ---
@@ -336,7 +336,7 @@ nginx -t && systemctl reload nginx
 
 ```bash
 docker ps && curl -s https://nestandart.online/api/v1/markets
-docker logs nestandart-backend --tail 50 | grep -v "GET /health"
+docker logs kote-backend --tail 50 | grep -v "GET /health"
 tail -20 /var/log/nginx/error.log
 fail2ban-client status sshd
 ```

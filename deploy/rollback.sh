@@ -46,7 +46,7 @@ fi
 # ─── Restore n8n data ──────────────────────────────────────────
 if [ -f "$BACKUP_DIR/n8n-db.sqlite" ]; then
     log "🗄️  Restoring n8n database..."
-    docker compose cp "$BACKUP_DIR/n8n-db.sqlite" nestandart-n8n:/home/node/.n8n/database.sqlite 2>/dev/null || \
+    docker compose cp "$BACKUP_DIR/n8n-db.sqlite" kote-n8n:/home/node/.n8n/database.sqlite 2>/dev/null || \
         warn "   ⚠️ Could not restore n8n DB (container may not be running)"
     log "   ✅ n8n data restored"
 fi
@@ -78,7 +78,7 @@ log "  📅 $(date '+%Y-%m-%d %H:%M:%S')"
 log "═══════════════════════════════════════════════════════════════"
 log ""
 log "Next steps if issues persist:"
-log "  1. Check logs: docker compose logs nestandart-backend"
-log "  2. Check n8n logs: docker compose logs nestandart-n8n"
+log "  1. Check logs: docker compose logs kote-backend"
+log "  2. Check n8n logs: docker compose logs kote-n8n"
 log "  3. Revert code: git revert HEAD~1 && git push"
 log "  4. Full redeploy: bash deploy/deploy.sh"

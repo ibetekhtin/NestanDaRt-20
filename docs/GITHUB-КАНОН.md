@@ -49,7 +49,7 @@
 | `nestandart-phuket/` | 59 | **САЙТ**: `index.html`, 27 стр. туров, 10 статей блога, `baza/` (знания), `js/config.js` (боты, города), sitemap/robots/og | ✅ деплоится на VPS nginx (`/var/www/nestandart`) |
 | `platform/` | 26 | **ПЛАТФОРМА** (см. §3) | смешанный |
 | `hq/` | 25 | **ШТАБ**: React + Vite админка → Supabase. Вьюхи: CRM, ContentFactory, Dashboard, Finance, Kanban, Wiki. Вход только админу | ⏳ есть код, деплой не подтверждён |
-| `app/` | 13 | **BACKEND**: `app/backend/` FastAPI (роутеры ai/bookings/clients/leads/markets/memory/sos/webhooks) | ✅ деплоится (`nestandart-backend`), но GitHub-версия v1.0.0 — отстаёт |
+| `app/` | 13 | **BACKEND**: `app/backend/` FastAPI (роутеры ai/bookings/clients/leads/markets/memory/sos/webhooks) | ✅ деплоится (`kote-backend`), но GitHub-версия v1.0.0 — отстаёт |
 | `archive-docs/` | 13 | архив старых доков | 🗄️ архив |
 | `docs/` | 10 | актуальные каноны: `АРХИТЕКТУРА-КАНОН.md`, `AI_ARCHITECTURE.md`, `ARCHITECTURE.md`, `N8N_MIGRATION.md`, `ENV.md`, `SUPABASE.md`, `API.md`, `DEPLOY.md` + этот файл | ✅ канон |
 | `deploy/` | 10 | скрипты VPS: setup, deploy, backup, healthcheck, nginx.conf | ⚠️ часть устарела (см. CLAUDE.md «деплой ручной») |
@@ -99,9 +99,9 @@
 
 ## 6. Деплой и сведение VPS↔GitHub
 
-- **Деплой ручной:** `ssh root@77.42.93.187 'cd /opt/NestanDaRt-20 && git pull --ff-only origin main && docker compose up -d --build nestandart-backend'`.
+- **Деплой ручной:** `ssh root@77.42.93.187 'cd /opt/NestanDaRt-20 && git pull --ff-only origin main && docker compose up -d --build kote-backend'`.
 - **Backend бакает код при сборке** (нет volume) → правки кода применяются только через `--build`.
-- **`.env` не в git** (секреты только в `/opt/NestanDaRt-20/.env` и env контейнеров). Новый ключ: `bash /opt/NestanDaRt-20/set-secret.sh VARNAME nestandart-backend`.
+- **`.env` не в git** (секреты только в `/opt/NestanDaRt-20/.env` и env контейнеров). Новый ключ: `bash /opt/NestanDaRt-20/set-secret.sh VARNAME kote-backend`.
 - **⚠️ Проблема:** `/opt/kote` на VPS разошёлся с GitHub (другая родословная + несведённые правки) → простой `git pull` конфликтнёт. Свести аккуратно: забрать с VPS актуальные `providers/`, `app/backend/`, экспорт `platform/nestandart-20/workflow.json`, закоммитить в `main`, затем выровнять VPS на origin. Делать ТОЛЬКО с подтверждения (прод).
 
 ---

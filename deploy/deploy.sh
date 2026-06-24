@@ -49,7 +49,7 @@ log "💾 Backing up current state..."
 mkdir -p "$BACKUP_DIR"
 docker compose ps --format json > "$BACKUP_DIR/container-state.json" 2>/dev/null || true
 cp .env "$BACKUP_DIR/.env.backup" 2>/dev/null || true
-docker compose exec -T nestandart-n8n cat /home/node/.n8n/database.sqlite > "$BACKUP_DIR/n8n-db.sqlite" 2>/dev/null || true
+docker compose exec -T kote-n8n cat /home/node/.n8n/database.sqlite > "$BACKUP_DIR/n8n-db.sqlite" 2>/dev/null || true
 log "   Backup saved to: $BACKUP_DIR"
 
 # ─── Pull latest code ───────────────────────────────────────────
@@ -94,15 +94,15 @@ wait_for_health() {
 }
 
 # Wait for backend
-if ! wait_for_health "nestandart-backend" "http://localhost:8000/health"; then
-    error "nestandart-backend failed health check after $((MAX_RETRIES * RETRY_INTERVAL))s"
+if ! wait_for_health "kote-backend" "http://localhost:8000/health"; then
+    error "kote-backend failed health check after $((MAX_RETRIES * RETRY_INTERVAL))s"
     warn "Run rollback: bash $DEPLOY_DIR/deploy/rollback.sh $BACKUP_DIR"
     exit 1
 fi
 
 # Wait for n8n
-if ! wait_for_health "nestandart-n8n" "http://localhost:5678/healthz"; then
-    warn "nestandart-n8n health check timed out (may still be starting)"
+if ! wait_for_health "kote-n8n" "http://localhost:5678/healthz"; then
+    warn "kote-n8n health check timed out (may still be starting)"
 fi
 
 # ─── Clean up old images ────────────────────────────────────────

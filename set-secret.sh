@@ -3,7 +3,7 @@
 # Использование: bash set-secret.sh VARNAME [service_для_пересоздания]
 set -euo pipefail
 ENVFILE=/opt/NestanDaRt-20/.env
-VAR="${1:?Укажи имя переменной, напр.: bash set-secret.sh AITUNNEL_API_KEY nestandart-backend}"
+VAR="${1:?Укажи имя переменной, напр.: bash set-secret.sh AITUNNEL_API_KEY kote-backend}"
 SVC="${2:-}"
 touch "$ENVFILE"; chmod 600 "$ENVFILE"
 printf "Вставь значение для %s и нажми Enter (ввод СКРЫТ): " "$VAR"

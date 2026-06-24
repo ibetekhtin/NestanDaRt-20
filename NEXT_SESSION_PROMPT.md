@@ -30,7 +30,7 @@
 > ```
 > KOTE_RPC_SECRET=<придумай сильный секрет, совпадающий с KOTE_SECRET в n8n>
 > ```
-> И перезапусти backend: `docker compose up -d --force-recreate nestandart-backend`
+> И перезапусти backend: `docker compose up -d --force-recreate kote-backend`
 >
 > Когда сделаешь — скажи мне, я продолжу."
 
@@ -187,7 +187,7 @@ LIMIT 10;
 
 ```bash
 # Код:
-ssh root@77.42.93.187 "cd /opt/NestanDaRt-20 && git pull && docker compose build nestandart-backend && docker compose up -d"
+ssh root@77.42.93.187 "cd /opt/NestanDaRt-20 && git pull && docker compose build kote-backend && docker compose up -d"
 
 # app.html (PWA):
 scp platform/app.html root@77.42.93.187:/var/www/nestandart/platform/app.html

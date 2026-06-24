@@ -33,24 +33,24 @@ check_nginx() {
 
 check_backend() {
   if ! curl -sf --max-time 5 "$BACKEND_URL" > /dev/null 2>&1; then
-    cd /opt/NestanDaRt-20 && docker compose restart nestandart-backend > /dev/null 2>&1
+    cd /opt/NestanDaRt-20 && docker compose restart kote-backend > /dev/null 2>&1
     sleep 10
     if curl -sf --max-time 5 "$BACKEND_URL" > /dev/null 2>&1; then
-      alert "⚠️ <b>nestandart-backend</b> упал и перезапущен"
+      alert "⚠️ <b>kote-backend</b> упал и перезапущен"
     else
-      alert "🚨 <b>nestandart-backend DOWN</b> — перезапуск не помог! VPS: $VPS_IP"
+      alert "🚨 <b>kote-backend DOWN</b> — перезапуск не помог! VPS: $VPS_IP"
     fi
   fi
 }
 
 check_n8n() {
   if ! curl -sf --max-time 5 "http://127.0.0.1:5678/healthz" > /dev/null 2>&1; then
-    cd /opt/NestanDaRt-20 && docker compose restart nestandart-n8n > /dev/null 2>&1
+    cd /opt/NestanDaRt-20 && docker compose restart kote-n8n > /dev/null 2>&1
     sleep 10
     if curl -sf --max-time 5 "http://127.0.0.1:5678/healthz" > /dev/null 2>&1; then
-      alert "⚠️ <b>nestandart-n8n</b> (автоматизации) упал и перезапущен"
+      alert "⚠️ <b>kote-n8n</b> (автоматизации) упал и перезапущен"
     else
-      alert "🚨 <b>nestandart-n8n DOWN</b> — перезапуск не помог! VPS: $VPS_IP"
+      alert "🚨 <b>kote-n8n DOWN</b> — перезапуск не помог! VPS: $VPS_IP"
     fi
   fi
 }
