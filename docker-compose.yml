@@ -73,6 +73,7 @@ services:
 
 volumes:
   n8n_data:
+    external: true          # volume создан старым проектом "kote" — не трогать
     name: kote-n8n-data    # НЕ переименовывать — там workflows n8n
 
 networks:
