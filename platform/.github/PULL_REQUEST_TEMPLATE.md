@@ -15,7 +15,7 @@
 |------|---------------|
 | `public/index.html` | |
 | `nestandart-20/workflow.json` | |
-| `kote/prompt.txt` | |
+| `nestandart-20/prompt.txt` | |
 
 ### Тест план
 - [ ] Проверил в preview URL Cloudflare

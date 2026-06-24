@@ -41,12 +41,19 @@ PWA:  app.nestandart.online → nginx → platform/app.html
 | `hq/` | БАЗА (React Vite, baza.nestandart.online) |
 | `deploy/healthcheck.sh` | Cron */5 мин — алерты в Telegram |
 
-## Безопасность (применено в этой сессии)
+## Безопасность (применено)
 
 - `/ai/chat`, `/pay/create`, `/bookings PATCH` требуют заголовок `X-Kote-Secret: <KOTE_RPC_SECRET>`
+  ⚠️ n8n пока НЕ шлёт этот заголовок — оставь `KOTE_RPC_SECRET=""` до обновления HTTP-нод в n8n
 - `market_id` валидируется через `Literal["phuket","pattaya","vietnam","bali","dubai"]`
 - UFW: открыты только 22, 80, 443. Порты 5678 и 8000 — только через nginx.
 - Пароль к БАЗЕ убран из CLAUDE.md — хранится только в `.env`
+
+## Архитектурный нюанс
+
+n8n workflow `doCUKEZQpLQjDmxP` шлёт запросы на `http://kote-backend:8000` (старое имя).
+В `docker-compose.yml` добавлен alias `kote-backend` для сервиса `nestandart-backend` — менять не нужно.
+Если убрать alias — бот перестанет получать AI-ответы.
 
 ## База данных (Supabase)
 

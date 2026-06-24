@@ -99,7 +99,7 @@ NestanDaRt-20/
 │
 ├── platform/
 │   ├── app.html               ← PWA v11.0, ~230 KB self-contained
-│   ├── kote/prompt.txt        ← ЛИЧНОСТЬ КотЭ
+│   ├── nestandart-20/prompt.txt ← ЛИЧНОСТЬ КотЭ (n8n workflow prompt)
 │   └── supabase/schema.sql    ← справочник схемы
 │
 ├── hq/                        ← БАЗА (React Vite, baza.nestandart.online)
@@ -209,13 +209,20 @@ credit_referral(p_booking_id)   -- начисляет % партнёру при 
 ## 🔌 FASTAPI BACKEND
 
 ```
-GET  /health
-GET  /api/v1/markets
-GET  /api/v1/tours[?market_id=phuket&active=true]
-POST /api/v1/lead          ← CRM, основной endpoint
-GET  /api/v1/bookings[?phone=...]
-POST /api/v1/ai/ask        ← AI для PWA
-POST /api/v1/ai/chat       ← passthrough для n8n-бота
+GET   /health
+GET   /api/v1/markets
+GET   /api/v1/tours[?market_id=phuket&active=true]
+POST  /api/v1/leads            ← создать/обновить лид (X-Kote-Secret)
+GET   /api/v1/bookings/{id}    ← статус брони
+PATCH /api/v1/bookings/{id}    ← сменить статус (X-Kote-Secret)
+POST  /api/v1/ai/chat          ← AI для n8n-бота (X-Kote-Secret)
+POST  /api/v1/ai/ask           ← AI для PWA (без авторизации)
+POST  /api/v1/pay/create       ← создать платёж YooKassa (X-Kote-Secret)
+POST  /api/v1/pay/webhook      ← вебхук YooKassa
+
+# Legacy (backward-compat, deprecated):
+POST /api/v1/lead   → /api/v1/leads
+GET  /api/v1/bookings?phone=... → /api/v1/bookings/{id}
 ```
 
 ### AI Fallback Chain

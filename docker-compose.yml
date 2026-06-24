@@ -24,7 +24,9 @@ services:
     expose:
       - "8000"
     networks:
-      - nestandart-net
+      nestandart-net:
+        aliases:
+          - kote-backend   # n8n workflow использует это имя — не менять без обновления workflow
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s

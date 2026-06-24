@@ -3,7 +3,7 @@
 # Перед запуском заполни hq/.env: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY (anon — публичный).
 # Запуск из корня репо:  bash deploy/deploy-hq.sh
 set -euo pipefail
-VPS="${KOTE_VPS:-root@77.42.93.187}"
+VPS="${NESTANDART_VPS:-root@77.42.93.187}"
 DEST="/var/www/nestandart/hq"
 
 cd "$(dirname "$0")/../hq"

@@ -17,7 +17,7 @@ BACKUP_DIR="/opt/NestanDaRt-20/backups"
 KEEP_DAYS=30
 KEEP_WEEKLY=12
 DATE=$(date +%Y%m%d_%H%M%S)
-BACKUP_FILE="${BACKUP_DIR}/kote_backup_${DATE}.sql"
+BACKUP_FILE="${BACKUP_DIR}/nestandart_backup_${DATE}.sql"
 BACKUP_GZ="${BACKUP_FILE}.gz"
 LOG_FILE="${BACKUP_DIR}/backup.log"
 
@@ -56,12 +56,12 @@ if pg_dump \
     --clean \
     --if-exists \
     --format=custom \
-    "$SUPABASE_DB_URL" > "${BACKUP_DIR}/kote_backup_${DATE}.dump" 2>> "$LOG_FILE"; then
+    "$SUPABASE_DB_URL" > "${BACKUP_DIR}/nestandart_backup_${DATE}.dump" 2>> "$LOG_FILE"; then
     log "   ✅ Database dump created successfully"
     
     # Compress
-    gzip -f "${BACKUP_DIR}/kote_backup_${DATE}.dump" 2>> "$LOG_FILE"
-    log "   ✅ Compressed: kote_backup_${DATE}.dump.gz"
+    gzip -f "${BACKUP_DIR}/nestandart_backup_${DATE}.dump" 2>> "$LOG_FILE"
+    log "   ✅ Compressed: nestandart_backup_${DATE}.dump.gz"
 else
     error "pg_dump failed. Check $LOG_FILE"
     # Fallback: try plain SQL format
@@ -96,16 +96,16 @@ log ""
 log "🧹 Cleaning up old backups..."
 
 # Remove daily backups older than KEEP_DAYS
-find "$BACKUP_DIR" -name "kote_backup_*.sql.gz" -mtime +${KEEP_DAYS} -delete 2>/dev/null || true
-find "$BACKUP_DIR" -name "kote_backup_*.dump.gz" -mtime +${KEEP_DAYS} -delete 2>/dev/null || true
+find "$BACKUP_DIR" -name "nestandart_backup_*.sql.gz" -mtime +${KEEP_DAYS} -delete 2>/dev/null || true
+find "$BACKUP_DIR" -name "nestandart_backup_*.dump.gz" -mtime +${KEEP_DAYS} -delete 2>/dev/null || true
 find "$BACKUP_DIR" -name "config_backup_*.tar.gz" -mtime +${KEEP_DAYS} -delete 2>/dev/null || true
 
 # Keep weekly backups (Monday) for KEEP_WEEKLY weeks
-find "$BACKUP_DIR" -name "kote_backup_*.sql.gz" ! -name "*_Mon_*" -mtime +7 -delete 2>/dev/null || true
+find "$BACKUP_DIR" -name "nestandart_backup_*.sql.gz" ! -name "*_Mon_*" -mtime +7 -delete 2>/dev/null || true
 
 # Remove empty backup files
-find "$BACKUP_DIR" -name "kote_backup_*.sql" -size 0 -delete 2>/dev/null || true
-find "$BACKUP_DIR" -name "kote_backup_*.dump" -size 0 -delete 2>/dev/null || true
+find "$BACKUP_DIR" -name "nestandart_backup_*.sql" -size 0 -delete 2>/dev/null || true
+find "$BACKUP_DIR" -name "nestandart_backup_*.dump" -size 0 -delete 2>/dev/null || true
 
 log "   ✅ Cleanup complete"
 
@@ -113,7 +113,7 @@ log "   ✅ Cleanup complete"
 if [ -n "${AWS_ACCESS_KEY_ID:-}" ] && [ -n "${AWS_SECRET_ACCESS_KEY:-}" ] && [ -n "${S3_BUCKET:-}" ]; then
     log "☁️  Uploading to S3..."
     if command -v aws &> /dev/null; then
-        LATEST_DUMP=$(ls -t "${BACKUP_DIR}"/kote_backup_*.dump.gz 2>/dev/null | head -1)
+        LATEST_DUMP=$(ls -t "${BACKUP_DIR}"/nestandart_backup_*.dump.gz 2>/dev/null | head -1)
         if [ -n "$LATEST_DUMP" ]; then
             aws s3 cp "$LATEST_DUMP" "s3://${S3_BUCKET}/supabase/$(basename "$LATEST_DUMP")" 2>> "$LOG_FILE" && \
                 log "   ✅ Uploaded to S3" || \

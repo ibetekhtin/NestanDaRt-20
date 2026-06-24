@@ -1,4 +1,4 @@
-# 🐙 GITHUB-КАНОН — карта репозитория KOTЭ / Нестандартный Отдых
+# 🐙 GITHUB-КАНОН — карта репозитория NestanDaRt-20 / Нестандартный Отдых
 
 **Документ-канон по репозиторию.** Что где лежит на GitHub, что развёрнуто, что легаси, и где GitHub расходится с боевым VPS.
 Составлен: **2026-06-21** (полное сканирование). Обновлять при крупных изменениях структуры.
@@ -99,7 +99,7 @@
 
 ## 6. Деплой и сведение VPS↔GitHub
 
-- **Деплой ручной** (VPS сам git не тянет): `ssh root@77.42.93.187 'cd /opt/NestanDaRt-20 /opt/kote && git pull/opt/kote && git pull git pull && docker compose up -d --build'`.
+- **Деплой ручной:** `ssh root@77.42.93.187 'cd /opt/NestanDaRt-20 && git pull --ff-only origin main && docker compose up -d --build nestandart-backend'`.
 - **Backend бакает код при сборке** (нет volume) → правки кода применяются только через `--build`.
 - **`.env` не в git** (секреты только в `/opt/NestanDaRt-20/.env` и env контейнеров). Новый ключ: `bash /opt/NestanDaRt-20/set-secret.sh VARNAME nestandart-backend`.
 - **⚠️ Проблема:** `/opt/kote` на VPS разошёлся с GitHub (другая родословная + несведённые правки) → простой `git pull` конфликтнёт. Свести аккуратно: забрать с VPS актуальные `providers/`, `app/backend/`, экспорт `platform/nestandart-20/workflow.json`, закоммитить в `main`, затем выровнять VPS на origin. Делать ТОЛЬКО с подтверждения (прод).

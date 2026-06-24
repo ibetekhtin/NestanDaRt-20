@@ -8,17 +8,14 @@
 
 ```
 NestanDaRt-20/                         ← github.com/ibetekhtin/NestanDaRt-20
-├── nestandart-phuket/   САЙТ        HTML/CSS/JS → VPS 77.42.93.187 (nginx + SSL)
-├── hq/                  ШТАБ        React + Vite → Supabase (вход только для админа)
-├── app/backend/         BACKEND     FastAPI (роутеры ai/bookings/clients/leads/…)
+├── nestandart-phuket/   САЙТ        HTML/CSS/JS → VPS (nginx + SSL)
+├── hq/                  ШТАБ        React + Vite → baza.nestandart.online
+├── app/backend/         BACKEND     FastAPI (ai/bookings/clients/leads/payments/…)
 ├── providers/           AI-КАСКАД   groq → aitunnel → openrouter → gemini
-├── platform/            ПЛАТФОРМА   nestandart-20/ (prompt.txt + workflow.json), bot/ (легаси), docs/
-├── supabase/            БАЗА        schema.sql + миграции
-├── shared/              константы рынков и бренда
-├── deploy/              VPS-скрипты + nginx-конфиги
-├── scripts/             утилиты (generate_tours.py, health-check.sh)
-├── docs/                каноны и аудиты
-└── docker-compose.yml · Makefile · CLAUDE.md · set-secret.sh
+├── platform/            ПЛАТФОРМА   app.html (PWA), nestandart-20/ (prompt + workflow)
+├── deploy/              VPS-скрипты + nginx-конфиги + healthcheck
+├── docs/                ENV.md, API.md, VPS_SETUP.md
+└── docker-compose.yml · CLAUDE.md · MASTER_PROMPT.md
 ```
 
 ## Где что живёт (источники истины)
@@ -26,36 +23,37 @@ NestanDaRt-20/                         ← github.com/ibetekhtin/NestanDaRt-20
 | Что | Где | Как менять |
 |-----|-----|-----------|
 | Туры, цены, сезоны | Supabase → `tours` | SQL / HQ-панель. КотЭ подхватит сам |
-| База знаний (84 записи) | Supabase → `knowledge` | SQL. КотЭ ищет по вопросу клиента |
+| База знаний (84+ записи) | Supabase → `knowledge` | SQL. КотЭ ищет по вопросу клиента |
 | Клиенты, заявки, платежи | Supabase → `clients`, `bookings`, `payments` | через HQ или бота |
 | Личность КотЭ | `platform/nestandart-20/prompt.txt` | правишь текст → импорт workflow в n8n |
-| Контент сайта | `nestandart-phuket/*.html` | правка + git push (VPS подтянет за 5 мин) |
-| Конфиг сайта (боты, города) | `nestandart-phuket/js/config.js` | правка + push |
+| Контент сайта | `nestandart-phuket/*.html` | правка + git push |
+| Конфиг сайта | `nestandart-phuket/js/config.js` | правка + push |
 
-**Supabase проект:** `cmmdrhususjuadqzyssc` (NON-STANDART)
+**Supabase проект:** `cmmdrhususjuadqzyssc`
 
 ## Архитектура КотЭ
 
 ```
-Telegram → n8n → get_kote_context(chat_id, вопрос) → Supabase
+Telegram → n8n (workflow doCUKEZQpLQjDmxP) → get_kote_context(chat_id, вопрос) → Supabase
                        ↓ один запрос отдаёт всё:
               память клиента + живой каталог туров + знания под вопрос
                        ↓
-        backend /ai/chat → каскад (groq → aitunnel → openrouter → gemini)
-                       ↓ личность из prompt.txt
-                     ответ
+        backend /api/v1/ai/chat → AI-каскад (groq → aitunnel → openrouter → gemini)
+                       ↓ личность из platform/nestandart-20/prompt.txt
+                     ответ клиенту
 ```
 
 Новый тур или факт = insert в базу. Воркфлоу не трогается.
 
 ## Рынки
 
-| Рынок | Статус |
-|-------|--------|
-| 🏝️ Пхукет | ✅ Активен (33 тура, 41 знание) |
-| 🌅 Паттайя | 🟡 Туры и знания готовы, сайт «coming soon» |
-| 🌿 Бали | 📋 Planned |
-| 🏙️ Дубай | 📋 Planned |
+| Рынок | Статус | Туры |
+|-------|--------|------|
+| 🏝️ Пхукет | ✅ Активен | 68 |
+| 🌅 Паттайя | 🟡 Туры готовы, сайт «coming soon» | 53 |
+| 🌿 Вьетнам | 🟡 Туры готовы, сайт «coming soon» | 12 |
+| 🏖️ Бали | 📋 Planned | — |
+| 🏙️ Дубай | 📋 Planned | — |
 
 ## Быстрый старт
 
@@ -63,53 +61,36 @@ Telegram → n8n → get_kote_context(chat_id, вопрос) → Supabase
 # Сайт локально
 cd nestandart-phuket && npx serve . -p 3000
 
-# ШТАБ
-cd hq && npm install && npm run dev   # вход: админ-email + пароль
+# ШТАБ (baza.nestandart.online)
+cd hq && npm install && npm run dev
 
-# КотЭ live: VPS /opt/NestanDaRt-20 (docker compose), мозг = n8n workflow kote-main
-# Редактор n8n: ssh -L 5678:localhost:5678 root@VPS → http://localhost:5678
+# Backend
+cd app/backend && pip install -r requirements.txt && uvicorn main:app --reload
+
+# n8n: ssh -L 5678:localhost:5678 root@77.42.93.187 → http://localhost:5678
 ```
 
-## Безопасность (что уже настроено)
+## Деплой
 
-- RLS: персональные данные читает только админ (email в JWT), anon — лишь публичное
-- Сайт: HTTPS (Let's Encrypt, автопродление), HSTS, X-Frame-Options — в nginx на VPS
-- БАЗА (ШТАБ): https://nestandart.online/baza — вход только по админ-паролю, скрыта от поисковиков
-- Секреты: только в `.env` (gitignore) и n8n credentials — в репо ничего нет
-- КотЭ ходит в базу через SECURITY DEFINER RPC — у бота нет прямого доступа к таблицам
+```bash
+# Синхронизировать VPS:
+ssh root@77.42.93.187 "cd /opt/NestanDaRt-20 && git pull && \
+  docker compose build nestandart-backend && docker compose up -d"
+
+# Проверить:
+curl -s https://nestandart.online/api/v1/markets
+```
+
+## Безопасность
+
+- **RLS**: anon читает туры/знания, пишет через `app_upsert_lead`. Клиент — только свои данные.
+- **X-Kote-Secret**: защищает `/ai/chat`, `/pay/create`, `/bookings PATCH` — только n8n может вызывать.
+- **UFW**: открыты 22, 80, 443. Порты 5678 и 8000 — только через nginx.
+- **Секреты**: только в `.env` (gitignore) и n8n credentials.
 
 ## Документация
 
-[Стек](platform/docs/STACK.md) · [Supabase](platform/docs/SUPABASE.md) · [Multi-Market](platform/docs/MULTI_MARKET.md) · [Роадмап](platform/docs/ROADMAP.md) · [КотЭ](platform/docs/KOTE_SYSTEM.md)
-
-## ⚠️ Что нужно для работы КотЭ
-
-Мозг КотЭ (n8n → Gemini) подключён и активен, но требует **валидный Gemini API-ключ**:
-1. Получить ключ на https://aistudio.google.com/apikey (формат `AIza...`)
-2. На VPS: заменить строку `GEMINI_API_KEY=` в `/opt/NestanDaRt-20/.env`
-3. `cd /opt/NestanDaRt-20 && docker compose restart n8n`
-
-Воркфлоу читает ключ через `$env.GEMINI_API_KEY` — править воркфлоу не нужно, только .env.
-Текущий ключ невалиден (формат не `AIza`, отдаёт 401) — до замены КотЭ не отвечает.
-
-## 🐾 КотЭ-бот: перенос с Railway на наш VPS
-
-Код бота (@phuket_nestandart_bot, Python/aiogram + Claude) теперь в `platform/bot/`,
-задеплоен как контейнер `nestandart-bot` на VPS рядом со старым стеком.
-
-**Чтобы запустить — впиши 2 секрета из Railway в `/opt/NestanDaRt-20/bot/.env`:**
-1. `TELEGRAM_BOT_TOKEN` — токен @phuket_nestandart_bot (Railway → Variables)
-2. `ANTHROPIC_API_KEY` — ключ Claude (Railway → Variables)
-
-Затем:
-```bash
-# 1. На Railway: остановить (Pause) деплой бота — иначе два инстанса
-#    конфликтуют за getUpdates (Telegram отдаёт 409).
-# 2. На VPS:
-cd /opt/NestanDaRt-20 && docker compose up -d nestandart-bot
-docker logs -f nestandart-bot   # увидеть "🐾 КотЭ (Python/Claude) запущен!"
-```
-
-Бот работает на polling (отдельный токен от @nestandart_phuket_bot — конфликта нет).
-Что починено при переносе: `market`→`city` в поиске знаний (был баг — знания не находились),
-память диалога (была заглушка `get_session(0)`), тёплый промпт-сердце.
+- [Переменные окружения](docs/ENV.md)
+- [Настройка VPS](docs/VPS_SETUP.md)
+- [API](docs/API.md)
+- [MASTER PROMPT](MASTER_PROMPT.md) — стартовый контекст для AI-сессий

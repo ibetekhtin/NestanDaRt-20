@@ -2,7 +2,7 @@
 Smoke-тесты API nestandart-backend.
 
 Бьют по работающему сервису (по умолчанию http://127.0.0.1:8000).
-Переопределить: KOTE_API_BASE=https://nestandart.online pytest
+Переопределить: NESTANDART_API_BASE=https://nestandart.online pytest
 
 Проверяют контракт статус-кодов: 200 на существующее, 404 на отсутствующее,
 422 на невалидный body. Реальные данные БД не ассертим (smoke, не unit).
@@ -15,7 +15,7 @@ import os
 import httpx
 import pytest
 
-BASE = os.getenv("KOTE_API_BASE", "http://127.0.0.1:8000").rstrip("/")
+BASE = os.getenv("NESTANDART_API_BASE", "http://127.0.0.1:8000").rstrip("/")
 V1 = f"{BASE}/api/v1"
 
 

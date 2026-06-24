@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Monitoring Script — KOTЭ SYSTEM
+# Monitoring Script — NestanDaRt-20
 # ============================================================================
 # Usage: bash deploy/monitoring.sh (or add to crontab)
 #
@@ -62,7 +62,7 @@ alert() {
     if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_ADMIN_CHAT_ID" ]; then
         curl -sf -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d "chat_id=${TELEGRAM_ADMIN_CHAT_ID}" \
-            -d "text=🚨 [${level}] KOTЭ Monitor: ${message}" \
+            -d "text=🚨 [${level}] NestanDaRt-20 Monitor: ${message}" \
             -d "parse_mode=HTML" >/dev/null 2>&1 || true
     fi
     
@@ -70,7 +70,7 @@ alert() {
     if [ -n "$SLACK_WEBHOOK_URL" ]; then
         curl -sf -X POST "$SLACK_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
-            -d "{\"text\": \"🚨 [${level}] KOTЭ Monitor: ${message}\"}" >/dev/null 2>&1 || true
+            -d "{\"text\": \"🚨 [${level}] NestanDaRt-20 Monitor: ${message}\"}" >/dev/null 2>&1 || true
     fi
 }
 
@@ -149,7 +149,7 @@ check_backups() {
     log "💾 Checking backup freshness..."
     
     if [ -d "$BACKUP_DIR" ]; then
-        local latest_backup=$(find "$BACKUP_DIR" -name "kote_backup_*" -type f 2>/dev/null | sort | tail -1)
+        local latest_backup=$(find "$BACKUP_DIR" -name "nestandart_backup_*" -type f 2>/dev/null | sort | tail -1)
         if [ -n "$latest_backup" ]; then
             local backup_age=$(($(date +%s) - $(stat -f "%m" "$latest_backup" 2>/dev/null || stat -c "%Y" "$latest_backup" 2>/dev/null || echo 0)))
             local backup_age_hours=$((backup_age / 3600))
@@ -185,7 +185,7 @@ check_ssl() {
 
 # ─── Main ───────────────────────────────────────────────────────
 log "═══════════════════════════════════════════════════════════════"
-log "  KOTЭ Monitoring Check — $(date '+%Y-%m-%d %H:%M:%S')"
+log "  NestanDaRt-20 Monitoring Check — $(date '+%Y-%m-%d %H:%M:%S')"
 log "═══════════════════════════════════════════════════════════════"
 
 check_system

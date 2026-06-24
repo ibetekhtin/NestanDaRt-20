@@ -1,5 +1,5 @@
 """
-KOTЭ Backend — Configuration (pydantic-settings)
+NestanDaRt-20 Backend — Configuration (pydantic-settings)
 """
 from pydantic_settings import BaseSettings
 
@@ -9,9 +9,9 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_KEY: str = ""
     SUPABASE_ANON_KEY: str = ""
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-2.0-flash"
+    GEMINI_MODEL: str = "gemini-2.5-flash"
     OPENROUTER_API_KEY: str = ""
-    OPENROUTER_MODEL: str = "google/gemini-2.0-flash-exp:free"
+    OPENROUTER_MODEL: str = "google/gemini-2.5-flash-lite"
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
     TELEGRAM_BOT_TOKEN: str = ""

@@ -28,7 +28,7 @@ ssh root@77.42.93.187
 
 # Текущий docker-compose уже содержит nestandart-backend
 # Просто перезапускаем:
-cd /opt/kote
+cd /opt/NestanDaRt-20
 docker compose up -d nestandart-backend
 
 # Проверить:
