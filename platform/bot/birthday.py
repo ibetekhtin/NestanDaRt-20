@@ -5,7 +5,8 @@ birthday.py — Поздравления с днём рождения.
 с напоминанием про скидку именинника 3.5% (действует только сегодня, стекается с выгодой наборов).
 
 Cron (раз в день, ~09:00 по Бангкоку = 02:00 UTC):
-  0 2 * * * docker exec nestandart-bot python /app/birthday.py >> /var/log/nestandart-birthday.log 2>&1
+  0 2 * * * # LEGACY — бот теперь в n8n, не Docker
+#   docker exec nestandart-bot python /app/birthday.py >> /var/log/nestandart-birthday.log 2>&1
 """
 
 import asyncio

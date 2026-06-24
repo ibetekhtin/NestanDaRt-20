@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Rollback Script — KOTЭ SYSTEM
+# Rollback Script — NestanDaRt-20
 # ============================================================================
 # Usage: bash deploy/rollback.sh [backup_dir]
 # Example: bash deploy/rollback.sh /opt/nestandart-backups/20260618_120000

@@ -5,7 +5,8 @@ nudge.py — Догрев брошенной брони.
 которые ещё не получали напоминание, и шлёт тёплый кото-нудж с ссылкой на оплату.
 
 Запуск по cron (раз в 30 мин):
-  */30 * * * * docker exec nestandart-bot python /app/nudge.py >> /var/log/nestandart-nudge.log 2>&1
+  */30 * * * * # LEGACY — бот теперь в n8n, не Docker
+#   docker exec nestandart-bot python /app/nudge.py >> /var/log/nestandart-nudge.log 2>&1
 """
 
 import asyncio

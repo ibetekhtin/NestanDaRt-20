@@ -234,7 +234,8 @@ GEMINI_MODEL=gemini-2.0-flash
 docker compose logs nestandart-backend -f
 
 # Bot (если включен)
-docker compose logs nestandart-bot -f
+# bot теперь в n8n — смотри логи n8n:
+docker compose logs nestandart-n8n -f
 
 # n8n
 docker compose logs nestandart-n8n -f

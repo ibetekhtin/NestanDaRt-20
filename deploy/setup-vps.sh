@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# VPS Setup — KOTЭ SYSTEM (Hetzner CPX21)
+# VPS Setup — NestanDaRt-20 (Hetzner CPX21)
 # ============================================================================
 # Run as root on fresh Ubuntu 24.04
 # Usage: sudo bash deploy/setup-vps.sh
@@ -8,7 +8,7 @@
 
 set -e
 
-echo "🚀 Setting up KOTЭ VPS..."
+echo "🚀 Setting up NestanDaRt-20 VPS..."
 
 # System update
 apt-get update && apt-get upgrade -y

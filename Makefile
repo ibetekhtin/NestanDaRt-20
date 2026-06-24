@@ -1,39 +1,33 @@
-.PHONY: up down logs restart bot backend validate deploy clean status ship
+.PHONY: up down logs restart backend check deploy status ship clean
 
-up:
+up:                ## запустить все контейнеры
 	docker compose up -d
 
-down:
+down:              ## остановить все контейнеры
 	docker compose down
 
-logs:
+logs:              ## логи всех контейнеров
 	docker compose logs -f
 
-restart:
+restart:           ## перезапустить все контейнеры
 	docker compose restart
 
-bot:
-	npm run bot
-
-backend:
+backend:           ## backend локально (для разработки)
 	cd app/backend && uvicorn main:app --reload --port 8000
 
-validate:
-	@echo "Validating JS..."
-	@find bot/ -name "*.js" -exec node --check {} \; 2>/dev/null || true
-	@echo "Validating Python..."
-	@find app/ -name "*.py" -exec python3 -c "import ast; ast.parse(open('{}').read())" \; 2>/dev/null || true
-	@echo "Done"
+check:             ## синтаксис Python
+	@echo "Checking Python syntax..."
+	@find app/ providers/ -name "*.py" -exec python3 -m py_compile {} \; && echo "OK"
 
-deploy:
+deploy:            ## деплой на VPS через deploy.sh
 	bash deploy/deploy.sh
 
-status:        ## сходятся ли GitHub ↔ VPS ↔ локаль + здоровье контейнеров
+status:            ## GitHub ↔ VPS ↔ локаль + статус контейнеров
 	@bash scripts/status.sh
 
-ship:          ## деплой: push main → git pull на VPS → пересборка backend (с подтверждением)
+ship:              ## push main → VPS → пересборка backend (с подтверждением)
 	@bash scripts/ship.sh
 
-clean:
+clean:             ## очистить docker мусор
 	docker system prune -f
 	docker image prune -f

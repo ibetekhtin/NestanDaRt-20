@@ -1,4 +1,4 @@
-# 📊 Supabase Database — KOTЭ SYSTEM
+# 📊 Supabase Database — NestanDaRt-20
 
 ## Tables
 

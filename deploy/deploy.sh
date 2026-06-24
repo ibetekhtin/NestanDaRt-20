@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Deploy Script — KOTЭ SYSTEM (Improved)
+# Deploy Script — NestanDaRt-20
 # ============================================================================
 # Usage: bash deploy/deploy.sh
 # Features: health checks, rollback support, zero-downtime attempt
@@ -23,7 +23,7 @@ BACKUP_DIR="/opt/nestandart-backups/$(date +%Y%m%d_%H%M%S)"
 MAX_RETRIES=30
 RETRY_INTERVAL=5
 
-log "🚀 Deploying KOTЭ System..."
+log "🚀 Deploying NestanDaRt-20..."
 log "Backup dir: $BACKUP_DIR"
 
 cd "$DEPLOY_DIR"

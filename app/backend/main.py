@@ -1,26 +1,22 @@
 """
 nestandart-backend — FastAPI REST API
-Нестандартный Отдых® / ПХУКЕТИК
+NestanDaRt-20 / Нестандартный Отдых®
 
 Эндпоинты:
-  GET  /health                        — healthcheck
-  GET  /api/v1/markets                — список рынков
-  GET  /api/v1/markets/{id}           — рынок + детали
-  GET  /api/v1/tours                  — каталог туров
-  GET  /api/v1/tours/{id|slug}        — тур по id или slug
-  POST /api/v1/lead                   — создать лид (legacy, без /s)
-  POST /api/v1/leads                  — создать лид
-  GET  /api/v1/leads                  — список лидов
-  GET  /api/v1/bookings               — брони по телефону (?phone=)
-  GET  /api/v1/bookings/{id}          — бронь по id
-  POST /api/v1/bookings               — создать бронь
-  GET  /api/v1/clients/{tg_chat_id}   — клиент по tg_chat_id
-  GET/POST /api/v1/clients/{id}/memory
-  POST /api/v1/ai/ask                 — запрос к AI (fallback chain)
-  POST /api/v1/sos                    — SOS-тревога
-  POST /api/v1/webhook/lead           — вебхук из n8n
-  POST /api/v1/webhook/booking        — вебхук из n8n
-  GET  /api/docs                      — Swagger UI
+  GET   /health
+  GET   /api/v1/markets, /api/v1/markets/{id}
+  GET   /api/v1/tours[?market_id&active], /api/v1/tours/{id|slug}
+  POST  /api/v1/leads              — создать/обновить лид (X-Kote-Secret)
+  GET   /api/v1/bookings/{id}      — бронь
+  PATCH /api/v1/bookings/{id}      — сменить статус (X-Kote-Secret)
+  GET   /api/v1/clients/{tg_chat_id}
+  POST  /api/v1/ai/chat            — passthrough для n8n-бота (X-Kote-Secret)
+  POST  /api/v1/ai/ask             — AI для PWA
+  POST  /api/v1/pay/create         — создать платёж YooKassa (X-Kote-Secret)
+  POST  /api/v1/pay/webhook        — YooKassa webhook
+  POST  /api/v1/sos
+  POST  /api/v1/webhook/lead, /api/v1/webhook/booking
+  GET   /api/docs                  — Swagger UI
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

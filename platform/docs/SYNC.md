@@ -19,7 +19,7 @@
 ## Где что лежит
 | Канал | Файлы | Источник данных |
 |-------|-------|-----------------|
-| Бот | `/opt/NestanDaRt-20/platform/bot/` (деплой Docker `nestandart-bot`) | Supabase RPC + REST (service key) |
+| Бот | `/opt/NestanDaRt-20/platform/bot/` (n8n workflow doCUKEZQpLQjDmxP (бот в n8n, не Docker)) | Supabase RPC + REST (service key) |
 | Приложение | `/var/www/nestandart/platform/app/index.html` | Supabase REST (anon) |
 | Сайт | `/var/www/nestandart/nestandart-phuket/` | `js/catalog.js` → Supabase REST (anon) |
 

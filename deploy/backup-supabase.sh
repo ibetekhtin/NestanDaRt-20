@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Backup Supabase — KOTЭ SYSTEM (Improved)
+# Backup Supabase — NestanDaRt-20 (Improved)
 # ============================================================================
 # Usage: bash deploy/backup-supabase.sh
 # Requires: SUPABASE_DB_URL env var (connection string)

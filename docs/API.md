@@ -1,4 +1,4 @@
-# 🔌 FastAPI Backend — KOTЭ SYSTEM
+# 🔌 FastAPI Backend — NestanDaRt-20
 
 ## Base URL
 

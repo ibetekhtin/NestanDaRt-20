@@ -1,6 +1,6 @@
 # ═══════════════════════════════════════════════
-# kote-backend — FastAPI REST API
-# для мобильного приложения «ПХУКЕТИК»
+# nestandart-backend — FastAPI REST API
+# NestanDaRt-20 / Нестандартный Отдых
 # ═══════════════════════════════════════════════
 FROM python:3.12-slim
 

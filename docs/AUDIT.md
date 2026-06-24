@@ -1,4 +1,4 @@
-# 📊 ULTRA FULL SYSTEM AUDIT REPORT — KOTЭ SYSTEM
+# 📊 ULTRA FULL SYSTEM AUDIT REPORT — NestanDaRt-20
 
 **Date:** 18 June 2026  
 **System:** Нестандартный Отдых (Non-Standart Travel)  
@@ -11,7 +11,7 @@
 
 ## 1. Executive Summary
 
-A comprehensive audit of the entire KOTЭ system was performed across 14 stages, analyzing ~100+ files including source code, infrastructure configurations, database schemas, deployment scripts, and business logic.
+A comprehensive audit of the entire NestanDaRt-20 system was performed across 14 stages, analyzing ~100+ files including source code, infrastructure configurations, database schemas, deployment scripts, and business logic.
 
 **Overall Health: FAIR** — Core architecture (single DB, multi-market, n8n-driven AI bot) is sound, but significant security gaps and infrastructure hardening are needed.
 
