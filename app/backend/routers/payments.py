@@ -184,7 +184,7 @@ async def pay_webhook(request: Request):
     # бронь → 'Оплачено' через санкционированный RPC (не прямой UPDATE)
     if ext:
         try:
-            sb.rpc("app_upsert_lead", {"p_external_id": ext, "p_status": "Оплачено", "p_secret": settings.KOTE_RPC_SECRET}).execute()
+            sb.rpc("app_mark_paid", {"p_external_id": ext, "p_secret": settings.KOTE_RPC_SECRET}).execute()
         except Exception as e:
             log.warning("mark paid failed: %s", e)
 
