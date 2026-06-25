@@ -1,21 +1,21 @@
 """
-Payments Router — YooKassa (ЮKassa).
+Payments Router — YooKassa (ЮKassa). Закалённая версия.
 
 Поток:
-  1. POST /api/v1/pay/create  — n8n (после создания брони) запрашивает платёж.
+  1. POST /api/v1/pay/create  — n8n запрашивает платёж по существующей брони.
      Сумма считается НА СЕРВЕРЕ из tours.price_adult/price_child × платящих × курс ฿→₽.
-     Возвращает confirmation_url (или available=false, если ключи не заданы).
-  2. POST /api/v1/pay/webhook — ЮKassa шлёт уведомление об оплате.
-     Статус ПЕРЕПРОВЕРЯЕТСЯ запросом к API ЮKassa (не доверяем payload).
-     При успехе: payments → succeeded, бронь → 'Оплачено' (через app_upsert_lead),
-     клиенту в Telegram уходит подтверждение от КотЭ.
+     Идемпотентно: повторный вызов по той же брони не плодит платежи (переиспользует pending).
+  2. POST /api/v1/pay/webhook — ЮKassa шлёт уведомление. Статус ПЕРЕПРОВЕРЯЕТСЯ у API.
+     Сверяется СУММА+валюта с ожидаемой. Обрабатываются succeeded / canceled / refund.
+     При расхождении/осиротевшей оплате — алерт менеджеру, бронь НЕ помечается.
+  3. POST /api/v1/pay/reconcile — (n8n по расписанию) ищет зависшие pending и оплаты без брони.
 
-Без YOOKASSA_SHOP_ID/SECRET_KEY всё деградирует мягко: create вернёт available=false,
-бот предложит оплату через менеджера. Никаких падений.
+Без ключей YooKassa всё деградирует мягко (create → available=false). Секрет-гейт fail-closed.
 """
 import base64
+import hashlib
 import logging
-import uuid
+from decimal import Decimal, InvalidOperation
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -34,8 +34,11 @@ TIMEOUT = 15.0
 
 
 def _check_secret(x_kote_secret: Optional[str]) -> None:
+    # fail-closed: незаданный секрет = мисконфигурация сервера, а не «всем можно»
     secret = settings.KOTE_RPC_SECRET
-    if secret and x_kote_secret != secret:
+    if not secret:
+        raise HTTPException(status_code=503, detail="KOTE_RPC_SECRET not configured")
+    if x_kote_secret != secret:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
@@ -49,7 +52,7 @@ def _auth() -> str:
 
 
 class PayCreate(BaseModel):
-    external_id: str            # external_id брони (ключ)
+    external_id: str
     tour_slug: str
     adults: int = 1
     children: int = 0
@@ -60,9 +63,30 @@ class PayCreate(BaseModel):
 def _amount_rub(tour: dict, adults: int, children: int) -> int:
     pa = int(tour.get("price_adult") or 0)
     pc = tour.get("price_child")
-    pc = int(pc) if pc is not None else pa
+    pc = int(pc) if pc is not None else pa   # NULL ребёнок = цена взрослого
     baht = pa * max(adults, 0) + pc * max(children, 0)
-    return round(baht * settings.YOOKASSA_BAHT_TO_RUB)
+    rate = settings.YOOKASSA_BAHT_TO_RUB
+    if not rate or rate <= 0:               # B7: валидация курса
+        log.error("YOOKASSA_BAHT_TO_RUB invalid: %s", rate)
+        return 0
+    from math import ceil
+    return ceil(baht * rate)                 # округление ВВЕРХ — не занижаем
+
+
+async def _notify(chat: Optional[str], text: str) -> None:
+    token = settings.TELEGRAM_BOT_TOKEN
+    if not (token and chat):
+        return
+    try:
+        async with httpx.AsyncClient(timeout=TIMEOUT) as cli:
+            await cli.post(f"https://api.telegram.org/bot{token}/sendMessage",
+                           json={"chat_id": chat, "text": text, "parse_mode": "HTML"})
+    except Exception as e:
+        log.warning("telegram notify failed: %s", e)
+
+
+async def _notify_manager(text: str) -> None:
+    await _notify(settings.MANAGER_CHAT_ID, text)
 
 
 @router.post("/pay/create")
@@ -81,7 +105,7 @@ async def pay_create(body: PayCreate, x_kote_secret: Optional[str] = Header(None
     if amount <= 0:
         return {"available": False, "reason": "zero_amount"}
 
-    # 2) booking_id по external_id
+    # 2) B4: бронь ДОЛЖНА существовать
     booking_id = None
     try:
         bk = sb.table("bookings").select("id").eq("external_id", body.external_id).limit(1).execute()
@@ -89,25 +113,42 @@ async def pay_create(body: PayCreate, x_kote_secret: Optional[str] = Header(None
             booking_id = bk.data[0]["id"]
     except Exception as e:
         log.warning("booking lookup failed: %s", e)
+    if not booking_id:
+        log.warning("pay_create: booking not found ext=%s", body.external_id)
+        return {"available": False, "reason": "booking_not_found"}
 
     if not _enabled():
-        log.info("YooKassa keys not set — graceful skip")
         return {"available": False, "reason": "not_configured", "amount_rub": amount}
 
-    # 3) платёж в ЮKassa
+    # 3) B3: идемпотентность — не плодить платежи по одной брони
+    try:
+        ex = sb.table("payments").select("payment_id,status,confirmation_url,amount") \
+            .eq("booking_id", booking_id).order("created_at", desc=True).limit(1).execute()
+        if ex.data:
+            p = ex.data[0]
+            if p.get("status") == "succeeded":
+                return {"available": False, "reason": "already_paid"}
+            if p.get("status") in ("pending", "waiting_for_capture") and p.get("confirmation_url") and p.get("amount") == amount:
+                return {"available": True, "confirmation_url": p["confirmation_url"],
+                        "amount_rub": amount, "payment_id": p["payment_id"], "reused": True}
+    except Exception as e:
+        log.warning("idempotency check failed: %s", e)
+
+    # 4) платёж в ЮKassa — стабильный Idempotence-Key по (бронь, сумма)
+    idem = hashlib.sha256(f"{body.external_id}:{amount}".encode()).hexdigest()
     desc = f"{tour.get('title') or body.tour_slug} — {body.name or 'бронь'}"[:128]
     payload = {
         "amount": {"value": f"{amount:.2f}", "currency": "RUB"},
         "capture": True,
         "confirmation": {"type": "redirect", "return_url": settings.YOOKASSA_RETURN_URL or "https://nestandart.online/"},
         "description": desc,
-        "metadata": {"external_id": body.external_id, "booking_id": booking_id or "", "tg_chat_id": body.tg_chat_id or ""},
+        "metadata": {"external_id": body.external_id, "booking_id": booking_id, "tg_chat_id": body.tg_chat_id or ""},
     }
     try:
         async with httpx.AsyncClient(timeout=TIMEOUT) as cli:
             r = await cli.post(YK_API, json=payload, headers={
                 "Authorization": _auth(),
-                "Idempotence-Key": str(uuid.uuid4()),
+                "Idempotence-Key": idem,
                 "Content-Type": "application/json",
             })
         r.raise_for_status()
@@ -117,76 +158,141 @@ async def pay_create(body: PayCreate, x_kote_secret: Optional[str] = Header(None
         return {"available": False, "reason": "yookassa_error", "amount_rub": amount}
 
     url = (pay.get("confirmation") or {}).get("confirmation_url")
-    # 4) записать платёж
+    # 5) записать платёж (idempotent: при повторе Idempotence-Key вернётся тот же id)
     try:
-        sb.table("payments").insert({
-            "booking_id": booking_id,
-            "provider": "yookassa",
-            "payment_id": pay.get("id"),
-            "amount": amount,
-            "currency": "RUB",
-            "status": pay.get("status", "pending"),
-            "confirmation_url": url,
-        }).execute()
+        sb.table("payments").upsert({
+            "booking_id": booking_id, "provider": "yookassa", "payment_id": pay.get("id"),
+            "amount": amount, "currency": "RUB",
+            "status": pay.get("status", "pending"), "confirmation_url": url,
+        }, on_conflict="payment_id").execute()
     except Exception as e:
         log.warning("payments insert failed: %s", e)
 
     return {"available": True, "confirmation_url": url, "amount_rub": amount, "payment_id": pay.get("id")}
 
 
-async def _notify_client(tg_chat_id: str, text: str) -> None:
-    token = settings.TELEGRAM_BOT_TOKEN
-    if not (token and tg_chat_id):
-        return
-    try:
-        async with httpx.AsyncClient(timeout=TIMEOUT) as cli:
-            await cli.post(f"https://api.telegram.org/bot{token}/sendMessage",
-                           json={"chat_id": tg_chat_id, "text": text, "parse_mode": "HTML"})
-    except Exception as e:
-        log.warning("telegram notify failed: %s", e)
+async def _yk_get(pay_id: str) -> dict:
+    async with httpx.AsyncClient(timeout=TIMEOUT) as cli:
+        r = await cli.get(f"{YK_API}/{pay_id}", headers={"Authorization": _auth()})
+    r.raise_for_status()
+    return r.json()
 
 
 @router.post("/pay/webhook")
 async def pay_webhook(request: Request):
-    # ЮKassa шлёт {event, object:{id,status,metadata}}. Статус перепроверяем у API.
     try:
         body = await request.json()
     except Exception:
         return {"ok": True}
+    event = (body or {}).get("event") or ""
     obj = (body or {}).get("object") or {}
     pay_id = obj.get("id")
     if not pay_id or not _enabled():
         return {"ok": True}
 
-    # перепроверка статуса напрямую у ЮKassa (не доверяем payload)
+    # B6: обрабатываем только ИЗВЕСТНЫЕ нам платежи (есть в нашей таблице)
     try:
-        async with httpx.AsyncClient(timeout=TIMEOUT) as cli:
-            r = await cli.get(f"{YK_API}/{pay_id}", headers={"Authorization": _auth()})
-        r.raise_for_status()
-        pay = r.json()
+        known = sb.table("payments").select("amount,currency,status,booking_id").eq("payment_id", pay_id).limit(1).execute()
+    except Exception as e:
+        log.error("payments lookup failed: %s", e)
+        raise HTTPException(status_code=503, detail="retry")   # B4: 5xx → YooKassa повторит
+    if not known.data:
+        log.warning("webhook: unknown payment_id %s — ignored", pay_id)
+        return {"ok": True}
+    prow = known.data[0]
+
+    # перепроверка у API ЮKassa (не доверяем payload)
+    try:
+        pay = await _yk_get(pay_id)
     except Exception as e:
         log.error("YooKassa verify failed: %s", e)
-        return {"ok": True}
+        raise HTTPException(status_code=502, detail="retry")   # transient → retry
 
-    if pay.get("status") != "succeeded":
-        return {"ok": True}
-
+    status = pay.get("status")
     meta = pay.get("metadata") or {}
     ext = meta.get("external_id")
     chat = meta.get("tg_chat_id")
+    secret = settings.KOTE_RPC_SECRET
+
+    # B5: ВОЗВРАТ
+    if event.startswith("refund") or status == "refunded" or (pay.get("refunded_amount") or {}).get("value"):
+        try:
+            sb.table("payments").update({"status": "refunded"}).eq("payment_id", pay_id).execute()
+        except Exception:
+            raise HTTPException(status_code=503, detail="retry")
+        if ext:
+            try:
+                sb.rpc("app_set_booking_status", {"p_external_id": ext, "p_status": "Возврат", "p_secret": secret}).execute()
+            except Exception as e:
+                log.warning("refund status set failed: %s", e)
+        await _notify_manager(f"↩️ <b>ВОЗВРАТ</b> по брони <code>{ext}</code> (платёж {pay_id}). Бронь → «Возврат».")
+        return {"ok": True}
+
+    # B5: ОТМЕНА
+    if status == "canceled":
+        try:
+            sb.table("payments").update({"status": "canceled"}).eq("payment_id", pay_id).execute()
+        except Exception:
+            raise HTTPException(status_code=503, detail="retry")
+        return {"ok": True}
+
+    if status != "succeeded":
+        return {"ok": True}
+
+    # B2: СВЕРКА СУММЫ И ВАЛЮТЫ
+    amt = pay.get("amount") or {}
+    try:
+        paid_val = Decimal(str(amt.get("value")))
+    except (InvalidOperation, TypeError):
+        paid_val = None
+    cur = amt.get("currency")
+    expected = Decimal(int(prow["amount"]))
+    if cur != "RUB" or paid_val is None or paid_val != expected:
+        log.error("AMOUNT MISMATCH pay=%s expected=%s got=%s %s", pay_id, expected, paid_val, cur)
+        await _notify_manager(
+            f"⚠️ <b>ОПЛАТА НЕ СОВПАЛА</b>\nПлатёж {pay_id}\nОжидали: {expected} RUB\nПришло: {paid_val} {cur}\n"
+            f"Бронь <code>{ext}</code> НЕ помечена оплаченной — проверьте вручную.")
+        return {"ok": True}   # реальный mismatch — повтор не поможет, не retry
 
     # payments → succeeded
     try:
         sb.table("payments").update({"status": "succeeded", "paid_at": datetime.now(timezone.utc).isoformat()}).eq("payment_id", pay_id).execute()
-    except Exception as e:
-        log.warning("payments update failed: %s", e)
+    except Exception:
+        raise HTTPException(status_code=503, detail="retry")
 
-    # бронь → 'Оплачено' через санкционированный RPC (не прямой UPDATE)
+    # бронь → 'Оплачено' (чистый RPC, без побочек)
+    booking_marked = False
     if ext:
         try:
-            sb.rpc("app_mark_paid", {"p_external_id": ext, "p_secret": settings.KOTE_RPC_SECRET}).execute()
+            res = sb.rpc("app_mark_paid", {"p_external_id": ext, "p_secret": secret}).execute()
+            data = res.data if isinstance(res.data, dict) else (res.data[0] if isinstance(res.data, list) and res.data else None)
+            booking_marked = bool(data and data.get("ok"))
         except Exception as e:
             log.warning("mark paid failed: %s", e)
+    # B4: деньги есть, брони нет → алерт
+    if not booking_marked:
+        await _notify_manager(
+            f"⚠️ <b>ОПЛАТА БЕЗ БРОНИ</b>\nПлатёж {pay_id} прошёл ({expected} RUB), но бронь "
+            f"<code>{ext or '—'}</code> не отмечена. Деньги получены — проверьте вручную!")
 
-    await _notify_client(chat, "Мур-р-р, оплата прошла! 🐾 Бронь подтверждена — ждём тебя на экскурсии. Хорошего отдыха! 😸")
+    await _notify(chat, "Мур-р-р, оплата прошла! 🐾 Бронь подтверждена — ждём тебя на экскурсии. Хорошего отдыха! 😸")
     return {"ok": True}
+
+
+@router.post("/pay/reconcile")
+async def pay_reconcile(x_kote_secret: Optional[str] = Header(None)):
+    """Вызывается n8n по расписанию: ищет зависшие pending и succeeded без оплаченной брони."""
+    _check_secret(x_kote_secret)
+    try:
+        res = sb.rpc("pay_stuck_report", {"p_secret": settings.KOTE_RPC_SECRET, "p_hours": 2}).execute()
+        rep = res.data if isinstance(res.data, dict) else (res.data[0] if isinstance(res.data, list) and res.data else {})
+    except Exception as e:
+        log.warning("reconcile report failed: %s", e)
+        return {"ok": False}
+    stale = (rep or {}).get("stale_pending", 0)
+    nb = (rep or {}).get("paid_without_booking", 0)
+    if stale or nb:
+        await _notify_manager(
+            f"🧮 <b>Сверка платежей</b>\nЗависших pending (&gt;2ч): {stale}\nОплачено без брони: {nb}\n"
+            f"Проверьте, если значения &gt; 0.")
+    return {"ok": True, "stale_pending": stale, "paid_without_booking": nb}
