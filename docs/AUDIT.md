@@ -1,4 +1,4 @@
-# 📊 ULTRA FULL SYSTEM AUDIT REPORT — NestanDaRt-20
+# 📊 ULTRA FULL SYSTEM AUDIT REPORT — Nestandart
 
 **Date:** 18 June 2026  
 **System:** Нестандартный Отдых (Non-Standart Travel)  
@@ -11,7 +11,7 @@
 
 ## 1. Executive Summary
 
-A comprehensive audit of the entire NestanDaRt-20 system was performed across 14 stages, analyzing ~100+ files including source code, infrastructure configurations, database schemas, deployment scripts, and business logic.
+A comprehensive audit of the entire Nestandart system was performed across 14 stages, analyzing ~100+ files including source code, infrastructure configurations, database schemas, deployment scripts, and business logic.
 
 **Overall Health: FAIR** — Core architecture (single DB, multi-market, n8n-driven AI bot) is sound, but significant security gaps and infrastructure hardening are needed.
 
@@ -291,10 +291,10 @@ The Python bot (`platform/bot/`) is **disabled** (`profiles: bot`) — productio
 ### Recommended Crontab
 ```bash
 # Daily backup at 3 AM
-0 3 * * * /opt/NestanDaRt-20/deploy/backup-supabase.sh
+0 3 * * * /opt/nestandart/deploy/backup-supabase.sh
 
 # Monitoring every 5 minutes
-*/5 * * * * /opt/NestanDaRt-20/deploy/monitoring.sh
+*/5 * * * * /opt/nestandart/deploy/monitoring.sh
 ```
 
 ---
@@ -455,8 +455,8 @@ sudo systemctl reload nginx
 # 4. Set up crontab
 crontab -e
 # Add:
-0 3 * * * /opt/NestanDaRt-20/deploy/backup-supabase.sh
-*/5 * * * * /opt/NestanDaRt-20/deploy/monitoring.sh
+0 3 * * * /opt/nestandart/deploy/backup-supabase.sh
+*/5 * * * * /opt/nestandart/deploy/monitoring.sh
 ```
 
 ---

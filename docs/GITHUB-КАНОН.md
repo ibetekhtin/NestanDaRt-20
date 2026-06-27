@@ -1,4 +1,4 @@
-# 🐙 GITHUB-КАНОН — карта репозитория NestanDaRt-20 / Нестандартный Отдых
+# 🐙 GITHUB-КАНОН — карта репозитория Nestandart / Нестандартный Отдых
 
 **Документ-канон по репозиторию.** Что где лежит на GitHub, что развёрнуто, что легаси, и где GitHub расходится с боевым VPS.
 Составлен: **2026-06-21** (полное сканирование). Обновлять при крупных изменениях структуры.
@@ -7,24 +7,24 @@
 
 ## 0. ✅ GitHub ↔ VPS СВЕДЕНЫ (2026-06-21)
 
-**Расхождение устранено.** `origin/main`, VPS `/opt/NestanDaRt-20` (ветка `main`) и боевой код — все на коммите **`54f9101`** («chore(sync): version live VPS runtime»). Залито через git-bundle с VPS → local (у VPS нет push-доступа) → fast-forward `origin/main`. Прод теперь версионируется; деплой = обычный `git pull` на VPS.
+**Расхождение устранено.** `origin/main`, VPS `/opt/nestandart` (ветка `main`) и боевой код — все на коммите **`54f9101`** («chore(sync): version live VPS runtime»). Залито через git-bundle с VPS → local (у VPS нет push-доступа) → fast-forward `origin/main`. Прод теперь версионируется; деплой = обычный `git pull` на VPS.
 
 - Сведено в git: groq-first `providers/` (+`aitunnel.py`, фикс openrouter), `app/backend/routers/ai.py` (`/ai/chat`), `docker-compose.yml`, `.env.example`, `set-secret.sh`, `platform/bot/*`.
 - **Структура почищена** (`1ffdf3b`): root разгружен (убраны `vercel.json`, дубль `roadmap.html`, стале `deploy.sh` с неверным IP, `ARCHIVE_DUPLICATES.sh`, дубль `ПОЛНАЯ_СВОДКА.md`); доки→`docs/`, утилиты→`scripts/`. `set-secret.sh` оставлен в root (документированный entrypoint).
 - **`docs/DEV_TOOLS.md`** — ключи вычищены (значения → `*-REDACTED`), теперь в git. ⚠️ Сами ключи всё равно надо **ротировать** (Groq+Gemini светились), это шаг владельца в консолях провайдеров.
-- **`platform/nestandart-20/workflow.json`** — обновлён живым экспортом n8n (17 нод, нормализован), Supabase JWT вычищен → `SCRUBBED_SUPABASE_KEY__SET_ON_IMPORT`; `KOTE_SECRET` остаётся `{{ $env.KOTE_SECRET }}` (ссылка, не секрет).
+- **`platform/Nestandart/workflow.json`** — обновлён живым экспортом n8n (17 нод, нормализован), Supabase JWT вычищен → `SCRUBBED_SUPABASE_KEY__SET_ON_IMPORT`; `KOTE_SECRET` остаётся `{{ $env.KOTE_SECRET }}` (ссылка, не секрет).
 - **Этот канон (`GITHUB-КАНОН.md`)** теперь в репо.
 
 ### Историческая справка (до сведения)
 До 2026-06-21 GitHub `main` сильно отставал от VPS: вся работа после 19.06 (AI-каскад, /ai/chat, фиксы провайдеров, перенос n8n-ноды на backend) была сделана **прямо на VPS** и в git не попадала. Таблица расхождений ниже — снимок того состояния.
 
-| Что | GitHub `main` (944379c, 19.06) | Боевой VPS `/opt/NestanDaRt-20` |
+| Что | GitHub `main` (944379c, 19.06) | Боевой VPS `/opt/nestandart` |
 |---|---|---|
 | `app/backend/main.py` | **v1.0.0** | v2.0.0 (9 роутеров, вкл. `ai`) |
 | `providers/ai.py` порядок | **gemini→openrouter→groq** (старый, без aitunnel, без env-конфига, без пропуска без ключа) | **groq→aitunnel→openrouter→gemini**, конфиг `AI_PROVIDER_ORDER`, авто-пропуск |
 | `providers/aitunnel.py` | **отсутствует** | есть |
 | endpoint `/api/v1/ai/chat` | **отсутствует** | есть (passthrough для бота) |
-| `platform/nestandart-20/workflow.json` | зовёт Gemini **напрямую** (`generativelanguage…`) — очень старый | n8n-нода зовёт backend `/api/v1/ai/chat` |
+| `platform/Nestandart/workflow.json` | зовёт Gemini **напрямую** (`generativelanguage…`) — очень старый | n8n-нода зовёт backend `/api/v1/ai/chat` |
 
 ➡️ **Вывод:** репозиторий — это история до 19.06 + исходники сайта/HQ. Боевой backend и n8n живут на VPS «своей жизнью». **Прод не версионируется git'ом** — это риск (нельзя откатиться, легко потерять при пересоздании VPS).
 **Рекомендация:** свести VPS→GitHub (закоммитить актуальные `providers/`, `app/backend/`, экспорт `workflow.json`) и дальше деплоить только через `git pull`. См. §6.
@@ -34,7 +34,7 @@
 ## 1. Идентичность репозитория
 
 - **Remote:** `github.com/ibetekhtin/NestanDaRt-20.git` (origin).
-- **Имена:** `README.md` и `CLAUDE.md` теперь оба зовут репо **`NestanDaRt-20`** (исправлено в `1ffdf3b`). Локальная папка на диске пока `Desktop/папка с проектом` — рекомендуется переименовать в `NestanDaRt-20` для полного совпадения (по согласованию с владельцем).
+- **Имена:** `README.md` и `CLAUDE.md` теперь оба зовут репо **`Nestandart`** (исправлено в `1ffdf3b`). Локальная папка на диске пока `Desktop/папка с проектом` — рекомендуется переименовать в `Nestandart` для полного совпадения (по согласованию с владельцем).
 - **Тип:** монорепо (один бренд, один код, одна база, много рынков).
 - **Ветки:** `main` (944379c) и `chore/audit-fixes-and-track-sources` (058d0fc) — обе от 19.06. PR'ов нет (gh CLI не установлен; ветки сравниваются через `git`).
 - **Объём:** 199 отслеживаемых файлов.
@@ -64,7 +64,7 @@
 ## 3. `platform/` — что внутри
 
 - `platform/bot/` — **Python-бот** (aiogram + tools): `main.py`, `intent.py`, `supabase_client.py`, `admin_notify.py`, `tools_knowledge.py`. ⚠️ **НЕ боевой** — живой бот = n8n workflow `doCUKEZQpLQjDmxP`. Это легаси/альтернатива (см. CLAUDE.md).
-- `platform/nestandart-20/` — `prompt.txt` (личность КотЭ) + `workflow.json` (экспорт n8n). ⚠️ `workflow.json` устарел (зовёт Gemini напрямую).
+- `platform/Nestandart/` — `prompt.txt` (личность КотЭ) + `workflow.json` (экспорт n8n). ⚠️ `workflow.json` устарел (зовёт Gemini напрямую).
 - `platform/docs/` — STACK, SUPABASE, MULTI_MARKET, ROADMAP, KOTE_SYSTEM, KOTE_VISION.
 - `platform/supabase/schema.sql` — справочник реальной схемы.
 - `platform/app.html`, `app-hyper.html`, `app/index.html`, `public/` — варианты **PWA** (личный кабинет). Несколько копий — кандидаты на консолидацию.
@@ -80,7 +80,7 @@
 | Туры, цены, сезоны | Supabase → `tours` | SQL / HQ-панель → КотЭ подхватит сам |
 | База знаний | Supabase → `knowledge` | SQL → КотЭ ищет по вопросу |
 | Клиенты, заявки, платежи | Supabase → `clients`/`bookings`/`payments` | через HQ или бота |
-| Личность КотЭ | `platform/nestandart-20/prompt.txt` | правка → импорт workflow в n8n |
+| Личность КотЭ | `platform/Nestandart/prompt.txt` | правка → импорт workflow в n8n |
 | Контент сайта | `nestandart-phuket/*.html` | правка + git push (VPS подтянет) |
 | Конфиг сайта | `nestandart-phuket/js/config.js` | правка + push |
 
@@ -99,10 +99,10 @@
 
 ## 6. Деплой и сведение VPS↔GitHub
 
-- **Деплой ручной:** `ssh root@77.42.93.187 'cd /opt/NestanDaRt-20 && git pull --ff-only origin main && docker compose up -d --build kote-backend'`.
+- **Деплой ручной:** `ssh root@77.42.93.187 'cd /opt/nestandart && git pull --ff-only origin main && docker compose up -d --build kote-backend'`.
 - **Backend бакает код при сборке** (нет volume) → правки кода применяются только через `--build`.
-- **`.env` не в git** (секреты только в `/opt/NestanDaRt-20/.env` и env контейнеров). Новый ключ: `bash /opt/NestanDaRt-20/set-secret.sh VARNAME kote-backend`.
-- **⚠️ Проблема:** `/opt/kote` на VPS разошёлся с GitHub (другая родословная + несведённые правки) → простой `git pull` конфликтнёт. Свести аккуратно: забрать с VPS актуальные `providers/`, `app/backend/`, экспорт `platform/nestandart-20/workflow.json`, закоммитить в `main`, затем выровнять VPS на origin. Делать ТОЛЬКО с подтверждения (прод).
+- **`.env` не в git** (секреты только в `/opt/nestandart/.env` и env контейнеров). Новый ключ: `bash /opt/nestandart/set-secret.sh VARNAME kote-backend`.
+- **⚠️ Проблема:** `/opt/kote` на VPS разошёлся с GitHub (другая родословная + несведённые правки) → простой `git pull` конфликтнёт. Свести аккуратно: забрать с VPS актуальные `providers/`, `app/backend/`, экспорт `platform/Nestandart/workflow.json`, закоммитить в `main`, затем выровнять VPS на origin. Делать ТОЛЬКО с подтверждения (прод).
 
 ---
 
@@ -112,4 +112,4 @@
 - `nestandart-phuket/vercel.json` + `netlify.toml` — канон запрещает Vercel/Netlify (хостинг = свой VPS). Удалить/заархивировать.
 - `roadmap.html` (root) дублирует `nestandart-phuket/roadmap.html`.
 - `platform/app.html` / `app-hyper.html` / `app/index.html` — несколько версий PWA, выбрать одну.
-- Имя репо: `NestanDaRt-20` (README) vs `NestanDaRt-20` (remote/CLAUDE) — унифицировать.
+- Имя репо: `Nestandart` (README) vs `Nestandart` (remote/CLAUDE) — унифицировать.

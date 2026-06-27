@@ -1,5 +1,5 @@
 """
-NestanDaRt-20 Backend — Configuration (pydantic-settings)
+Nestandart Backend — Configuration (pydantic-settings)
 """
 from pydantic_settings import BaseSettings
 

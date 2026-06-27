@@ -4,7 +4,7 @@
 set -euo pipefail
 umask 077
 
-set -a; source /opt/NestanDaRt-20/.env; set +a
+set -a; source /opt/nestandart/.env; set +a
 
 BOT_TOKEN="${TELEGRAM_BOT_TOKEN:?}"
 CHAT_ID="${TELEGRAM_ADMIN_CHAT_ID:?}"

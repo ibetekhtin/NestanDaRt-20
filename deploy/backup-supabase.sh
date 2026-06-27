@@ -1,19 +1,19 @@
 #!/bin/bash
 # ============================================================================
-# Backup Supabase — NestanDaRt-20 (Improved)
+# Backup Supabase — Nestandart (Improved)
 # ============================================================================
 # Usage: bash deploy/backup-supabase.sh
 # Requires: SUPABASE_DB_URL env var (connection string)
 #
 # Creates:  SQL dump + optional S3 upload
 # Schedule: Add to crontab:
-#   0 3 * * * /opt/NestanDaRt-20/deploy/backup-supabase.sh
+#   0 3 * * * /opt/nestandart/deploy/backup-supabase.sh
 # ============================================================================
 
 set -euo pipefail
 umask 077   # backups contain secrets — owner-only (rw-------)
 
-BACKUP_DIR="/opt/NestanDaRt-20/backups"
+BACKUP_DIR="/opt/nestandart/backups"
 KEEP_DAYS=30
 KEEP_WEEKLY=12
 DATE=$(date +%Y%m%d_%H%M%S)
@@ -80,9 +80,9 @@ fi
 log "   Backing up configurations..."
 CONFIG_BACKUP="${BACKUP_DIR}/config_backup_${DATE}.tar.gz"
 tar czf "$CONFIG_BACKUP" \
-    -C /opt/NestanDaRt-20 .env \
-    -C /opt/NestanDaRt-20/deploy nginx.conf \
-    -C /opt/NestanDaRt-20 docker-compose.yml 2>/dev/null && \
+    -C /opt/nestandart .env \
+    -C /opt/nestandart/deploy nginx.conf \
+    -C /opt/nestandart docker-compose.yml 2>/dev/null && \
     log "   ✅ Config backup: config_backup_${DATE}.tar.gz" || \
     log "   ⚠️ Config backup skipped (some files may not exist)"
 

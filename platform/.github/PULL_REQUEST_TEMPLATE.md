@@ -14,8 +14,8 @@
 | Файл | Что изменилось |
 |------|---------------|
 | `public/index.html` | |
-| `nestandart-20/workflow.json` | |
-| `nestandart-20/prompt.txt` | |
+| `kote/workflow.json` | |
+| `kote/prompt.txt` | |
 
 ### Тест план
 - [ ] Проверил в preview URL Cloudflare

@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# VPS Setup — NestanDaRt-20 (Hetzner CPX21)
+# VPS Setup — Nestandart (Hetzner CPX21)
 # ============================================================================
 # Run as root on fresh Ubuntu 24.04
 # Usage: sudo bash deploy/setup-vps.sh
@@ -8,7 +8,7 @@
 
 set -e
 
-echo "🚀 Setting up NestanDaRt-20 VPS..."
+echo "🚀 Setting up Nestandart VPS..."
 
 # System update
 apt-get update && apt-get upgrade -y
@@ -23,8 +23,8 @@ curl -L "https://github.com/docker/compose/releases/latest/download/docker-compo
 chmod +x /usr/local/bin/docker-compose
 
 # Create project directory
-mkdir -p /opt/NestanDaRt-20
-mkdir -p /opt/NestanDaRt-20/logs
+mkdir -p /opt/nestandart
+mkdir -p /opt/nestandart/logs
 
 # Firewall (UFW) — только публичные порты; n8n и backend только через nginx
 apt-get install -y ufw
@@ -47,7 +47,7 @@ echo ""
 echo "✅ VPS setup complete!"
 echo ""
 echo "Next steps:"
-echo "  1. Clone repo: cd /opt/NestanDaRt-20 && git clone <repo> ."
+echo "  1. Clone repo: cd /opt/nestandart && git clone <repo> ."
 echo "  2. Configure: cp .env.example .env && nano .env"
 echo "  3. Deploy: docker compose up -d"
 echo ""

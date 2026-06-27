@@ -11,9 +11,9 @@ export const MARKETS = {
     dat: 'Пхукету',
     acc: 'Пхукет',
     active: true,
-    tg_bot: 'phuket_nestandart_bot',
+    tg_bot: 'nestandart_phuket',
     wa_phone: '66804894595',
-    domain: 'nestandart.online',
+    domain: 'nestandart-phuket.ru',
     theme: 'green', // CSS theme class
   },
   pattaya: {
@@ -25,7 +25,7 @@ export const MARKETS = {
     dat: 'Паттайе',
     acc: 'Паттайю',
     active: false, // coming soon
-    tg_bot: 'phuket_nestandart_bot',
+    tg_bot: 'nestandart_phuket',
     wa_phone: '66804894595',
     domain: 'nestandart-pattaya.ru',
     theme: 'orange',
@@ -39,7 +39,7 @@ export const MARKETS = {
     dat: 'Бали',
     acc: 'Бали',
     active: false,
-    tg_bot: 'phuket_nestandart_bot',
+    tg_bot: 'nestandart_phuket',
     wa_phone: '66804894595',
     domain: 'nestandart-bali.ru',
     theme: 'green',
@@ -53,7 +53,7 @@ export const MARKETS = {
     dat: 'Дубаю',
     acc: 'Дубай',
     active: false,
-    tg_bot: 'phuket_nestandart_bot',
+    tg_bot: 'nestandart_phuket',
     wa_phone: '66804894595',
     domain: 'nestandart-dubai.ru',
     theme: 'gold',

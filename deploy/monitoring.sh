@@ -1,11 +1,11 @@
 #!/bin/bash
 # ============================================================================
-# Monitoring Script — NestanDaRt-20
+# Monitoring Script — Nestandart
 # ============================================================================
 # Usage: bash deploy/monitoring.sh (or add to crontab)
 #
 # Suggested crontab:
-#   * * * * * /opt/NestanDaRt-20/deploy/monitoring.sh >/dev/null 2>&1
+#   * * * * * /opt/nestandart/deploy/monitoring.sh >/dev/null 2>&1
 # ============================================================================
 
 set -euo pipefail
@@ -23,7 +23,7 @@ DISK_THRESHOLD=85
 BACKUP_AGE_MAX_HOURS=28
 
 # Paths
-DEPLOY_DIR="/opt/NestanDaRt-20"
+DEPLOY_DIR="/opt/nestandart"
 BACKUP_DIR="${DEPLOY_DIR}/backups"
 LOG_FILE="${DEPLOY_DIR}/logs/monitoring.log"
 STATE_FILE="${DEPLOY_DIR}/logs/.monitor_state"
@@ -62,7 +62,7 @@ alert() {
     if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_ADMIN_CHAT_ID" ]; then
         curl -sf -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d "chat_id=${TELEGRAM_ADMIN_CHAT_ID}" \
-            -d "text=🚨 [${level}] NestanDaRt-20 Monitor: ${message}" \
+            -d "text=🚨 [${level}] Nestandart Monitor: ${message}" \
             -d "parse_mode=HTML" >/dev/null 2>&1 || true
     fi
     
@@ -70,7 +70,7 @@ alert() {
     if [ -n "$SLACK_WEBHOOK_URL" ]; then
         curl -sf -X POST "$SLACK_WEBHOOK_URL" \
             -H "Content-Type: application/json" \
-            -d "{\"text\": \"🚨 [${level}] NestanDaRt-20 Monitor: ${message}\"}" >/dev/null 2>&1 || true
+            -d "{\"text\": \"🚨 [${level}] Nestandart Monitor: ${message}\"}" >/dev/null 2>&1 || true
     fi
 }
 
@@ -185,7 +185,7 @@ check_ssl() {
 
 # ─── Main ───────────────────────────────────────────────────────
 log "═══════════════════════════════════════════════════════════════"
-log "  NestanDaRt-20 Monitoring Check — $(date '+%Y-%m-%d %H:%M:%S')"
+log "  Nestandart Monitoring Check — $(date '+%Y-%m-%d %H:%M:%S')"
 log "═══════════════════════════════════════════════════════════════"
 
 check_system

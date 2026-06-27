@@ -5,14 +5,12 @@ const AppContext = createContext();
 
 const DEFAULT_MARKET = import.meta.env.VITE_DEFAULT_MARKET || 'phuket';
 
-// City → market mapping — синхронизировано с shared/markets.js и DB
+// City → market mapping (tours use 'city' field)
 const MARKET_CITY = {
   phuket: 'Пхукет',
   pattaya: 'Паттайя',
   bali: 'Бали',
   dubai: 'Дубай',
-  vietnam: 'Вьетнам',
-  srilanka: 'Шри-Ланка',
 };
 
 export const AppProvider = ({ children }) => {
@@ -25,8 +23,6 @@ export const AppProvider = ({ children }) => {
   const [payments, setPayments] = useState([]);
   const [knowledge, setKnowledge] = useState([]);
   const [contentPlan, setContentPlan] = useState([]);
-  const [conversations, setConversations] = useState([]);
-  const [partners, setPartners] = useState([]);
 
   const city = MARKET_CITY[activeMarket] || 'Пхукет';
 
@@ -34,24 +30,20 @@ export const AppProvider = ({ children }) => {
     if (!isSupabaseConfigured) return;
     setLoading(true);
     try {
-      const [toursRes, clientsRes, bookingsRes, paymentsRes, knowledgeRes, contentRes, convsRes, partnersRes] = await Promise.all([
+      const [toursRes, clientsRes, bookingsRes, paymentsRes, knowledgeRes, contentRes] = await Promise.all([
         supabase.from('tours').select('*').eq('city', city).order('sort_order'),
         supabase.from('clients').select('*').order('created_at', { ascending: false }),
         supabase.from('bookings').select('*, clients(name, phone, telegram), tours(title, city)').order('created_at', { ascending: false }),
         supabase.from('payments').select('*, bookings(tour_name, total)').order('created_at', { ascending: false }),
         supabase.from('knowledge').select('*').eq('city', city).eq('active', true).order('priority', { ascending: false }),
         supabase.from('content_plan').select('*').eq('city', city).order('date'),
-        supabase.from('conversations').select('*, clients(name, telegram)').order('created_at', { ascending: false }).limit(100),
-        supabase.from('partner_stats').select('*').order('total_sales', { ascending: false }),
       ]);
-      if (toursRes.data)     setTours(toursRes.data);
-      if (clientsRes.data)   setClients(clientsRes.data);
-      if (bookingsRes.data)  setBookings(bookingsRes.data);
-      if (paymentsRes.data)  setPayments(paymentsRes.data);
+      if (toursRes.data)    setTours(toursRes.data);
+      if (clientsRes.data)  setClients(clientsRes.data);
+      if (bookingsRes.data) setBookings(bookingsRes.data);
+      if (paymentsRes.data) setPayments(paymentsRes.data);
       if (knowledgeRes.data) setKnowledge(knowledgeRes.data);
-      if (contentRes.data)   setContentPlan(contentRes.data);
-      if (convsRes.data)     setConversations(convsRes.data);
-      if (partnersRes.data)  setPartners(partnersRes.data);
+      if (contentRes.data)  setContentPlan(contentRes.data);
     } finally {
       setLoading(false);
     }
@@ -61,21 +53,11 @@ export const AppProvider = ({ children }) => {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
-  // --- Clients (через RPC app_upsert_lead — единая точка записи) ---
+  // --- Clients ---
   const addClient = async (client) => {
     if (!isSupabaseConfigured) return;
-    const { data, error } = await supabase.rpc('app_upsert_lead', {
-      p_name: client.name || '',
-      p_phone: client.phone || '',
-      p_telegram: client.telegram || '',
-      p_tg_chat_id: client.tg_chat_id || client.telegram || '',
-      p_source: client.source || 'baza',
-      p_market_id: activeMarket,
-    });
-    if (error) { console.error('[HQ] addClient RPC error:', error); return null; }
-    // После RPC перезагружаем список клиентов
-    const { data: fresh } = await supabase.from('clients').select('*').order('created_at', { ascending: false });
-    if (fresh) setClients(fresh);
+    const { data } = await supabase.from('clients').insert([client]).select().single();
+    if (data) setClients(prev => [data, ...prev]);
     return data;
   };
 
@@ -90,17 +72,7 @@ export const AppProvider = ({ children }) => {
   // --- Bookings ---
   const addBooking = async (booking) => {
     if (!isSupabaseConfigured) return;
-    const { data, error } = await supabase.from('bookings').insert([{
-      client_id: booking.client_id,
-      tour_id: booking.tour_id,
-      status: booking.status || 'draft',
-      date_start: booking.date_start,
-      date_end: booking.date_end,
-      guests: booking.guests || 1,
-      total: booking.total || 0,
-      notes: booking.notes || '',
-    }]).select('*, clients(name), tours(title)').single();
-    if (error) { console.error('[HQ] addBooking error:', error); return null; }
+    const { data } = await supabase.from('bookings').insert([booking]).select('*, clients(name), tours(title)').single();
     if (data) setBookings(prev => [data, ...prev]);
     return data;
   };
@@ -128,22 +100,19 @@ export const AppProvider = ({ children }) => {
   };
 
   // --- Stats (derived) ---
-  const KPT_STATUSES = ['Подтверждён', 'Активный', 'Завершён', 'Оплачен', 'done', 'confirmed', 'active', 'completed'];
   const stats = {
-    kpt: bookings.filter(b => KPT_STATUSES.includes(b.status)).length,
     totalClients: clients.length,
     activeBookings: bookings.filter(b => b.status === 'Подтверждён' || b.status === 'Активный').length,
     newLeads: clients.filter(c => c.stage === 'new' || c.stage === 'interest').length,
     totalRevenue: payments.filter(p => p.status === 'succeeded').reduce((sum, p) => sum + (p.amount || 0), 0),
     totalTours: tours.filter(t => t.active).length,
-    completedTours: bookings.filter(b => b.status === 'Завершён' || b.status === 'completed').length,
   };
 
   return (
     <AppContext.Provider value={{
       activeMarket, setActiveMarket,
       loading, refetch: fetchAll,
-      tours, clients, bookings, payments, knowledge, contentPlan, conversations, partners,
+      tours, clients, bookings, payments, knowledge, contentPlan,
       stats,
       addClient, updateClient, updateClientStage,
       addBooking, updateBookingStatus,

@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════
-# NestanDaRt-20 — Docker Compose
+# Nestandart — Docker Compose
 # VPS: 77.42.93.187
 #
 # Сервисы:
@@ -10,7 +10,7 @@
 # Логи:    docker compose logs -f kote-backend
 # Стоп:    docker compose down
 # ═══════════════════════════════════════════════════════════════
-name: nestandart-20
+name: nestandart
 
 services:
 

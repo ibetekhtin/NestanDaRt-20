@@ -6,7 +6,7 @@ VPS_IP="77.42.93.187"
 LOG_FILE="/var/log/nestandart-health.log"
 BACKEND_URL="http://127.0.0.1:8000/health"
 
-set -a; source /opt/NestanDaRt-20/.env 2>/dev/null; set +a
+set -a; source /opt/nestandart/.env 2>/dev/null; set +a
 
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $1" >> "$LOG_FILE"; }
 
@@ -33,7 +33,7 @@ check_nginx() {
 
 check_backend() {
   if ! curl -sf --max-time 5 "$BACKEND_URL" > /dev/null 2>&1; then
-    cd /opt/NestanDaRt-20 && docker compose restart kote-backend > /dev/null 2>&1
+    cd /opt/nestandart && docker compose restart kote-backend > /dev/null 2>&1
     sleep 10
     if curl -sf --max-time 5 "$BACKEND_URL" > /dev/null 2>&1; then
       alert "⚠️ <b>kote-backend</b> упал и перезапущен"
@@ -45,7 +45,7 @@ check_backend() {
 
 check_n8n() {
   if ! curl -sf --max-time 5 "http://127.0.0.1:5678/healthz" > /dev/null 2>&1; then
-    cd /opt/NestanDaRt-20 && docker compose restart kote-n8n > /dev/null 2>&1
+    cd /opt/nestandart && docker compose restart kote-n8n > /dev/null 2>&1
     sleep 10
     if curl -sf --max-time 5 "http://127.0.0.1:5678/healthz" > /dev/null 2>&1; then
       alert "⚠️ <b>kote-n8n</b> (автоматизации) упал и перезапущен"

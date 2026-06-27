@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # ============================================================
 # enable-kote-secret.sh — активирует KOTE_SECRET в n8n и backend
-# Запускать на VPS: bash /opt/NestanDaRt-20/scripts/enable-kote-secret.sh
+# Запускать на VPS: bash /opt/nestandart/scripts/enable-kote-secret.sh
 # ============================================================
 set -euo pipefail
 
-DIR="/opt/NestanDaRt-20"
+DIR="/opt/nestandart"
 ENV_FILE="$DIR/.env"
 
 cd "$DIR"

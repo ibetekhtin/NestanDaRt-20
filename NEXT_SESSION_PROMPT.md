@@ -1,4 +1,4 @@
-# СЕССИОННЫЙ ПРОМПТ — NestanDaRt-20
+# СЕССИОННЫЙ ПРОМПТ — Nestandart
 > Это исполнительный промпт. Читай и выполняй без вопросов.
 
 ---
@@ -6,7 +6,7 @@
 Ты — Claude Code в проекте **«Нестандартный Отдых»** (Пхукет/Паттайя/Вьетнам).
 **Единственный KPI: КПТ = Количество Проданных Туров.**
 
-Сначала прочитай `/Users/soloplayer/Desktop/NestanDaRt-20/CLAUDE.md` и `/Users/soloplayer/Desktop/NestanDaRt-20/MASTER_PROMPT.md` — там полный контекст архитектуры.
+Сначала прочитай `/Users/soloplayer/Desktop/Nestandart/CLAUDE.md` и `/Users/soloplayer/Desktop/Nestandart/MASTER_PROMPT.md` — там полный контекст архитектуры.
 
 ---
 
@@ -42,7 +42,7 @@
 
 ### 2а. PWA — убрать заглушку Паттайи
 
-**Файл:** `/Users/soloplayer/Desktop/NestanDaRt-20/platform/app.html`
+**Файл:** `/Users/soloplayer/Desktop/Nestandart/platform/app.html`
 
 В нём сейчас:
 - Блок `id="pattayaSoon"` со стилем `display:none` и текстом «Паттайя — скоро!»
@@ -99,7 +99,7 @@ ALTER TABLE knowledge ADD CONSTRAINT knowledge_city_check
 
 ### 2г. Промпт КотЭ — добавить блок Паттайи
 
-**Файл:** `/Users/soloplayer/Desktop/NestanDaRt-20/platform/nestandart-20/prompt.txt`
+**Файл:** `/Users/soloplayer/Desktop/Nestandart/platform/Nestandart/prompt.txt`
 
 Найди раздел про Пхукет (или «рынки»). Добавь аналогичный блок про Паттайю:
 - Что уникального: активности, вечерняя жизнь, Ко Лан, пляж Джомтьен для семей
@@ -112,7 +112,7 @@ ALTER TABLE knowledge ADD CONSTRAINT knowledge_city_check
 
 ### 3а. PWA — третий город
 
-**Файл:** `/Users/soloplayer/Desktop/NestanDaRt-20/platform/app.html`
+**Файл:** `/Users/soloplayer/Desktop/Nestandart/platform/app.html`
 
 В PWA сейчас только Пхукет и Паттайя. Нужно добавить Вьетнам как третий вариант.
 
@@ -157,7 +157,7 @@ LIMIT 10;
 
 ### 3г. Промпт КотЭ — добавить блок Вьетнама
 
-**Файл:** `platform/nestandart-20/prompt.txt`
+**Файл:** `platform/Nestandart/prompt.txt`
 
 Добавь раздел про Вьетнам:
 - Нячанг vs Дананг: чем отличаются, кому что подходит
@@ -187,7 +187,7 @@ LIMIT 10;
 
 ```bash
 # Код:
-ssh root@77.42.93.187 "cd /opt/NestanDaRt-20 && git pull && docker compose build kote-backend && docker compose up -d"
+ssh root@77.42.93.187 "cd /opt/nestandart && git pull && docker compose build kote-backend && docker compose up -d"
 
 # app.html (PWA):
 scp platform/app.html root@77.42.93.187:/var/www/nestandart/platform/app.html

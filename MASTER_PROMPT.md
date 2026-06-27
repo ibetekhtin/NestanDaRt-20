@@ -1,4 +1,4 @@
-# MASTER PROMPT — NestanDaRt-20
+# MASTER PROMPT — Nestandart
 > Скопируй в начало следующей Claude Code сессии. Обновляй после каждого крупного изменения.
 > Последнее обновление: 2026-06-24 · v6
 
@@ -25,9 +25,9 @@ PWA:  app.nestandart.online → nginx → platform/app.html
 ## Репозиторий
 
 - **GitHub**: `github.com/ibetekhtin/NestanDaRt-20`
-- **Локально**: `/Users/soloplayer/Desktop/NestanDaRt-20/`
-- **VPS**: `/opt/NestanDaRt-20/` (симлинк `/opt/kote → /opt/NestanDaRt-20` для совместимости)
-- **Деплой**: `ssh root@77.42.93.187 "cd /opt/NestanDaRt-20 && git pull && docker compose build kote-backend && docker compose up -d"`
+- **Локально**: `/Users/soloplayer/Desktop/Nestandart/`
+- **VPS**: `/opt/nestandart/` (симлинк `/opt/kote → /opt/nestandart` для совместимости)
+- **Деплой**: `ssh root@77.42.93.187 "cd /opt/nestandart && git pull && docker compose build kote-backend && docker compose up -d"`
 
 ## Ключевые файлы
 
@@ -37,7 +37,7 @@ PWA:  app.nestandart.online → nginx → platform/app.html
 | `docker-compose.yml` | Два сервиса: kote-backend, kote-n8n |
 | `app/backend/` | FastAPI (роутеры: ai, bookings, clients, leads, markets, memory, payments, sos, tours, webhooks) |
 | `providers/` | AI fallback chain (groq, aitunnel, openrouter, gemini + общий openai_compat.py) |
-| `platform/nestandart-20/prompt.txt` | Промпт-личность КотЭ |
+| `platform/Nestandart/prompt.txt` | Промпт-личность КотЭ |
 | `platform/app.html` | PWA v11.0, self-contained |
 | `hq/` | БАЗА (React Vite, baza.nestandart.online) |
 | `deploy/healthcheck.sh` | Cron */5 мин — алерты в Telegram |
@@ -99,7 +99,7 @@ n8n workflow `doCUKEZQpLQjDmxP` шлёт запросы на `http://kote-backen
 
 ```bash
 # 1. Применить новый docker-compose.yml (mem_limit + kote-backend alias)
-ssh root@77.42.93.187 "cd /opt/NestanDaRt-20 && git pull && docker compose up -d --force-recreate"
+ssh root@77.42.93.187 "cd /opt/nestandart && git pull && docker compose up -d --force-recreate"
 
 # 2. Убрать мёртвый systemd-юнит
 sudo systemctl disable nestandart-bot.service
@@ -124,5 +124,5 @@ UPDATE tours SET active = true
 ## Проверка после изменений
 
 ```bash
-ssh root@77.42.93.187 'cd /opt/NestanDaRt-20 && docker compose ps && curl -s http://localhost:8000/health'
+ssh root@77.42.93.187 'cd /opt/nestandart && docker compose ps && curl -s http://localhost:8000/health'
 ```

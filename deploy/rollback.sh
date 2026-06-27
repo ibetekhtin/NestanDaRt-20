@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Rollback Script — NestanDaRt-20
+# Rollback Script — Nestandart
 # ============================================================================
 # Usage: bash deploy/rollback.sh [backup_dir]
 # Example: bash deploy/rollback.sh /opt/nestandart-backups/20260618_120000
@@ -17,7 +17,7 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 log() { echo -e "${GREEN}[INFO]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 
-DEPLOY_DIR="/opt/NestanDaRt-20"
+DEPLOY_DIR="/opt/nestandart"
 
 if [ $# -lt 1 ]; then
     echo "Usage: $0 [backup_dir]"

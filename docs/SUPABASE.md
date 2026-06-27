@@ -1,4 +1,4 @@
-# 📊 Supabase Database — NestanDaRt-20
+# 📊 Supabase Database — Nestandart
 
 ## Tables
 

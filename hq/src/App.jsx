@@ -3,27 +3,21 @@ import { AppProvider, useApp } from './context/AppContext';
 import { supabase, isSupabaseConfigured } from './supabase';
 import {
   LayoutDashboard, Users, FolderKanban, Megaphone,
-  DollarSign, BookOpen, LogOut, Filter, Map, Bot, UserCheck
+  DollarSign, BookOpen, LogOut
 } from 'lucide-react';
 
 import DashboardView from './components/DashboardView';
-import FunnelView from './components/FunnelView';
 import CRMView from './components/CRMView';
 import KanbanView from './components/KanbanView';
 import ContentFactoryView from './components/ContentFactoryView';
 import FinanceView from './components/FinanceView';
 import WikiView from './components/WikiView';
-import ToursView from './components/ToursView';
-import KoteView from './components/KoteView';
-import ReferralsView from './components/ReferralsView';
 
 const MARKETS = [
   { id: 'phuket', label: '🏝️ Пхукет' },
   { id: 'pattaya', label: '🌅 Паттайя' },
   { id: 'bali', label: '🌿 Бали' },
   { id: 'dubai', label: '🏙️ Дубай' },
-  { id: 'vietnam', label: '🌏 Вьетнам' },
-  { id: 'srilanka', label: '🏝️ Шри-Ланка' },
 ];
 
 function AppContent() {
@@ -66,8 +60,8 @@ function AppContent() {
     return (
       <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
         <form onSubmit={handleLogin} className="glass-card" style={{ width: '360px', textAlign: 'center' }}>
-          <h2 style={{ marginBottom: '8px', color: 'var(--accent-cyan)' }}>БАЗА</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Нестандартный Отдых® · Войти</p>
+          <h2 style={{ marginBottom: '8px', color: 'var(--accent-cyan)' }}>ШТАБ</h2>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Нестандартный Отдых®</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <input type="email" placeholder="Email администратора" required value={emailInput} onChange={e => setEmailInput(e.target.value)} />
             <input type="password" placeholder="Пароль" required value={passInput} onChange={e => setPassInput(e.target.value)} />
@@ -84,8 +78,8 @@ function AppContent() {
       {/* Боковая панель навигации */}
       <aside style={{ width: '280px', background: 'var(--bg-secondary)', borderRight: '1px solid var(--glass-border)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <div style={{ padding: '0 8px 24px 8px', borderBottom: '1px solid var(--glass-border)', marginBottom: '16px' }}>
-          <h2 style={{ color: 'var(--accent-cyan)', fontSize: '20px', fontWeight: '800' }}>БАЗА</h2>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Центр управления проектом</span>
+          <h2 style={{ color: 'var(--accent-cyan)', fontSize: '20px', fontWeight: '800' }}>ШТАБ</h2>
+          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Операционный центр</span>
           <select
             value={activeMarket}
             onChange={e => setActiveMarket(e.target.value)}
@@ -110,22 +104,10 @@ function AppContent() {
           <Megaphone size={20} /> Контент-завод
         </button>
         <button className={`btn ${activeTab === 'finance' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('finance')}>
-          <DollarSign size={20} /> Финансы
+          <DollarSign size={20} /> Финансовый штаб
         </button>
         <button className={`btn ${activeTab === 'wiki' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('wiki')}>
           <BookOpen size={20} /> Wiki База знаний
-        </button>
-        <button className={`btn ${activeTab === 'tours' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('tours')}>
-          <Map size={20} /> Экскурсии
-        </button>
-        <button className={`btn ${activeTab === 'funnel' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('funnel')}>
-          <Filter size={20} /> Воронка
-        </button>
-        <button className={`btn ${activeTab === 'kote' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('kote')}>
-          <Bot size={20} /> КотЭ
-        </button>
-        <button className={`btn ${activeTab === 'referrals' ? 'btn-primary' : ''}`} style={{ justifyContent: 'flex-start', width: '100%' }} onClick={() => setActiveTab('referrals')}>
-          <UserCheck size={20} /> Рефералы
         </button>
 
         <div style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--glass-border)' }}>
@@ -135,7 +117,7 @@ function AppContent() {
             </button>
           )}
           <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center' }}>
-            БАЗА · nestandart.online © 2026
+            nestandart-phuket.ru © 2026
           </div>
         </div>
       </aside>
@@ -148,10 +130,6 @@ function AppContent() {
         {activeTab === 'content' && <ContentFactoryView />}
         {activeTab === 'finance' && <FinanceView />}
         {activeTab === 'wiki' && <WikiView />}
-        {activeTab === 'tours' && <ToursView />}
-        {activeTab === 'funnel' && <FunnelView />}
-        {activeTab === 'kote' && <KoteView />}
-        {activeTab === 'referrals' && <ReferralsView />}
       </main>
     </div>
   );

@@ -1,6 +1,6 @@
 """
 nestandart-backend — FastAPI REST API
-NestanDaRt-20 / Нестандартный Отдых®
+Nestandart / Нестандартный Отдых®
 
 Эндпоинты:
   GET   /health

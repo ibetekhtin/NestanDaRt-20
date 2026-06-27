@@ -15,8 +15,8 @@ ssh root@77.42.93.187
 crontab -e
 
 # Добавить строки:
-0 3 * * * /opt/NestanDaRt-20/deploy/backup-supabase.sh >> /var/log/nestandart-backup.log 2>&1
-*/5 * * * * /opt/NestanDaRt-20/deploy/healthcheck.sh >> /var/log/nestandart-health.log 2>&1
+0 3 * * * /opt/nestandart/deploy/backup-supabase.sh >> /var/log/nestandart-backup.log 2>&1
+*/5 * * * * /opt/nestandart/deploy/healthcheck.sh >> /var/log/nestandart-health.log 2>&1
 
 # Проверить:
 crontab -l
@@ -28,7 +28,7 @@ ssh root@77.42.93.187
 
 # Текущий docker-compose уже содержит kote-backend
 # Просто перезапускаем:
-cd /opt/NestanDaRt-20
+cd /opt/nestandart
 docker compose up -d kote-backend
 
 # Проверить:

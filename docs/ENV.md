@@ -1,4 +1,4 @@
-# 🔑 Environment Variables — NestanDaRt-20
+# 🔑 Environment Variables — Nestandart
 
 ## Required
 
@@ -47,6 +47,6 @@
 
 ## Security
 
-- **Новый ключ на VPS:** `bash /opt/NestanDaRt-20/set-secret.sh VARNAME` → пересоздать контейнер `docker compose up -d kote-backend`
+- **Новый ключ на VPS:** `bash /opt/nestandart/set-secret.sh VARNAME` → пересоздать контейнер `docker compose up -d kote-backend`
 - `.env` в `.gitignore` — не коммитить
 - `TELEGRAM_ADMIN_CHAT_ID` = `MANAGER_CHAT_ID` (один чат для простоты; можно разделить)

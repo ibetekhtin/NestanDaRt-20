@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Deploy Script — NestanDaRt-20
+# Deploy Script — Nestandart
 # ============================================================================
 # Usage: bash deploy/deploy.sh
 # Features: health checks, rollback support, zero-downtime attempt
@@ -18,12 +18,12 @@ log() { echo -e "${GREEN}[$(date '+%H:%M:%S')]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-DEPLOY_DIR="/opt/NestanDaRt-20"
+DEPLOY_DIR="/opt/nestandart"
 BACKUP_DIR="/opt/nestandart-backups/$(date +%Y%m%d_%H%M%S)"
 MAX_RETRIES=30
 RETRY_INTERVAL=5
 
-log "🚀 Deploying NestanDaRt-20..."
+log "🚀 Deploying Nestandart..."
 log "Backup dir: $BACKUP_DIR"
 
 cd "$DEPLOY_DIR"

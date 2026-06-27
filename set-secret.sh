@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Безопасно записать секрет в /opt/NestanDaRt-20/.env — без засветки в экране/истории.
+# Безопасно записать секрет в /opt/nestandart/.env — без засветки в экране/истории.
 # Использование: bash set-secret.sh VARNAME [service_для_пересоздания]
 set -euo pipefail
-ENVFILE=/opt/NestanDaRt-20/.env
+ENVFILE=/opt/nestandart/.env
 VAR="${1:?Укажи имя переменной, напр.: bash set-secret.sh AITUNNEL_API_KEY kote-backend}"
 SVC="${2:-}"
 touch "$ENVFILE"; chmod 600 "$ENVFILE"
@@ -17,5 +17,5 @@ echo "OK: ${VAR} записан (длина ${#VALUE} симв.)"
 unset VALUE
 if [ -n "$SVC" ]; then
   echo "Пересоздаю контейнер $SVC, чтобы подхватил ключ..."
-  cd /opt/NestanDaRt-20 && docker compose up -d "$SVC" 2>&1 | tail -3
+  cd /opt/nestandart && docker compose up -d "$SVC" 2>&1 | tail -3
 fi

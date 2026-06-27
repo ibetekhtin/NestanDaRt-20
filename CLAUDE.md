@@ -1,6 +1,6 @@
 # CLAUDE.md — МАСТЕР-ФАЙЛ ПРОЕКТА
-# NestanDaRt-20 / Нестандартный Отдых®
-> Последнее обновление: 2026-06-23 · v5 — единый канон NestanDaRt-20
+# Nestandart / Нестандартный Отдых®
+> Последнее обновление: 2026-06-23 · v5 — единый канон Nestandart
 > Этот файл — единственный источник истины для Claude Code и любого AI-агента.
 > Читать полностью перед любой работой с проектом.
 
@@ -23,7 +23,7 @@
 
 | Термин | Что это |
 |--------|---------|
-| **NestanDaRt-20** | Название проекта, имя репозитория, имя папки — везде одно |
+| **Nestandart** | Название проекта, имя репозитория, имя папки — везде одно |
 | **ЗОЛОТОЙ ТРЕУГОЛЬНИК** | Три точки продаж: **Бот** + **Сайт** + **Приложение** |
 | **БАЗА / Штаб** | React/Vite командный центр на baza.nestandart.online |
 | **БД** | База данных = Supabase (PostgreSQL) |
@@ -79,14 +79,14 @@
 
 ### Репозиторий
 - **GitHub:** `github.com/ibetekhtin/NestanDaRt-20`
-- **Локально:** `/Users/soloplayer/Desktop/NestanDaRt-20/`
-- **VPS:** `/opt/NestanDaRt-20/` (симлинк `/opt/kote` → `/opt/NestanDaRt-20` для совместимости)
+- **Локально:** `/Users/soloplayer/Desktop/Nestandart/`
+- **VPS:** `/opt/nestandart/` (симлинк `/opt/kote` → `/opt/nestandart` для совместимости)
 
 ### Папки
 ```
-NestanDaRt-20/
+Nestandart/
 ├── CLAUDE.md                  ← ЭТОТ ФАЙЛ
-├── docker-compose.yml         ← name: nestandart-20
+├── docker-compose.yml         ← name: Nestandart
 ├── docker-compose.override.yml
 ├── .env                       ← СЕКРЕТЫ (не коммитить!)
 ├── .env.example               ← шаблон без секретов
@@ -99,7 +99,7 @@ NestanDaRt-20/
 │
 ├── platform/
 │   ├── app.html               ← PWA v11.0, ~230 KB self-contained
-│   ├── nestandart-20/prompt.txt ← ЛИЧНОСТЬ КотЭ (n8n workflow prompt)
+│   ├── Nestandart/prompt.txt ← ЛИЧНОСТЬ КотЭ (n8n workflow prompt)
 │   └── supabase/schema.sql    ← справочник схемы
 │
 ├── hq/                        ← БАЗА (React Vite, baza.nestandart.online)
@@ -128,19 +128,19 @@ NestanDaRt-20/
 | n8n | n8n.nestandart.online | ✅ |
 | API FastAPI | nestandart.online/api/v1/ | ✅ |
 
-### VPS сервисы (все внутри /opt/NestanDaRt-20/)
+### VPS сервисы (все внутри /opt/nestandart/)
 
 | Сервис | Порт | Управление |
 |--------|------|-----------|
-| kote-backend (FastAPI) | 127.0.0.1:8000 | Docker (project: nestandart-20) |
-| kote-n8n | 127.0.0.1:5678 | Docker (project: nestandart-20) |
+| kote-backend (FastAPI) | 127.0.0.1:8000 | Docker (project: Nestandart) |
+| kote-n8n | 127.0.0.1:5678 | Docker (project: Nestandart) |
 | nestandart-api (Node.js) | 127.0.0.1:3055 | PM2 |
 
 > ⚠️ Volume `kote-n8n-data` — имя НЕ МЕНЯТЬ (там живут все workflows n8n). Объявлен в docker-compose.yml как `name: kote-n8n-data` — это намеренно.
 
 ---
 
-## 🔑 ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ (`/opt/NestanDaRt-20/.env`)
+## 🔑 ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ (`/opt/nestandart/.env`)
 
 ```bash
 SUPABASE_URL=https://cmmdrhususjuadqzyssc.supabase.co
@@ -295,7 +295,7 @@ groq (основной) → aitunnel → openrouter → gemini (резерв)
 ## 🐳 DOCKER
 
 ```bash
-cd /opt/NestanDaRt-20
+cd /opt/nestandart
 
 docker compose ps                              # статус
 docker compose logs -f kote-backend           # логи
@@ -309,7 +309,7 @@ docker compose build kote-backend && \
 
 ```bash
 # Синхронизировать VPS с GitHub:
-ssh root@77.42.93.187 "cd /opt/NestanDaRt-20 && git pull"
+ssh root@77.42.93.187 "cd /opt/nestandart && git pull"
 
 # app.html → VPS:
 scp platform/app.html root@77.42.93.187:/var/www/nestandart/platform/app.html
@@ -325,8 +325,8 @@ nginx -t && systemctl reload nginx
 ```
 0  3  * * *  /root/backup-supabase.sh
 30 3  * * *  /root/backup-vps.sh
-*/5 * * * *  /opt/NestanDaRt-20/deploy/healthcheck.sh
-15 3  * * *  /opt/NestanDaRt-20/deploy/run-backup.sh
+*/5 * * * *  /opt/nestandart/deploy/healthcheck.sh
+15 3  * * *  /opt/nestandart/deploy/run-backup.sh
 0  4  * * *  /root/backup-offsite.sh
 ```
 
@@ -381,5 +381,5 @@ fail2ban-client status sshd
 
 ---
 
-*NestanDaRt-20 CLAUDE.md · v5 · 2026-06-23*
+*Nestandart CLAUDE.md · v5 · 2026-06-23*
 *Единый канон. Один репозиторий. Один стандарт.*

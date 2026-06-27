@@ -1,4 +1,4 @@
-# 🔌 FastAPI Backend — NestanDaRt-20
+# 🔌 FastAPI Backend — Nestandart
 
 ## Base URL
 

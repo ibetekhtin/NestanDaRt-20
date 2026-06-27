@@ -5,11 +5,11 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/NestanDaRt-20
+WorkingDirectory=/opt/nestandart
 ExecStart=/usr/bin/node -r dotenv/config bot/index.js
 Restart=always
 RestartSec=10
-EnvironmentFile=/opt/NestanDaRt-20/.env
+EnvironmentFile=/opt/nestandart/.env
 
 [Install]
 WantedBy=multi-user.target
