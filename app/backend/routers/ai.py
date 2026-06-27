@@ -6,21 +6,15 @@ AI Router — proxy to AI providers.
 """
 from typing import List, Literal, Optional
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from config import settings
+from auth import require_secret
 from providers import ask as ai_ask
 
 router = APIRouter()
 
 MARKETS = Literal["phuket", "pattaya", "vietnam", "bali", "dubai"]
-
-
-def _check_secret(x_kote_secret: Optional[str]) -> None:
-    secret = settings.KOTE_RPC_SECRET
-    if secret and x_kote_secret != secret:
-        raise HTTPException(status_code=403, detail="Forbidden")
 
 
 class AIRequest(BaseModel):
@@ -72,8 +66,7 @@ class ChatRequest(BaseModel):
 
 
 @router.post("/ai/chat")
-async def ai_chat(req: ChatRequest, x_kote_secret: Optional[str] = Header(None)):
-    _check_secret(x_kote_secret)
+async def ai_chat(req: ChatRequest, _=Depends(require_secret)):
     system = "\n".join(m.content for m in req.messages if m.role == "system")
     prompt = "\n".join(m.content for m in req.messages if m.role != "system")
     try:

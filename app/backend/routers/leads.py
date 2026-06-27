@@ -1,19 +1,15 @@
 """
 Leads Router — создание и просмотр лидов через clients + bookings
 """
-from fastapi import APIRouter, Header, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from typing import Optional
+
+from auth import require_secret
 from config import settings
 from db import sb
 
 router = APIRouter()
-
-
-def _check_secret(x_kote_secret: Optional[str]) -> None:
-    secret = settings.KOTE_RPC_SECRET
-    if secret and x_kote_secret != secret:
-        raise HTTPException(status_code=403, detail="Forbidden")
 
 
 class LeadCreate(BaseModel):
@@ -65,9 +61,8 @@ async def get_leads(
     status: Optional[str] = None,
     stage: Optional[str] = None,
     limit: int = Query(50, le=200),
-    x_kote_secret: Optional[str] = Header(None),
+    _=Depends(require_secret),
 ):
-    _check_secret(x_kote_secret)
     try:
         query = sb.table("clients").select(
             "id, name, phone, tg_chat_id, source, status, stage, created_at, last_contact"

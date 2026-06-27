@@ -1,22 +1,15 @@
 """
 Webhooks Router — входящие вызовы от n8n
 """
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
+
+from auth import require_secret
 from config import settings
 from db import sb
 
 router = APIRouter()
-
-
-def _check_secret(x_kote_secret: Optional[str]) -> None:
-    expected = settings.KOTE_RPC_SECRET
-    # fail-closed: незаданный секрет — это мисконфигурация сервера, а не «всем можно»
-    if not expected:
-        raise HTTPException(status_code=503, detail="KOTE_RPC_SECRET not configured")
-    if x_kote_secret != expected:
-        raise HTTPException(status_code=403, detail="Invalid secret")
 
 
 class LeadWebhook(BaseModel):
@@ -35,8 +28,7 @@ class BookingWebhook(BaseModel):
 
 
 @router.post("/webhook/lead")
-async def webhook_lead(payload: LeadWebhook, x_kote_secret: Optional[str] = Header(None)):
-    _check_secret(x_kote_secret)
+async def webhook_lead(payload: LeadWebhook, _=Depends(require_secret)):
     try:
         result = sb.rpc("app_upsert_lead", {
             "p_name":        payload.name,
@@ -65,8 +57,7 @@ async def webhook_lead(payload: LeadWebhook, x_kote_secret: Optional[str] = Head
 
 
 @router.post("/webhook/booking")
-async def webhook_booking(payload: BookingWebhook, x_kote_secret: Optional[str] = Header(None)):
-    _check_secret(x_kote_secret)
+async def webhook_booking(payload: BookingWebhook, _=Depends(require_secret)):
     try:
         sb.table("bookings").update({"status": payload.status}).eq("id", payload.booking_id).execute()
     except Exception as e:

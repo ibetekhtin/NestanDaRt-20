@@ -4,9 +4,11 @@ Memory Router — client_memory table
        last_tour_viewed, tours_viewed[], tours_booked[],
        arrival_date, group_size, has_children
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
+
+from auth import require_secret
 from db import sb
 
 router = APIRouter()
@@ -25,7 +27,7 @@ class MemoryUpsert(BaseModel):
 
 
 @router.get("/clients/{client_id}/memory")
-async def get_memory(client_id: str):
+async def get_memory(client_id: str, _=Depends(require_secret)):
     try:
         result = sb.table("client_memory").select("*").eq("client_id", client_id).maybe_single().execute()
     except Exception as e:
@@ -34,7 +36,7 @@ async def get_memory(client_id: str):
 
 
 @router.post("/clients/{client_id}/memory")
-async def upsert_memory(client_id: str, mem: MemoryUpsert):
+async def upsert_memory(client_id: str, mem: MemoryUpsert, _=Depends(require_secret)):
     # updated_at проставляется server-side (DB default) — не передаём вручную
     payload = {"client_id": client_id, **mem.model_dump(exclude_none=True)}
     try:

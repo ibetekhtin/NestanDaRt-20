@@ -1,14 +1,16 @@
 """
 Clients Router
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+
+from auth import require_secret
 from db import sb
 
 router = APIRouter()
 
 
 @router.get("/clients/{tg_chat_id}")
-async def get_client(tg_chat_id: str):
+async def get_client(tg_chat_id: str, _=Depends(require_secret)):
     try:
         result = sb.table("clients").select("*").eq("tg_chat_id", tg_chat_id).maybe_single().execute()
     except Exception as e:

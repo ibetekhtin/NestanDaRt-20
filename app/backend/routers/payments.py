@@ -20,9 +20,10 @@ from datetime import datetime, timezone
 from typing import Optional
 
 import httpx
-from fastapi import APIRouter, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
+from auth import require_secret
 from config import settings
 from db import sb
 
@@ -31,15 +32,6 @@ router = APIRouter()
 
 YK_API = "https://api.yookassa.ru/v3/payments"
 TIMEOUT = 15.0
-
-
-def _check_secret(x_kote_secret: Optional[str]) -> None:
-    # fail-closed: незаданный секрет = мисконфигурация сервера, а не «всем можно»
-    secret = settings.KOTE_RPC_SECRET
-    if not secret:
-        raise HTTPException(status_code=503, detail="KOTE_RPC_SECRET not configured")
-    if x_kote_secret != secret:
-        raise HTTPException(status_code=403, detail="Forbidden")
 
 
 def _enabled() -> bool:
@@ -90,8 +82,7 @@ async def _notify_manager(text: str) -> None:
 
 
 @router.post("/pay/create")
-async def pay_create(body: PayCreate, x_kote_secret: Optional[str] = Header(None)):
-    _check_secret(x_kote_secret)
+async def pay_create(body: PayCreate, _=Depends(require_secret)):
     # 1) цена тура из БД (источник истины)
     try:
         tr = sb.table("tours").select("price_adult,price_child,title").eq("slug", body.tour_slug).limit(1).execute()
@@ -280,9 +271,8 @@ async def pay_webhook(request: Request):
 
 
 @router.post("/pay/reconcile")
-async def pay_reconcile(x_kote_secret: Optional[str] = Header(None)):
+async def pay_reconcile(_=Depends(require_secret)):
     """Вызывается n8n по расписанию: ищет зависшие pending и succeeded без оплаченной брони."""
-    _check_secret(x_kote_secret)
     try:
         res = sb.rpc("pay_stuck_report", {"p_secret": settings.KOTE_RPC_SECRET, "p_hours": 2}).execute()
         rep = res.data if isinstance(res.data, dict) else (res.data[0] if isinstance(res.data, list) and res.data else {})

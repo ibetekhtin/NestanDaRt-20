@@ -1,20 +1,23 @@
-"""
-SOS Router — emergency calls
-"""
-from fastapi import APIRouter, HTTPException
+"""SOS Router — экстренные вызовы (приватный, с секрет-гейтом)."""
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-import httpx
+
+from auth import require_secret
 from config import settings
 from db import sb
+from notify import tg_send
 
 router = APIRouter()
 
 EMERGENCY_NUMBERS = {
     "phuket":  {"police": "191", "ambulance": "1669", "fire": "199", "embassy": "+66-2-650-2531"},
     "pattaya": {"police": "191", "ambulance": "1669", "fire": "199", "embassy": "+66-2-650-2531"},
+    "vietnam": {"police": "113", "ambulance": "115",  "fire": "114", "embassy": "+84-24-3833-6991"},
     "bali":    {"police": "110", "ambulance": "118",  "fire": "113", "embassy": "+62-21-5765765"},
     "dubai":   {"police": "999", "ambulance": "998",  "fire": "997", "embassy": "+971-4-363-8600"},
 }
+# Неизвестный рынок: универсальный номер 112, а НЕ подмена Таиландом (это было опасно).
+EMERGENCY_DEFAULT = {"police": "112", "ambulance": "112", "fire": "112", "embassy": "уточните у менеджера"}
 
 
 class SOSRequest(BaseModel):
@@ -22,34 +25,22 @@ class SOSRequest(BaseModel):
     market_id: str
 
 
-async def _tg_send(token: str, chat_id: str, text: str) -> None:
-    async with httpx.AsyncClient(timeout=10) as client:
-        await client.post(
-            f"https://api.telegram.org/bot{token}/sendMessage",
-            json={"chat_id": chat_id, "text": text},
-        )
-
-
 @router.post("/sos")
-async def trigger_sos(req: SOSRequest):
+async def trigger_sos(req: SOSRequest, _=Depends(require_secret)):
     try:
         result = sb.table("clients").select("name, stage").eq("tg_chat_id", req.tg_chat_id).maybe_single().execute()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
     client_name = (result.data["name"] if result and result.data else None) or "Турист"
-    numbers = EMERGENCY_NUMBERS.get(req.market_id, EMERGENCY_NUMBERS["phuket"])
+    numbers = EMERGENCY_NUMBERS.get(req.market_id, EMERGENCY_DEFAULT)
 
-    token = settings.TELEGRAM_BOT_TOKEN
-    manager_chat = str(settings.MANAGER_CHAT_ID)
-
-    await _tg_send(
-        token, manager_chat,
-        f"🚨 SOS!\nКлиент: {client_name}\nРынок: {req.market_id}\nTG: {req.tg_chat_id}\n\n⚡ Свяжитесь немедленно!"
+    await tg_send(
+        settings.MANAGER_CHAT_ID,
+        f"🚨 SOS!\nКлиент: {client_name}\nРынок: {req.market_id}\nTG: {req.tg_chat_id}\n\n⚡ Свяжитесь немедленно!",
     )
-
-    await _tg_send(
-        token, req.tg_chat_id,
+    await tg_send(
+        req.tg_chat_id,
         (
             f"🚨 SOS получен!\n\n"
             f"📞 Полиция: {numbers['police']}\n"
@@ -57,7 +48,6 @@ async def trigger_sos(req: SOSRequest):
             f"🔥 Пожарные: {numbers['fire']}\n"
             f"📞 Посольство: {numbers['embassy']}\n\n"
             f"Менеджер свяжется с тобой прямо сейчас!"
-        )
+        ),
     )
-
     return {"status": "alerted", "emergency_numbers": numbers}

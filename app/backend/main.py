@@ -29,8 +29,10 @@ from routers import ai, bookings, clients, leads, markets, memory, payments, sos
 app = FastAPI(
     title="Нестандартный Отдых — API",
     version="2.0.0",
-    docs_url="/api/docs",
+    # Карта API скрыта в проде (не раскрываем эндпоинты/RPC/PII-поля).
+    docs_url=None,
     redoc_url=None,
+    openapi_url=None,
 )
 
 app.add_middleware(
