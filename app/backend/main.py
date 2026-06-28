@@ -24,6 +24,7 @@ from pydantic import BaseModel
 
 from config import settings
 from db import sb
+from notify import notify_manager
 from routers import ai, bookings, clients, leads, markets, memory, payments, sos, tours, webhooks
 
 app = FastAPI(
@@ -102,5 +103,48 @@ async def upsert_lead_legacy(lead: LeadIn):
         "p_secret":      settings.KOTE_RPC_SECRET,
     }).execute()
     return {"ok": True, "data": res.data}
+
+
+# ── Заявка из приложения «Нестандарт» (PWA checkout) ──────────
+# Публичный (форма приложения), rate-limit на nginx. Раньше шёл на мёртвый порт 3055.
+class AppOrder(BaseModel):
+    external_id: str | None = None
+    source: str = "Приложение"
+    name: str | None = None
+    phone: str | None = None
+    tg_chat_id: str | None = None
+    tour_name: str | None = None
+    total: int | None = None
+    status: str = "Новый"
+    comment: str | None = None
+
+
+@app.post("/api/leads", tags=["leads"], include_in_schema=False)
+async def app_order(order: AppOrder):
+    try:
+        sb.rpc("app_upsert_lead", {
+            "p_external_id": order.external_id,
+            "p_source":      order.source or "Приложение",
+            "p_name":        order.name,
+            "p_phone":       order.phone,
+            "p_tg_chat_id":  order.tg_chat_id,
+            "p_tour_name":   order.tour_name,
+            "p_total":       order.total,
+            "p_comment":     order.comment,
+            "p_status":      order.status or "Новый",
+            "p_secret":      settings.KOTE_RPC_SECRET,
+        }).execute()
+    except Exception:
+        # Не валим клиента (он уйдёт в outbox), но сообщаем менеджеру об ошибке записи.
+        await notify_manager(
+            f"⚠️ Заявка из приложения НЕ записалась в CRM\n{order.name or ''} {order.phone or ''}\n"
+            f"{order.tour_name or ''} — {order.total or '?'} ₽\n{order.comment or ''}"
+        )
+        return {"ok": False}
+    await notify_manager(
+        f"🆕 <b>Заявка из приложения</b>\n👤 {order.name or '—'}  📞 {order.phone or '—'}\n"
+        f"🏝 {order.tour_name or '—'} — {order.total or '?'} ₽\n💬 {order.comment or ''}"
+    )
+    return {"ok": True}
 
 
