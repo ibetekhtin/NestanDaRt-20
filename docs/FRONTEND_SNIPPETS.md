@@ -2,7 +2,6 @@
 
 On-brand куски под текущую палитру (золото `#FFD25E`, циан `#5DC8F5`, розовый `#FF6B9D`,
 тёмный `#1A1A2E`). Данные/бот уже готовы под них — формы просто шлют `app_upsert_lead`.
-Размещай где удобно в `nestandart-phuket/index.html` и `platform/app.html`.
 
 ---
 

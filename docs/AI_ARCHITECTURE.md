@@ -347,7 +347,6 @@ GROQ_MODEL=llama-3.3-70b-versatile
 ```bash
 # Откат к backup
 cp app/backend/routers/ai.py.bak app/backend/routers/ai.py
-cp platform/bot/main.py.bak platform/bot/main.py
 
 # Перезапуск
 docker compose build kote-backend

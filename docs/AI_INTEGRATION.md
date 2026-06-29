@@ -127,7 +127,6 @@ GitHub Copilot может работать вместе с Cline.
 ├── app/
 │   └── backend/
 │       └── config.py     # ← Читает .env
-└── platform/
     └── bot/
         └── main.py       # ← Читает .env
 ```
@@ -242,7 +241,6 @@ cp .env.example .env
 
 # 4. Установить зависимости
 pip install -r app/backend/requirements.txt
-pip install -r platform/bot/requirements.txt
 
 # 5. Проверить импорты
 python -c "from providers import ask; print('OK')"

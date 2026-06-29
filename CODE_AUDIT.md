@@ -9,9 +9,6 @@
 
 | Файл | Статус | Действие |
 |------|--------|----------|
-| `platform/app.html` | ✅ Основная (v11.0, 230 KB) | **Оставить** |
-| `platform/app-hyper.html` | ❌ Дубликат | **Удалить** |
-| `platform/public/index.html` | ❌ Дубликат | **Удалить** |
 
 **Почему:** Всё три файла содержат один и тот же PWA с минимальными отличиями. `app.html` — каноническая версия.
 
@@ -23,7 +20,6 @@
 | `Остальное/nestandart-app_v10_FINAL.html` | ❌ Устарел | **Удалить** |
 | `Остальное/nestandart-phuket-app.html` | ❌ Устарел | **Удалить** |
 
-**Почему:** Ветка v10 уже в `platform/app.html` (v11.0). Эти файлы не используются.
 
 ### 1.3. Прототипы
 
@@ -49,7 +45,6 @@
 
 | Файл | Статус | Действие |
 |------|--------|----------|
-| `platform/bot/main.py` | ❌ Deprecated | **Удалить** |
 
 **Почему:** Логика бота теперь в n8n workflow.
 
@@ -65,7 +60,6 @@
 | `pattayaSoon` placeholder | `index.html` | ✅ Да | Убрать после создания лендинга |
 | Вьетнам (упоминания в коде) | `index.html`, `app.html` | ✅ Да | Пока не запущен |
 
-### 2.2. В PWA `platform/app.html`
 
 | Функция | Где | Можно убрать? | Примечание |
 |---------|-----|---------------|------------|
@@ -151,9 +145,6 @@
 Остальное/ai_studio_code.html
 Остальное/code.html
 Остальное/Каталог экскурсий.html
-platform/app-hyper.html
-platform/public/index.html
-platform/bot/main.py
 deploy/systemd/nestandart-bot.service
 ```
 
@@ -165,7 +156,6 @@ deploy/systemd/nestandart-bot.service
 - pattayaSoon placeholder
 - Все data-city="pattaya" атрибуты
 
-// В platform/app.html:
 - Паттайя блок (если PATTAYA_ENABLED=false)
 - Вьетнам блок (если не запущен)
 ```
@@ -204,7 +194,6 @@ deploy/systemd/nestandart-bot.service
 
 ```bash
 # 1. Удалить дубликаты PWA
-rm platform/app-hyper.html platform/public/index.html
 
 # 2. Удалить старые версии
 rm Остальное/nestandart-app_v10*.html
@@ -215,7 +204,6 @@ rm Остальное/code.html
 rm Остальное/Каталог\ экскурсий.html
 
 # 3. Удалить мёртвый код
-rm platform/bot/main.py
 rm deploy/systemd/nestandart-bot.service
 
 # 4. Git commit

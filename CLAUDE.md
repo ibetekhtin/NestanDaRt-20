@@ -133,7 +133,6 @@ Nestandart/
 │
 ├── providers/                 ← AI fallback chain
 │
-├── platform/
 │   ├── app.html               ← PWA v11.0, ~230 KB self-contained
 │   ├── Nestandart/prompt.txt ← ЛИЧНОСТЬ КотЭ (n8n workflow prompt)
 │   └── supabase/schema.sql    ← справочник схемы
@@ -348,7 +347,6 @@ docker compose build kote-backend && \
 ssh root@77.42.93.187 "cd /opt/nestandart && git pull"
 
 # app.html → VPS:
-scp platform/app.html root@77.42.93.187:/var/www/nestandart/platform/app.html
 
 # nginx изменения:
 nginx -t && systemctl reload nginx

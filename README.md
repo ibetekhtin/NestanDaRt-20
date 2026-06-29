@@ -12,7 +12,6 @@ Nestandart/                         ← github.com/ibetekhtin/NestanDaRt-20
 ├── baza/                  ШТАБ        React + Vite → baza.nestandart.online
 ├── app/backend/         BACKEND     FastAPI (ai/bookings/clients/leads/payments/…)
 ├── providers/           AI-КАСКАД   groq → aitunnel → openrouter → gemini
-├── platform/            ПЛАТФОРМА   app.html (PWA), Nestandart/ (prompt + workflow)
 ├── deploy/              VPS-скрипты + nginx-конфиги + healthcheck
 ├── docs/                ENV.md, API.md, VPS_SETUP.md
 └── docker-compose.yml · CLAUDE.md · MASTER_PROMPT.md
@@ -25,7 +24,6 @@ Nestandart/                         ← github.com/ibetekhtin/NestanDaRt-20
 | Туры, цены, сезоны | Supabase → `tours` | SQL / HQ-панель. КотЭ подхватит сам |
 | База знаний (84+ записи) | Supabase → `knowledge` | SQL. КотЭ ищет по вопросу клиента |
 | Клиенты, заявки, платежи | Supabase → `clients`, `bookings`, `payments` | через HQ или бота |
-| Личность КотЭ | `platform/Nestandart/prompt.txt` | правишь текст → импорт workflow в n8n |
 | Контент сайта | `nestandart-phuket/*.html` | правка + git push |
 | Конфиг сайта | `nestandart-phuket/js/config.js` | правка + push |
 
@@ -39,7 +37,6 @@ Telegram → n8n (workflow doCUKEZQpLQjDmxP) → get_kote_context(chat_id, во�
               память клиента + живой каталог туров + знания под вопрос
                        ↓
         backend /api/v1/ai/chat → AI-каскад (groq → aitunnel → openrouter → gemini)
-                       ↓ личность из platform/Nestandart/prompt.txt
                      ответ клиенту
 ```
 

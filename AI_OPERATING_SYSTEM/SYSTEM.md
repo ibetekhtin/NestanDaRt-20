@@ -83,7 +83,6 @@
 | `MASTER_PROMPT.md` | Контекст для AI-сессий |
 | `docker-compose.yml` | Инфраструктура |
 | `app/backend/main.py` | Точка входа API |
-| `platform/app.html` | PWA (230 KB) |
 | `nestandart-phuket/index.html` | Сайт Пхукет |
 
 ---

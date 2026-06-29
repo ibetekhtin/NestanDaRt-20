@@ -14,7 +14,6 @@
 Telegram → n8n (kote-n8n, :5678) → FastAPI (kote-backend, :8000) → Supabase
 Сайт: nestandart.online → nginx → /var/www/nestandart/
 Штаб: baza.nestandart.online → nginx → React/Vite (baza/)
-PWA:  app.nestandart.online → nginx → platform/app.html
 ```
 
 - **Бот КотЭ** = n8n workflow `doCUKEZQpLQjDmxP`. НЕ запускать `nestandart-bot` через Docker.
@@ -42,8 +41,6 @@ PWA:  app.nestandart.online → nginx → platform/app.html
 | `docker-compose.yml` | Два сервиса: kote-backend, kote-n8n |
 | `app/backend/` | FastAPI (роутеры: ai, bookings, clients, leads, markets, memory, payments, sos, tours, webhooks) |
 | `providers/` | AI fallback chain (groq, aitunnel, openrouter, gemini + общий openai_compat.py) |
-| `platform/Nestandart/prompt.txt` | Промпт-личность КотЭ |
-| `platform/app.html` | PWA v11.0, self-contained |
 | `baza/` | БАЗА (React Vite, baza.nestandart.online) |
 | `deploy/healthcheck.sh` | Cron */5 мин — алерты в Telegram |
 
@@ -81,14 +78,12 @@ n8n workflow `doCUKEZQpLQjDmxP` шлёт запросы на `http://kote-backen
 
 ### P0 — Немедленно (деньги уходят мимо прямо сейчас)
 
-1. **Паттайя — убрать заглушку** (`pattayaSoon`) в `platform/app.html` → показать реальный каталог из БД
 2. **Паттайя — посадочная страница** `/pattaya/index.html` (клон структуры `/phuket/`) → SEO трафик
 3. **Паттайя — 15 знаний** в `knowledge` (пляжи, сезонность, логистика) + обновить промпт КотЭ
 
 ### P1 — Эта неделя
 
 4. **n8n ноды** — добавить `X-Kote-Secret` заголовок в «🤖 Gemini» и «💳 Создать оплату» (UI n8n, не код)
-5. **Вьетнам PWA** — добавить третий город в `platform/app.html`: splash, акцент-цвет (#B8FF3C), фильтр
 6. **Supabase Вьетнам** — `UPDATE markets SET active=true WHERE slug='vietnam'`; активировать туры
 7. **`knowledge.city`** — расширить CHECK constraint на 'Вьетнам', добавить 15 записей
 

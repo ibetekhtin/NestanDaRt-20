@@ -31,7 +31,6 @@
 
 ### Модули
 - `app/backend/` → зависит от `providers/`, `shared/`
-- `platform/` → зависит от `shared/`
 - `nestandart-phuket/` → зависит от `shared/`
 - `baza/` → зависит от `shared/`
 

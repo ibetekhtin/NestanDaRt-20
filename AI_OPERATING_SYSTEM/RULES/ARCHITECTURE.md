@@ -40,7 +40,6 @@
 NestanDaRt-20/
 ├── app/backend/          ← FastAPI (роутеры по domains)
 ├── providers/            ← AI fallback chain
-├── platform/             ← PWA (один app.html)
 ├── nestandart-phuket/    ← Сайт (HTML/CSS/JS)
 ├── baza/                   ← React/Vite (компоненты по фичам)
 ├── deploy/               ← Скрипты деплоя
@@ -61,10 +60,6 @@ NestanDaRt-20/
 
 | Модуль | Может зависеть от | Не может зависеть от |
 |--------|-------------------|----------------------|
-| `app/backend/` | `providers/`, `shared/` | `platform/`, `nestandart-phuket/`, `baza/` |
-| `platform/` | `shared/` | `app/backend/`, `baza/` |
-| `nestandart-phuket/` | `shared/` | `app/backend/`, `baza/`, `platform/` |
-| `baza/` | `shared/` | `app/backend/`, `platform/`, `nestandart-phuket/` |
 | `shared/` | Ничего | Всё (только общий код) |
 
 ### Правило:

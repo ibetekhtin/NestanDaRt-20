@@ -83,7 +83,6 @@ A comprehensive audit of the entire Nestandart system was performed across 14 st
 **Status:** ✅ FIXED — Added rate limiting zones (30r/s API, 10r/s webhooks)
 
 ### P1-6: ❤️ Missing HEALTHCHECK in Dockerfiles
-**Files:** `app/backend/Dockerfile`, `platform/bot/Dockerfile`, `docker-compose.yml`  
 **Impact:** Docker/K8s can't detect service health  
 **Status:** ✅ FIXED — Added HEALTHCHECK directives to all Dockerfiles + n8n service in compose
 
@@ -105,7 +104,6 @@ A comprehensive audit of the entire Nestandart system was performed across 14 st
 | 5 | Conversations table no rate limit | `supabase/schema.sql` | ✅ FIXED (RLS + function) |
 | 6 | HQ app no authentication | `baza/` | ⚠️ Requires user action |
 | 7 | Tour pages inconsistent markup | `nestandart-phuket/tours/*` | 📝 Architectural change needed |
-| 8 | Duplicate AI logic (bot vs backend) | `platform/bot/` + `app/backend/routers/` | 📝 Refactor opportunity |
 | 9 | No CORS restrictions on all endpoints | `app/backend/main.py` | ⚠️ CORS exists but minimal |
 | 10 | Hardcoded `your-domain.com` in nginx | `deploy/nginx.conf` | ⚠️ User must set real domain |
 | 11 | `shared/markets.js` duplicates DB data | `shared/markets.js` | 📝 Refactor for DB-driven |
@@ -233,7 +231,6 @@ All optimizations in `supabase/migrations/005_performance_and_security.sql`:
 
 ## 10. Telegram Bot Findings
 
-The Python bot (`platform/bot/`) is **disabled** (`profiles: bot`) — production uses n8n Cloud.
 
 ### Architecture
 - Disabled Python bot: aiogram 3.x + Gemini → just runs in cloud
@@ -365,7 +362,6 @@ As CTO, the highest ROI improvements to scale revenue:
 | 5 | `.dockerignore` created | `.dockerignore` | Performance |
 | 6 | Docker memory limits added | `docker-compose.yml` | Reliability |
 | 7 | Docker logging limits added | `docker-compose.yml` | Maintenance |
-| 8 | HEALTHCHECK added to Dockerfiles | `app/backend/Dockerfile`, `platform/bot/Dockerfile` | Monitoring |
 | 9 | HEALTHCHECK added to n8n | `docker-compose.yml` | Monitoring |
 | 10 | Deploy script with health checks | `deploy/deploy.sh` | Reliability |
 | 11 | Backup script enhanced | `deploy/backup-supabase.sh` | Disaster Recovery |

@@ -84,7 +84,6 @@ NestanDaRt-20/
 │   ├── openai_compat.py       ← Универсальный OpenAI-совместимый
 │   └── openrouter.py          ← OpenRouter
 │
-├── platform/                  ← PWA + промпты
 │   ├── app.html               ← PWA v11.0 (~230 KB, self-contained)
 │   ├── app-hyper.html         ← Альтернативная версия PWA
 │   ├── wrangler.toml
@@ -238,7 +237,6 @@ NestanDaRt-20/
 | `MASTER_PROMPT.md` | Контекст для AI-сессий | 🔴 КРИТИЧНО |
 | `README.md` | Общая карта | 🟡 ВАЖНО |
 | `app/backend/main.py` | Точка входа FastAPI | 🟡 ВАЖНО |
-| `platform/app.html` | PWA (230 KB) | 🟡 ВАЖНО |
 | `nestandart-phuket/index.html` | Сайт Пхукет | 🟡 ВАЖНО |
 | `baza/src/App.jsx` | Штаб (React) | 🟢 ПОЛЕЗНО |
 | `docker-compose.yml` | Инфраструктура | 🟢 ПОЛЕЗНО |
@@ -251,12 +249,9 @@ NestanDaRt-20/
 
 | Что | Где | Действие |
 |-----|-----|----------|
-| `platform/app.html` + `platform/app-hyper.html` + `platform/public/index.html` | platform/ | Оставить 1 основную версию, остальные удалить |
-| `Остальное/nestandart-app_v10.html` + `_FINAL` + `_phuket-app` | Остальное/ | Ветка master уже в `platform/app.html` — удалить |
 | `Остальное/Prototype.html` + `Prototype-2.html` | Остальное/ | Прототипы — удалить |
 | `Остальное/ai_studio_code.html` + `code.html` | Остальное/ | Непонятные файлы — удалить |
 | `deploy/systemd/nestandart-bot.service` | deploy/ | Мёртвый systemd-юнит (бот в n8n) |
-| `platform/bot/main.py` | platform/ | Старый бот (deprecated) |
 
 ### 6.2. Необязательные для запуска функции
 

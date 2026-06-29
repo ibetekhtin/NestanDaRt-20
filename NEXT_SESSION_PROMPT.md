@@ -42,7 +42,6 @@
 
 ### 2а. PWA — убрать заглушку Паттайи
 
-**Файл:** `/Users/soloplayer/Desktop/Nestandart/platform/app.html`
 
 В нём сейчас:
 - Блок `id="pattayaSoon"` со стилем `display:none` и текстом «Паттайя — скоро!»
@@ -59,7 +58,6 @@
 
 **Образец:** `/var/www/nestandart/phuket/index.html` (на VPS) или структура папки `nestandart.online/phuket/`
 
-**Задача:** Создать файл `platform/pattaya/index.html` — полноценная SEO-страница для Паттайи.
 
 Структура аналогична Пхукету:
 - `<title>Экскурсии в Паттайе — Нестандартный Отдых®</title>`
@@ -99,7 +97,6 @@ ALTER TABLE knowledge ADD CONSTRAINT knowledge_city_check
 
 ### 2г. Промпт КотЭ — добавить блок Паттайи
 
-**Файл:** `/Users/soloplayer/Desktop/Nestandart/platform/Nestandart/prompt.txt`
 
 Найди раздел про Пхукет (или «рынки»). Добавь аналогичный блок про Паттайю:
 - Что уникального: активности, вечерняя жизнь, Ко Лан, пляж Джомтьен для семей
@@ -112,7 +109,6 @@ ALTER TABLE knowledge ADD CONSTRAINT knowledge_city_check
 
 ### 3а. PWA — третий город
 
-**Файл:** `/Users/soloplayer/Desktop/Nestandart/platform/app.html`
 
 В PWA сейчас только Пхукет и Паттайя. Нужно добавить Вьетнам как третий вариант.
 
@@ -157,7 +153,6 @@ LIMIT 10;
 
 ### 3г. Промпт КотЭ — добавить блок Вьетнама
 
-**Файл:** `platform/Nestandart/prompt.txt`
 
 Добавь раздел про Вьетнам:
 - Нячанг vs Дананг: чем отличаются, кому что подходит
@@ -166,7 +161,6 @@ LIMIT 10;
 
 ### 3д. Посадочная страница /vietnam/
 
-Аналогично `/pattaya/` — создать `platform/vietnam/index.html`:
 - SEO под Вьетнам (Нячанг, Дананг, экскурсии)
 - Hero с картой/описанием двух городов
 - Акцент-цвет Вьетнама
@@ -190,15 +184,12 @@ LIMIT 10;
 ssh root@77.42.93.187 "cd /opt/nestandart && git pull && docker compose build kote-backend && docker compose up -d"
 
 # app.html (PWA):
-scp platform/app.html root@77.42.93.187:/var/www/nestandart/platform/app.html
 
 # Паттайя посадочная:
 ssh root@77.42.93.187 "mkdir -p /var/www/nestandart/pattaya"
-scp platform/pattaya/index.html root@77.42.93.187:/var/www/nestandart/pattaya/index.html
 
 # Вьетнам посадочная:
 ssh root@77.42.93.187 "mkdir -p /var/www/nestandart/vietnam"
-scp platform/vietnam/index.html root@77.42.93.187:/var/www/nestandart/vietnam/index.html
 ```
 
 ---
