@@ -42,7 +42,7 @@ values ('bali-volcano', 'Восход на вулкане Батур', 'Бали
 
 ### 3. HQ
 
-Добавить город в маппинг `MARKET_CITY` (`hq/src/context/AppContext.jsx`) и в список `MARKETS` (`hq/src/App.jsx`).
+Добавить город в маппинг `MARKET_CITY` (`baza/src/context/AppContext.jsx`) и в список `MARKETS` (`baza/src/App.jsx`).
 
 ### 4. КотЭ
 

@@ -123,7 +123,7 @@ NestanDaRt-20/
 │   ├── tours/                 ← Детальные страницы туров
 │   └── baza/                  ← Дополнительные файлы
 │
-├── hq/                        ← БАЗА (Штаб) — React/Vite
+├── baza/                        ← БАЗА (Штаб) — React/Vite
 │   ├── index.html
 │   ├── package.json
 │   ├── vite.config.js
@@ -240,7 +240,7 @@ NestanDaRt-20/
 | `app/backend/main.py` | Точка входа FastAPI | 🟡 ВАЖНО |
 | `platform/app.html` | PWA (230 KB) | 🟡 ВАЖНО |
 | `nestandart-phuket/index.html` | Сайт Пхукет | 🟡 ВАЖНО |
-| `hq/src/App.jsx` | Штаб (React) | 🟢 ПОЛЕЗНО |
+| `baza/src/App.jsx` | Штаб (React) | 🟢 ПОЛЕЗНО |
 | `docker-compose.yml` | Инфраструктура | 🟢 ПОЛЕЗНО |
 
 ---
@@ -265,7 +265,7 @@ NestanDaRt-20/
 | Паттайя в `nestandart-phuket/index.html` | 6 туров + placeholder | ✅ Да — отдельный лендинг |
 | Вьетнам в коде (упоминания) | везде | ✅ Да — когда не нужен |
 | `pattayaSoon` placeholder | nestandart-phuket/ | ✅ Да |
-| `hq/` (БАЗА) | React-приложение | ❌ Нет — нужно для менеджеров |
+| `baza/` (БАЗА) | React-приложение | ❌ Нет — нужно для менеджеров |
 | `n8n/` (workflows backup) | n8n/flows/ | ❌ Нет — живут в Docker volume |
 | `docs/` (документация) | docs/ | ❌ Нет — нужно для разработки |
 | `supabase/migrations/` | миграции | ❌ Нет — история схемы |

@@ -138,7 +138,7 @@ Nestandart/
 │   ├── Nestandart/prompt.txt ← ЛИЧНОСТЬ КотЭ (n8n workflow prompt)
 │   └── supabase/schema.sql    ← справочник схемы
 │
-├── hq/                        ← БАЗА (React Vite, baza.nestandart.online)
+├── baza/                        ← БАЗА (React Vite, baza.nestandart.online)
 │   └── src/components/
 │       ├── DashboardView.jsx  ← КПТ hero + KPI
 │       ├── WikiView.jsx       ← база знаний (live Supabase)

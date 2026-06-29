@@ -9,7 +9,7 @@
 ```
 Nestandart/                         ← github.com/ibetekhtin/NestanDaRt-20
 ├── nestandart-phuket/   САЙТ        HTML/CSS/JS → VPS (nginx + SSL)
-├── hq/                  ШТАБ        React + Vite → baza.nestandart.online
+├── baza/                  ШТАБ        React + Vite → baza.nestandart.online
 ├── app/backend/         BACKEND     FastAPI (ai/bookings/clients/leads/payments/…)
 ├── providers/           AI-КАСКАД   groq → aitunnel → openrouter → gemini
 ├── platform/            ПЛАТФОРМА   app.html (PWA), Nestandart/ (prompt + workflow)

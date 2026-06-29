@@ -27,13 +27,13 @@
 ### Точки входа
 - `app/backend/main.py`
 - `nestandart-phuket/index.html`
-- `hq/src/App.jsx`
+- `baza/src/App.jsx`
 
 ### Модули
 - `app/backend/` → зависит от `providers/`, `shared/`
 - `platform/` → зависит от `shared/`
 - `nestandart-phuket/` → зависит от `shared/`
-- `hq/` → зависит от `shared/`
+- `baza/` → зависит от `shared/`
 
 ### Листья (без зависимостей)
 - `deploy/scripts/*.sh`

@@ -103,7 +103,7 @@ A comprehensive audit of the entire Nestandart system was performed across 14 st
 | 3 | No database indexes on foreign keys | `supabase/schema.sql` | ✅ FIXED (migration) |
 | 4 | No `.dockerignore` — bloated build context | — | ✅ FIXED |
 | 5 | Conversations table no rate limit | `supabase/schema.sql` | ✅ FIXED (RLS + function) |
-| 6 | HQ app no authentication | `hq/` | ⚠️ Requires user action |
+| 6 | HQ app no authentication | `baza/` | ⚠️ Requires user action |
 | 7 | Tour pages inconsistent markup | `nestandart-phuket/tours/*` | 📝 Architectural change needed |
 | 8 | Duplicate AI logic (bot vs backend) | `platform/bot/` + `app/backend/routers/` | 📝 Refactor opportunity |
 | 9 | No CORS restrictions on all endpoints | `app/backend/main.py` | ⚠️ CORS exists but minimal |

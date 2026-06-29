@@ -10,7 +10,7 @@ VITE_SUPABASE_ANON_KEY=<anon key из Dashboard → Settings → API>
 ```
 
 Где лежат:
-- `hq/.env` — для HQ-панели (в gitignore, не коммитится)
+- `baza/.env` — для HQ-панели (в gitignore, не коммитится)
 - n8n Credentials — для воркфлоу КотЭ
 
 ## Таблицы

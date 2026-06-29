@@ -13,7 +13,7 @@
 ```
 Telegram → n8n (kote-n8n, :5678) → FastAPI (kote-backend, :8000) → Supabase
 Сайт: nestandart.online → nginx → /var/www/nestandart/
-Штаб: baza.nestandart.online → nginx → React/Vite (hq/)
+Штаб: baza.nestandart.online → nginx → React/Vite (baza/)
 PWA:  app.nestandart.online → nginx → platform/app.html
 ```
 
@@ -44,7 +44,7 @@ PWA:  app.nestandart.online → nginx → platform/app.html
 | `providers/` | AI fallback chain (groq, aitunnel, openrouter, gemini + общий openai_compat.py) |
 | `platform/Nestandart/prompt.txt` | Промпт-личность КотЭ |
 | `platform/app.html` | PWA v11.0, self-contained |
-| `hq/` | БАЗА (React Vite, baza.nestandart.online) |
+| `baza/` | БАЗА (React Vite, baza.nestandart.online) |
 | `deploy/healthcheck.sh` | Cron */5 мин — алерты в Telegram |
 
 ## Архитектурный нюанс (ВАЖНО — не ломать)

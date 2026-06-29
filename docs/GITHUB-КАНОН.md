@@ -48,7 +48,7 @@
 |---|---|---|---|
 | `nestandart-phuket/` | 59 | **САЙТ**: `index.html`, 27 стр. туров, 10 статей блога, `baza/` (знания), `js/config.js` (боты, города), sitemap/robots/og | ✅ деплоится на VPS nginx (`/var/www/nestandart`) |
 | `platform/` | 26 | **ПЛАТФОРМА** (см. §3) | смешанный |
-| `hq/` | 25 | **ШТАБ**: React + Vite админка → Supabase. Вьюхи: CRM, ContentFactory, Dashboard, Finance, Kanban, Wiki. Вход только админу | ⏳ есть код, деплой не подтверждён |
+| `baza/` | 25 | **ШТАБ**: React + Vite админка → Supabase. Вьюхи: CRM, ContentFactory, Dashboard, Finance, Kanban, Wiki. Вход только админу | ⏳ есть код, деплой не подтверждён |
 | `app/` | 13 | **BACKEND**: `app/backend/` FastAPI (роутеры ai/bookings/clients/leads/markets/memory/sos/webhooks) | ✅ деплоится (`kote-backend`), но GitHub-версия v1.0.0 — отстаёт |
 | `archive-docs/` | 13 | архив старых доков | 🗄️ архив |
 | `docs/` | 10 | актуальные каноны: `АРХИТЕКТУРА-КАНОН.md`, `AI_ARCHITECTURE.md`, `ARCHITECTURE.md`, `N8N_MIGRATION.md`, `ENV.md`, `SUPABASE.md`, `API.md`, `DEPLOY.md` + этот файл | ✅ канон |

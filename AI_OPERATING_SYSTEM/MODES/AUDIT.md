@@ -25,7 +25,7 @@
 - [ ] Прочитать конфигурации nginx
 - [ ] Прочитать .env.example (без секретов)
 - [ ] Прочитать все Python-файлы в app/backend/
-- [ ] Прочитать все JS/JSX файлы в hq/
+- [ ] Прочитать все JS/JSX файлы в baza/
 - [ ] Прочитать все HTML/CSS/JS в nestandart-phuket/
 - [ ] Прочитать platform/app.html
 
