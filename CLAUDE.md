@@ -82,6 +82,42 @@
 - **Локально:** `/Users/soloplayer/Desktop/Nestandart/`
 - **VPS:** `/opt/nestandart/` (симлинк `/opt/kote` → `/opt/nestandart` для совместимости)
 
+### AI Operating System
+- **Путь:** `AI_OPERATING_SYSTEM/`
+- **Назначение:** Правила и режимы работы для AI-агентов
+- **Структура:**
+  ```
+  AI_OPERATING_SYSTEM/
+  ├── SYSTEM.md                    ← Конституция проекта
+  ├── MODES/                       ← 7 режимов работы
+  │   ├── AUDIT.md                 ← Только анализ
+  │   ├── REFACTOR.md              ← Рефакторинг по аудиту
+  │   ├── BUILD.md                 ← Новая функциональность
+  │   ├── SECURITY.md              ← Безопасность
+  │   ├── PERFORMANCE.md           ← Производительность
+  │   ├── RELEASE.md               ← Деплой
+  │   └── EMERGENCY.md             ← Восстановление
+  ├── RULES/                       ← 7 правил
+  │   ├── ARCHITECTURE.md          ← Архитектура
+  │   ├── CODING.md                ← Стандарты кода
+  │   ├── DEPENDENCIES.md          ← Зависимости
+  │   ├── SAFE_DELETE.md           ← Безопасное удаление
+  │   ├── DOCUMENTATION.md         ← Документация
+  │   ├── GIT.md                   ← Git workflow
+  │   └── DECISIONS.md             ← Журнал решений
+  ├── CHECKLISTS/                  ← 5 чеклистов
+  │   ├── BEFORE_CHANGE.md         ← Перед изменением
+  │   ├── BEFORE_COMMIT.md         ← Перед коммитом
+  │   ├── BEFORE_DEPLOY.md         ← Перед деплоем
+  │   ├── AFTER_REFACTOR.md        ← После рефакторинга
+  │   └── AFTER_RELEASE.md         ← После релиза
+  └── REPORTS/                     ← 3 шаблона
+      ├── TEMPLATE.md              ← Универсальный
+      ├── AUDIT_TEMPLATE.md        ← Для аудита
+      └── RELEASE_TEMPLATE.md      ← Для релиза
+  ```
+- **Использование:** Все AI-агенты должны следовать правилам из `SYSTEM.md` и использовать соответствующие режимы из `MODES/`
+
 ### Папки
 ```
 Nestandart/

@@ -34,6 +34,11 @@ PWA:  app.nestandart.online → nginx → platform/app.html
 | Файл | Назначение |
 |------|-----------|
 | `CLAUDE.md` | Главный канон — читать перед любой работой |
+| `AI_OPERATING_SYSTEM/SYSTEM.md` | Конституция проекта — правила для AI-агентов |
+| `AI_OPERATING_SYSTEM/MODES/` | 7 режимов работы (AUDIT, REFACTOR, BUILD, SECURITY, PERFORMANCE, RELEASE, EMERGENCY) |
+| `AI_OPERATING_SYSTEM/RULES/` | 7 правил (Architecture, Coding, Dependencies, Safe Delete, Documentation, Git, Decisions) |
+| `AI_OPERATING_SYSTEM/CHECKLISTS/` | 5 чеклистов (Before Change, Before Commit, Before Deploy, After Refactor, After Release) |
+| `AI_OPERATING_SYSTEM/REPORTS/` | 3 шаблона отчётов (Template, Audit, Release) |
 | `docker-compose.yml` | Два сервиса: kote-backend, kote-n8n |
 | `app/backend/` | FastAPI (роутеры: ai, bookings, clients, leads, markets, memory, payments, sos, tours, webhooks) |
 | `providers/` | AI fallback chain (groq, aitunnel, openrouter, gemini + общий openai_compat.py) |
