@@ -115,6 +115,36 @@
       "skillPath": "skills/monitoring-expert/SKILL.md",
       "computedHash": "928f8e068a5c3c85e4a8d515241f21e5cf6a38b39c597cf54b681197fa107853"
     },
+    "n8n-code-javascript": {
+      "source": "czlonkowski/n8n-skills",
+      "sourceType": "github",
+      "skillPath": "skills/n8n-code-javascript/SKILL.md",
+      "computedHash": "7bb3d0a7316155a650c725f4f0cd7234cd02be362c72e1196981c18c2596ee91"
+    },
+    "n8n-mcp-tools-expert": {
+      "source": "czlonkowski/n8n-skills",
+      "sourceType": "github",
+      "skillPath": "skills/n8n-mcp-tools-expert/SKILL.md",
+      "computedHash": "68ef07515849ba91da343506009d15bd508dc3af54916a9bbd4af57c07ec2fca"
+    },
+    "n8n-node-configuration": {
+      "source": "czlonkowski/n8n-skills",
+      "sourceType": "github",
+      "skillPath": "skills/n8n-node-configuration/SKILL.md",
+      "computedHash": "dfe7ecc6b8b8a9213d63ca2b97cd6dcea4629d6264adb488bb2ed71629df3d10"
+    },
+    "n8n-validation-expert": {
+      "source": "czlonkowski/n8n-skills",
+      "sourceType": "github",
+      "skillPath": "skills/n8n-validation-expert/SKILL.md",
+      "computedHash": "def0a64ac1c0f25183e2049eebcb9a756798282234069bc624e2bc249fc01af0"
+    },
+    "n8n-workflow-patterns": {
+      "source": "czlonkowski/n8n-skills",
+      "sourceType": "github",
+      "skillPath": "skills/n8n-workflow-patterns/SKILL.md",
+      "computedHash": "9ccf6e22a8a34cb732f8f2a40f6cb83e0b94d92a29f5a5422010c7a3aceadf77"
+    },
     "nginx-configuration": {
       "source": "aj-geddes/useful-ai-prompts",
       "sourceType": "github",
@@ -234,6 +264,18 @@
       "sourceType": "github",
       "skillPath": "telegram-bot/SKILL.md",
       "computedHash": "8c9554098e2f9c4baa53980e09f3bd7374034c1948e73341b691a33ebb473db9"
+    },
+    "telegram-bot-builder": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/telegram-bot-builder/SKILL.md",
+      "computedHash": "a57b1413132d277829e3e357270e993a5ae67a41fa757c9b201d46c30c6289fc"
+    },
+    "telegram-mini-app": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/telegram-mini-app/SKILL.md",
+      "computedHash": "e19acb241d3d9d8dd2f275be5588dd129fd36f97f93d0dd18fa7b93b67d2e205"
     },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",
