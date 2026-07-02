@@ -76,12 +76,12 @@
 ### Шаг 4: Деплой
 - [ ] Деплой бэкенда: `docker compose up -d --force-recreate`
 - [ ] Деплой фронтенда: `scp` / `rsync` на VPS
-- [ ] Деплой HQ: `npm run build && scp` (если нужно)
+- [ ] Деплой БАЗЫ: `npm run build && scp` (если нужно)
 - [ ] Применить миграции (если есть)
 - [ ] Перезагрузить nginx: `systemctl reload nginx`
 
 ### Шаг 5: Верификация
-- [ ] Health check: `curl https://nestandart.online/api/v1/health`
+- [ ] Health check: `curl https://nestandart.online/health`
 - [ ] Проверить markets: `curl https://nestandart.online/api/v1/markets`
 - [ ] Проверить tours: `curl https://nestandart.online/api/v1/tours`
 - [ ] Открыть сайт: https://nestandart.online
@@ -110,14 +110,14 @@
 
 ```bash
 # Откат бэкенда
-docker compose rollback kote-backend
+git revert HEAD && docker compose build kote-backend && docker compose up -d  # отката-команды у compose нет kote-backend
 
 # Откат фронтенда
 git checkout HEAD~1 -- nestandart-phuket/
 scp -r nestandart-phuket/ root@VPS:/var/www/nestandart/
 
 # Откат БД
-psql -U postgres -d nestandart < backup_YYYYMMDD.sql
+# БД в Supabase Cloud: восстановление — см. docs/RUNBOOK.md §Restore < backup_YYYYMMDD.sql
 
 # Откат n8n
 docker exec kote-n8n n8n import:workflow --backup=backup_YYYYMMDD.json
@@ -147,7 +147,7 @@ docker exec kote-n8n n8n import:workflow --backup=backup_YYYYMMDD.json
 | P0 | Не работает оплата |
 | P1 | Не работает бот |
 | P1 | Не работает сайт |
-| P2 | Не работает HQ |
+| P2 | Не работает БАЗА |
 | P2 | Косметические проблемы |
 
 ---

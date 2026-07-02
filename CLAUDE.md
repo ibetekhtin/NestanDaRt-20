@@ -422,5 +422,14 @@ fail2ban-client status sshd
 
 ---
 
-*Nestandart CLAUDE.md · v5 · 2026-06-23*
+*Nestandart CLAUDE.md · v6 · 2026-07-02*
 *Единый канон. Один репозиторий. Один стандарт.*
+
+## 💎 Архитектурные нюансы (не потерять!)
+
+- **alias kote-backend**: n8n-ноды внутри docker-сети зовут бэкенд как `http://kote-backend:8000` (не localhost).
+- **Реферальный %** начисляет ТРИГГЕР `trg_referral_bonus` при оплате (RPC credit_referral как вызов не используется).
+- **n8n исполняет ВЕРСИОНИРОВАННЫЙ снимок** воркфлоу: правка = export → edit → import → publish --id → 2 рестарта (docs/N8N.md).
+- **Telegram Mini App**: кнопка меню бота → app.nestandart.online; заявка несёт tg_chat_id из initData.
+- **CI**: push в main → secret-scan → flake8 (ignore E501,W503,E241) → docker build → ghcr. Зелёный с 02.07.26.
+- **Тестовые клиенты**: только chat_id вида 70000001xx — НИКОГДА не использовать реальные (менеджер = 8943048058).

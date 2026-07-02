@@ -11,7 +11,7 @@
 | `TELEGRAM_ADMIN_CHAT_ID` | chat_id для алертов (= `MANAGER_CHAT_ID`) |
 | `MANAGER_CHAT_ID` | chat_id менеджера для уведомлений о лидах |
 | `KOTE_RPC_SECRET` | общий секрет n8n↔backend (защита /ai/chat, /pay/create, /bookings PATCH) |
-| `GROQ_API_KEY` | AI-провайдер (порядок каскада — AI_PROVIDER_ORDER, основной AITUNNEL) |
+| `GROQ_API_KEY` | AI-провайдер (каскад по умолчанию: groq → aitunnel → openrouter → gemini; переопределяется AI_PROVIDER_ORDER) |
 
 ## AI Fallback Chain
 
@@ -27,7 +27,7 @@
 | `OPENROUTER_API_KEY` | — |
 | `OPENROUTER_MODEL` | `google/gemini-2.5-flash-lite` |
 | `GEMINI_API_KEY` | — |
-| `GEMINI_MODEL` | `gemini-2.5-flash` (сверить с .env) |
+| `GEMINI_MODEL` | `gemini-2.5-flash` |
 
 ## YooKassa (платежи)
 

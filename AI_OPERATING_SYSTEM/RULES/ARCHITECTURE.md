@@ -37,7 +37,7 @@
 ## СТРУКТУРА ПРОЕКТА (канон)
 
 ```
-NestanDaRt-20/
+Nestandart/
 ├── app/backend/          ← FastAPI (роутеры по domains)
 ├── providers/            ← AI fallback chain
 ├── nestandart-phuket/    ← Сайт (HTML/CSS/JS)

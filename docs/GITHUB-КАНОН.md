@@ -86,7 +86,7 @@
 
 ## 6. Деплой и сведение VPS↔GitHub
 
-- **Деплой ручной:** `ssh root@77.42.93.187 'cd /opt/nestandart && git pull --ff-only origin main && docker compose up -d --build kote-backend'`.
+- **Деплой: cron git pull (/var/www, статика) + docker compose build на VPS (backend); CI: lint→docker→ghcr. Исторически был ручной:** `ssh root@77.42.93.187 'cd /opt/nestandart && git pull --ff-only origin main && docker compose up -d --build kote-backend'`.
 - **Backend бакает код при сборке** (нет volume) → правки кода применяются только через `--build`.
 - **`.env` не в git** (секреты только в `/opt/nestandart/.env` и env контейнеров). Новый ключ: `bash /opt/nestandart/set-secret.sh VARNAME kote-backend`.
 

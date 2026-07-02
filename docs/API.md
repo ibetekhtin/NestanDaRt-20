@@ -17,7 +17,7 @@
 | `GET /api/v1/tours?market_id&active&category` · `GET /tours/{id\|slug}` | публичный | каталог туров |
 | `POST /api/v1/leads` | публичный | лид; **требует** phone/tg_chat_id/telegram/email (иначе 400) |
 | `POST /api/v1/lead` | публичный, legacy | обратная совместимость, тот же гейт идентификатора |
-| `POST /api/leads` (без /v1) | публичный | checkout PWA «Нестандарт»; гейт идентификатора; уведомляет менеджера |
+| `POST /api/leads` (без /v1) | публичный | checkout PWA/Mini App; из Telegram приходит tg_chat_id (initData) → заказ линкуется с клиентом КотЭ; гейт идентификатора; уведомляет менеджера |
 | `GET /api/v1/leads?status&stage&limit` | 🔒 X-Kote-Secret | список лидов (PII) |
 | `POST /api/v1/bookings` | 🔒 | создать бронь |
 | `PATCH /api/v1/bookings/{id}` | 🔒 | статус: Новый/Подтверждён/Оплачено/Завершён/Отменён |

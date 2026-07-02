@@ -15,7 +15,7 @@
 Сайт / Приложение / Бот / Backend  ──►  app_upsert_lead(...)  ──►  clients + bookings
 ```
 
-`app_upsert_lead` (SECURITY DEFINER, anon): антидубль клиента (phone → tg_chat_id → email),
+`app_upsert_lead` (SECURITY DEFINER; вызов ТОЛЬКО под service_role (lockdown 02.07.26) + sha256-гейт p_secret): антидубль клиента (phone → tg_chat_id → email),
 антидубль брони (по `external_id`), пишет историю в `action_history`. Возвращает
 `{client_id, booking_id, is_new_client, is_new_booking}`.
 

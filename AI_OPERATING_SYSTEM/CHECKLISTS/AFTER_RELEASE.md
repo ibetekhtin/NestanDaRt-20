@@ -16,7 +16,7 @@
 ## ПРОВЕРКИ
 
 ### 1. Мгновенная (первые 5 минут)
-- [ ] Health check: `curl https://nestandart.online/api/v1/health` → 200 OK
+- [ ] Health check: `curl https://nestandart.online/health` → 200 OK
 - [ ] Markets: `curl https://nestandart.online/api/v1/markets` → JSON
 - [ ] Tours: `curl https://nestandart.online/api/v1/tours` → JSON
 - [ ] Сайт: https://nestandart.online → загружается

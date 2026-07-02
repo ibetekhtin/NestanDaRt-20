@@ -1,4 +1,5 @@
 # AI_ARCHITECTURE.md
+> ⚠️ Актуальны §1–5 и §9 (каскад groq→aitunnel→openrouter→gemini, два входа /ai/chat и /ai/ask). Разделы про статусы ключей, rollback и GitHub Actions — исторический снапшот июня, реальный CI см. RUNBOOK.md.
 ## Архитектура AI-слоя проекта «Нестандартный Отдых»
 **Версия:** 2.0  
 **Дата:** 2026-06-21

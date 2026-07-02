@@ -34,7 +34,7 @@
 
 ### Структура файла
 ```python
-# 1. Импорты (стандартная библиотека →第三方 → локальные)
+# 1. Импорты (стандартная библиотека →сторонние → локальные)
 import os
 from fastapi import APIRouter
 from app.db import supabase
@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
 ---
 
-## JAVASCRIPT/REACT (HQ)
+## JAVASCRIPT/REACT (БАЗА)
 
 ### Стиль
 - [ ] ESLint (проектные правила)

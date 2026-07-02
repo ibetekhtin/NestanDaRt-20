@@ -52,9 +52,9 @@ const adults  = +document.getElementById('paxAdults').value || 1;
 const children= +document.getElementById('paxChildren').value || 0;
 const infants = +document.getElementById('paxInfants').value || 0;
 
-await fetch(`${SB_URL}/rest/v1/rpc/app_upsert_lead`, {
+await fetch(`${SB_URL}/api/leads  (RPC под anon закрыт с 02.07.26 — писать ТОЛЬКО через backend)`, {
   method: 'POST',
-  headers: { apikey: SB_ANON, Authorization: `Bearer ${SB_ANON}`, 'Content-Type': 'application/json' },
+  headers: { // apikey больше не нужен: POST https://nestandart.online/api/leads, поля: name/phone/tg_chat_id/tour_slug/date_start/people/comment — apikey: SB_ANON, Authorization: `Bearer ${SB_ANON}`, 'Content-Type': 'application/json' },
   body: JSON.stringify({
     p_external_id: orderId,            // твой идемпотентный ключ
     p_source: 'Сайт',                  // или 'Приложение'

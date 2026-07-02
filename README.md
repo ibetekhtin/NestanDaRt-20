@@ -1,5 +1,6 @@
 # Нестандартный Отдых®
 
+> **МЫ ХОТИМ, ЧТОБЫ ВЫ ОТДЫХАЛИ.**
 > Ваш маршрут. Ваш темп. Ваши правила.
 
 **Монорепо.** Один бренд. Один код. Одна база. Много рынков.
@@ -15,8 +16,8 @@ Nestandart/                         ← github.com/ibetekhtin/NestanDaRt-20
 ├── providers/           AI-КАСКАД   groq → aitunnel → openrouter → gemini
 ├── n8n/live/            БОТ КотЭ    актуальные экспорты живых воркфлоу (без секретов)
 ├── deploy/              VPS-скрипты + nginx-конфиги + healthcheck
-├── docs/                VISION, ENV, API, VPS_SETUP, ROADMAP, …
-└── docker-compose.yml · CLAUDE.md · MASTER_PROMPT.md
+├── docs/                VISION, ROADMAP, RUNBOOK, SECURITY, API, ENV, …
+└── docker-compose.yml · CLAUDE.md · docs/ROADMAP.md
 ```
 
 ## Где что живёт (источники истины)
@@ -70,14 +71,13 @@ cd app/backend && pip install -r requirements.txt && uvicorn main:app --reload
 
 ## Деплой
 
-```bash
-# Синхронизировать VPS:
-ssh root@77.42.93.187 "cd /opt/nestandart && git pull && \
-  docker compose build kote-backend && docker compose up -d"
+`git push origin main` → CI (lint → docker → ghcr) + автодеплой статики (cron git pull в /var/www каждые 5 мин).
+Backend: `cd /opt/nestandart && git pull && docker compose build kote-backend && docker compose up -d`.
+Подробно: [docs/RUNBOOK.md](docs/RUNBOOK.md).
 
-# Проверить:
-curl -s https://nestandart.online/api/v1/markets
-```
+## Telegram Mini App
+
+Приложение открывается прямо из чата с ботом (кнопка «Приложение» в меню). Заказы из Mini App автоматически привязываются к Telegram-клиенту (tg_chat_id из initData).
 
 ## Безопасность
 
@@ -92,6 +92,8 @@ curl -s https://nestandart.online/api/v1/markets
 
 - [Карта видения](docs/VISION.md) — миссия, продукт, этапы
 - [Переменные окружения](docs/ENV.md)
-- [Настройка VPS](docs/VPS_SETUP.md)
+- [RUNBOOK](docs/RUNBOOK.md) — операционка «симптом → действие»
+- [Безопасность](docs/SECURITY.md)
+- [Роадмап](docs/ROADMAP.md) — единый план
 - [API](docs/API.md)
-- [MASTER PROMPT](MASTER_PROMPT.md) — стартовый контекст для AI-сессий
+- [CLAUDE.md](CLAUDE.md) — канон для AI-агентов

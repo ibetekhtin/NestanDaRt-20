@@ -65,7 +65,7 @@ cd app/backend && uvicorn main:app --reload
 cd nestandart-phuket && npx serve . -p 3000
 
 # 3. Проверить работоспособность
-curl http://localhost:8000/api/v1/health
+curl http://localhost:8000/health
 curl http://localhost:3000
 
 # 4. Если всё работает — удалить

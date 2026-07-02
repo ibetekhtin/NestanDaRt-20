@@ -42,7 +42,7 @@
 - [ ] Что упало? (конкретный симптом)
 - [ ] Где упало? (логи, ошибки)
 - [ ] Когда упало? (после какого изменения)
-- [ ] Кто受影响? (пользователи, клиенты, бот)
+- [ ] Кто затронут? (пользователи, клиенты, бот)
 
 ### Шаг 2: Быстрый фикс
 - [ ] Найти минимальное изменение, которое починит
@@ -71,7 +71,7 @@
 | P0 | Оплата не проходит | Восстановить YooKassa webhook |
 | P0 | Данные потеряны | Восстановить из бэкапа |
 | P1 | PWA не загружается | Восстановить app.html |
-| P1 | HQ не работает | Восстановить React-сборку |
+| P1 | БАЗА не работает | Восстановить React-сборку |
 | P2 | Косметические проблемы | Отложить на потом |
 
 ---
@@ -98,10 +98,10 @@
 git checkout HEAD~1 -- <файлы>
 
 # Быстрый откат Docker
-docker compose rollback <сервис>
+git revert HEAD && docker compose build kote-backend && docker compose up -d  # отката-команды у compose нет <сервис>
 
 # Быстрый откат БД
-psql -U postgres -d nestandart < backup_latest.sql
+# БД в Supabase Cloud: восстановление — см. docs/RUNBOOK.md §Restore < backup_latest.sql
 
 # Быстрый откат n8n
 docker exec kote-n8n n8n import:workflow --backup=backup_latest.json
