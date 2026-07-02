@@ -1,4 +1,5 @@
 # 📊 ULTRA FULL SYSTEM AUDIT REPORT — Nestandart
+> ⚠️ Исторический отчёт (точка во времени). Актуальное состояние: README.md, docs/VISION.md, PROJECT_MAP.md.
 
 **Date:** 18 June 2026  
 **System:** Нестандартный Отдых (Non-Standart Travel)  

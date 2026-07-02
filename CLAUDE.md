@@ -169,7 +169,6 @@ Nestandart/
 |--------|------|-----------|
 | kote-backend (FastAPI) | 127.0.0.1:8000 | Docker (project: Nestandart) |
 | kote-n8n | 127.0.0.1:5678 | Docker (project: Nestandart) |
-| nestandart-api (Node.js) | 127.0.0.1:3055 | PM2 |
 
 > ⚠️ Volume `kote-n8n-data` — имя НЕ МЕНЯТЬ (там живут все workflows n8n). Объявлен в docker-compose.yml как `name: kote-n8n-data` — это намеренно.
 

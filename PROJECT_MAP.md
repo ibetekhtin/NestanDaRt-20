@@ -1,11 +1,11 @@
 # КАРТА ПРОЕКТА «Нестандартный Отдых®»
-> Создано: 2026-06-28 · Полный аудит кодовой базы
+> Создано: 2026-06-28 · Актуализировано: 2026-07-02 (полный аудит системы; видение — docs/VISION.md)
 
 ---
 
 ## 1. ЧТО ЭТО ЗА ПРОЕКТ
 
-**Нестандартный Отдых®** — туристическая платформа для продажи авторских экскурсий в Азии (Пхукет, Паттайя, Вьетнам).  
+**Нестандартный Отдых®** — туристическая платформа для продажи классических экскурсий. Сейчас фокус — только Пхукет (Паттайя и Вьетнам в архиве), цель — весь мир (docs/VISION.md).  
 Главный KPI: **КПТ = Количество Проданных Туров**.
 
 **Бизнес-модель:**  
@@ -87,7 +87,7 @@ NestanDaRt-20/
 │   ├── app.html               ← PWA v11.0 (~230 KB, self-contained)
 │   ├── app-hyper.html         ← Альтернативная версия PWA
 │   ├── wrangler.toml
-│   ├── nestandart-20/
+│   ├── Nestandart/  (личность КотЭ)
 │   │   └── prompt.txt         ← Личность КотЭ (для n8n)
 │   ├── supabase/
 │   │   └── schema.sql         ← Справочник схемы БД
@@ -152,7 +152,6 @@ NestanDaRt-20/
 │
 ├── deploy/                    ← VPS-скрипты
 │   ├── deploy.sh
-│   ├── deploy-hq.sh
 │   ├── backup-supabase.sh
 │   ├── backup-offsite.sh
 │   ├── healthcheck.sh         ← Cron */5 мин
@@ -161,7 +160,6 @@ NestanDaRt-20/
 │   ├── run-backup.sh
 │   ├── setup-vps.sh
 │   ├── nginx.conf
-│   ├── nginx-hq.conf
 │   ├── nginx-nestandart-online.conf
 │   ├── nginx-nestandart-phuket-redirect.conf
 │   └── systemd/
@@ -296,7 +294,6 @@ NestanDaRt-20/
 | nginx | 80/443 | ❌ systemd |
 | kote-backend (FastAPI) | 127.0.0.1:8000 | ✅ Docker |
 | kote-n8n | 127.0.0.1:5678 | ✅ Docker |
-| nestandart-api (Node.js) | 127.0.0.1:3055 | ❌ PM2 |
 
 ### Supabase
 
