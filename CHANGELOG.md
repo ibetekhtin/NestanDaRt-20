@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.2.0] - 2026-07-02
+
+### Security
+- Supabase lockdown: все 21 бизнес-RPC — только service_role (REVOKE anon/authenticated/PUBLIC + default privileges); partner_stats скрыт от anon; справочники anon read-only
+- n8n переведён на service_role через `{{ $env.SUPABASE_SERVICE_KEY }}` — ключей в JSON воркфлоу нет
+- Утечка текстов ошибок БД клиенту закрыта; PII-эндпоинты под X-Kote-Secret
+
+### Fixed
+- Пустое тело POST /api/leads создавало мусорный лид + спам менеджеру → 400
+- Сломанные crontab-пути после переименования (/opt/NestanDaRt-20 → /opt/nestandart): healthcheck и pg_dump-бэкап снова работают
+- Битый симлинк /opt/kote; мёртвый порт 3055 в nginx (главный сайт и app-субдомен)
+- n8n: сбой записи диалога больше не блокирует создание брони; таймауты HTTP-нод; алерт при ошибке создания оплаты; Telegram-рассылки не падают от одного 403-клиента
+- Сайт: битые клики 4 туров (data-id ≠ имя файла); дубль moto_tour консолидирован; sitemap 12 → 37 URL
+- PWA: title/meta «только Пхукет», мёртвый домен в шаринге → app.nestandart.online
+
+### Changed
+- Единый helper db.upsert_lead() вместо 4 копий словаря RPC (−60 строк)
+- Sync-Supabase уведён из event loop (def-эндпоинты / run_in_threadpool)
+- KOTE_SOUL: вырезаны Паттайя/Вьетнам (фокус Пхукет)
+- Репозиторий: hq-артефакты удалены, ветки-сироты удалены (архив-теги локально), .OLD удалён (бэкапы в /root/backups/old-repo), platform/ и доки восстановлены, docs/archive/ для исторических отчётов
+
+### Added
+- docs/VISION.md (карта видения), docs/SECURITY.md, актуальный API.md, baza/README.md
+- n8n/live/ — экспорты живых воркфлоу; supabase/schema.reference.sql — свежий дамп (73 объекта)
+- tests/test_payments.py (11 тестов); смоуки под приватные PII (25/25)
+
 ## [2.0.0] - 2026-06-09
 
 ### Added

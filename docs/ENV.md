@@ -11,7 +11,7 @@
 | `TELEGRAM_ADMIN_CHAT_ID` | chat_id для алертов (= `MANAGER_CHAT_ID`) |
 | `MANAGER_CHAT_ID` | chat_id менеджера для уведомлений о лидах |
 | `KOTE_RPC_SECRET` | общий секрет n8n↔backend (защита /ai/chat, /pay/create, /bookings PATCH) |
-| `GROQ_API_KEY` | основной AI (бесплатный, быстрый) |
+| `GROQ_API_KEY` | AI-провайдер (порядок каскада — AI_PROVIDER_ORDER, основной AITUNNEL) |
 
 ## AI Fallback Chain
 
@@ -27,7 +27,7 @@
 | `OPENROUTER_API_KEY` | — |
 | `OPENROUTER_MODEL` | `google/gemini-2.5-flash-lite` |
 | `GEMINI_API_KEY` | — |
-| `GEMINI_MODEL` | `gemini-2.5-flash` |
+| `GEMINI_MODEL` | `gemini-2.5-flash` (сверить с .env) |
 
 ## YooKassa (платежи)
 
@@ -50,3 +50,10 @@
 - **Новый ключ на VPS:** `bash /opt/nestandart/set-secret.sh VARNAME` → пересоздать контейнер `docker compose up -d kote-backend`
 - `.env` в `.gitignore` — не коммитить
 - `TELEGRAM_ADMIN_CHAT_ID` = `MANAGER_CHAT_ID` (один чат для простоты; можно разделить)
+
+## n8n (контейнер kote-n8n)
+
+| Переменная | Назначение |
+|---|---|
+| `SUPABASE_SERVICE_KEY` | подставляется в ноды как `{{ $env.SUPABASE_SERVICE_KEY }}` — ключей в JSON воркфлоу нет |
+| `KOTE_SECRET` | sha256-гейт внутри RPC (n8n-сторона; backend использует KOTE_RPC_SECRET) |

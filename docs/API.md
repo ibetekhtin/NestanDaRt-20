@@ -1,183 +1,50 @@
-# 🔌 FastAPI Backend — Nestandart
+# API — nestandart-backend (FastAPI)
 
-## Base URL
+> Актуализировано 2026-07-02 по коду `app/backend/` (main.py + роутеры). Swagger скрыт в проде намеренно.
 
+**База:** `https://nestandart.online` (nginx → kote-backend :8000). Префикс `/api/v1`, кроме особо указанных.
+
+## Аутентификация
+
+Приватные эндпоинты требуют заголовок **`X-Kote-Secret`** (fail-closed: без настроенного секрета — 503, с неверным — 403). JWT не используется. Публичные эндпоинты защищены rate-limit на nginx (зоны `api`, `leads`).
+
+## Эндпоинты
+
+| Метод и путь | Доступ | Что делает |
+|---|---|---|
+| `GET /health` | публичный (без префикса) | `{"status":"ok","version":"2.0.0"}` |
+| `GET /api/v1/markets` · `GET /markets/{id}` | публичный | справочник рынков (404 если нет) |
+| `GET /api/v1/tours?market_id&active&category` · `GET /tours/{id\|slug}` | публичный | каталог туров |
+| `POST /api/v1/leads` | публичный | лид; **требует** phone/tg_chat_id/telegram/email (иначе 400) |
+| `POST /api/v1/lead` | публичный, legacy | обратная совместимость, тот же гейт идентификатора |
+| `POST /api/leads` (без /v1) | публичный | checkout PWA «Нестандарт»; гейт идентификатора; уведомляет менеджера |
+| `GET /api/v1/leads?status&stage&limit` | 🔒 X-Kote-Secret | список лидов (PII) |
+| `POST /api/v1/bookings` | 🔒 | создать бронь |
+| `PATCH /api/v1/bookings/{id}` | 🔒 | статус: Новый/Подтверждён/Оплачено/Завершён/Отменён |
+| `GET /api/v1/bookings/{id}` | 🔒 | бронь + клиент + тур (PII) |
+| `GET /api/v1/clients/{tg_chat_id}` | 🔒 | карточка клиента (PII) |
+| `GET/POST /api/v1/clients/{id}/memory` | 🔒 | память клиента |
+| `POST /api/v1/ai/chat` | 🔒 | AI для n8n-бота (каскад providers/) |
+| `POST /api/v1/ai/ask` | публичный | AI для PWA |
+| `POST /api/v1/pay/create` | 🔒 | платёж ЮKassa: сумма считается на сервере из tours; идемпотентно по брони |
+| `POST /api/v1/pay/webhook` | публичный | вебхук ЮKassa: статус перепроверяется у API, сверка суммы/валюты, refund/cancel |
+| `POST /api/v1/pay/reconcile` | 🔒 | сверка зависших платежей (зовёт n8n по крону) |
+| `POST /api/v1/sos` | 🔒 | SOS: номера экстренных служб рынка + алерт менеджеру |
+| `POST /api/v1/webhook/lead` · `/webhook/booking` | 🔒 | входящие из n8n |
+
+## Модель данных лида
+
+Все записи лидов идут через единый helper `db.upsert_lead()` → RPC `app_upsert_lead` (Supabase, SECURITY DEFINER, вызов только под service_role + sha256-гейт секрета).
+
+## Ошибки
+
+- 400 — нет идентификатора лида; 403/503 — секрет-гейт; 404 — не найдено; 422 — невалидная схема (pydantic).
+- 500 — generic «Внутренняя ошибка сервера» (текст ошибки БД клиенту не отдаётся, детали в логах контейнера).
+
+## Смоук-проверка
+
+```bash
+curl -s https://nestandart.online/health
+curl -s https://nestandart.online/api/v1/markets
+pytest app/backend/tests/ -q       # 25 тестов (нужен KOTE_RPC_SECRET в env для PII-кейсов)
 ```
-http://localhost:8000/api/v1
-```
-
-## Authentication
-
-Supabase JWT token via `Authorization: Bearer <token>` header. All endpoints require authentication.
-
----
-
-## Endpoints
-
-### Markets
-
-#### GET `/api/v1/markets`
-Получить список активных рынков.
-
-**Response:**
-```json
-[
-  { "id": "phuket", "name": "🏖 Пхукет", "currency": "THB", "timezone": "Asia/Bangkok" }
-]
-```
-
-#### GET `/api/v1/markets/{market_id}`
-Получить информацию о рынке + статистику.
-
----
-
-### Leads
-
-#### POST `/api/v1/leads`
-Создать лид.
-
-**Request:**
-```json
-{
-  "market_id": "phuket",
-  "telegram_id": "123",
-  "name": "Иван",
-  "phone": "+6690...",
-  "email": "ivan@example.com",
-  "source": "telegram",
-  "notes": "Интересуется дайвингом"
-}
-```
-
-**Response:** `{ "id": "uuid", "status": "new" }`
-
-#### GET `/api/v1/leads?market_id=phuket&status=new`
-Получить лиды (фильтры: market_id, status, source).
-
----
-
-### Bookings
-
-#### POST `/api/v1/bookings`
-Создать бронь (через RPC app_create_booking).
-
-**Request:**
-```json
-{
-  "market_id": "phuket",
-  "telegram_id": "123",
-  "client_name": "Иван",
-  "service_id": "uuid",
-  "date": "2025-02-15"
-}
-```
-
-**Response:** `{ "booking_id": "uuid", "status": "draft" }`
-
-#### PATCH `/api/v1/bookings/{booking_id}`
-Обновить статус брони.
-
-**Request:** `{ "status": "confirmed" }`
-
-#### GET `/api/v1/bookings/{booking_id}`
-Получить полную информацию о брони (VIEW v_booking_full).
-
----
-
-### Clients
-
-#### GET `/api/v1/clients/{telegram_id}`
-Получить клиента по Telegram ID.
-
-**Response:**
-```json
-{
-  "id": "uuid", "name": "Иван", "phone": "+66...",
-  "market_id": "phuket", "created_at": "2025-01-01T00:00:00Z"
-}
-```
-
----
-
-### AI
-
-#### POST `/api/v1/ai/ask`
-Задать вопрос КотЭ.
-
-**Request:**
-```json
-{
-  "market_id": "phuket",
-  "session_id": "tg:123",
-  "message": "Покажи мне туры на Пхи-Пхи"
-}
-```
-
-**Response:**
-```json
-{
-  "reply": "🐾 Вот туры на Пхи-Пхи! Выбери интересный...",
-  "intent": "recommendation"
-}
-```
-
----
-
-### SOS
-
-#### POST `/api/v1/sos`
-Экстренный вызов.
-
-**Request:** `{ "telegram_id": "123", "market_id": "phuket" }`
-
-**Response:** `{ "status": "alerted", "emergency_numbers": {...} }`
-
----
-
-### Memory
-
-#### GET `/api/v1/clients/{client_id}/memory`
-Получить память клиента.
-
-**Response:**
-```json
-[
-  { "key": "prefers_pool", "value": "true", "importance": 8 },
-  { "key": "allergic_seafood", "value": "true", "importance": 10 }
-]
-```
-
-#### POST `/api/v1/clients/{client_id}/memory`
-Обновить память.
-
-**Request:**
-```json
-{
-  "market_id": "phuket",
-  "key": "anniversary",
-  "value": "2025-03-15",
-  "importance": 7,
-  "expires_at": "2025-03-20T00:00:00Z"
-}
-```
-
----
-
-### Health
-
-#### GET `/api/v1/health`
-Health check.
-
-**Response:** `{ "status": "ok", "timestamp": "2025-01-01T00:00:00Z" }`
-
----
-
-## Error Codes
-
-| Code | Description |
-|------|-------------|
-| 400 | Bad Request — невалидный JSON |
-| 401 | Unauthorized — нет/невалидный JWT |
-| 404 | Not Found |
-| 422 | Validation Error — невалидные поля |
-| 500 | Internal Server Error |

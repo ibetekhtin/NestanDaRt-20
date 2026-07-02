@@ -5,7 +5,7 @@
 ---
 
 Ты работаешь над проектом **«Нестандартный Отдых»** — туристическая компания в Азии.
-Рынки: **Пхукет (68 туров, LIVE), Паттайя (53, инфра готова — нужна посадочная), Вьетнам (12, только БД)**.
+Рынки: **Пхукет (68 туров, LIVE) — единственный фокус. Паттайя/Вьетнам в архиве** (возврат — этап 4, docs/VISION.md).
 Единственный KPI: **КПТ = Количество Проданных Туров**. Любое решение оценивается через этот фильтр.
 
 ## Архитектура (VPS 77.42.93.187, Ubuntu 22.04)
@@ -53,7 +53,7 @@ n8n workflow `doCUKEZQpLQjDmxP` шлёт запросы на `http://kote-backen
 ## Безопасность
 
 - `/ai/chat`, `/pay/create`, `POST /bookings`, `PATCH /bookings/{id}`, `GET /leads` — требуют `X-Kote-Secret`
-- ⚠️ n8n пока **НЕ шлёт** `X-Kote-Secret` → оставь `KOTE_RPC_SECRET=""` до обновления HTTP-нод в n8n
+- ✅ Секрет-гейт боевой: backend требует `X-Kote-Secret` (fail-closed); RPC в Supabase закрыты от anon (service_role only); n8n ходит под `{{ $env.SUPABASE_SERVICE_KEY }}`
 - Когда будешь ставить `KOTE_RPC_SECRET`: сначала добавь заголовок в n8n ноды «🤖 Gemini» и «💳 Создать оплату»
 - `POST /api/v1/leads` (create) и `POST /api/v1/lead` (legacy, используется PWA) — публичные по дизайну
 - YooKassa webhook перепроверяет статус у YooKassa API напрямую (не доверяет payload) — это правильно
@@ -84,7 +84,6 @@ n8n workflow `doCUKEZQpLQjDmxP` шлёт запросы на `http://kote-backen
 ### P1 — Эта неделя
 
 4. **n8n ноды** — добавить `X-Kote-Secret` заголовок в «🤖 Gemini» и «💳 Создать оплату» (UI n8n, не код)
-6. **Supabase Вьетнам** — `UPDATE markets SET active=true WHERE slug='vietnam'`; активировать туры
 7. **`knowledge.city`** — расширить CHECK constraint на 'Вьетнам', добавить 15 записей
 
 ### P2 — Ближайший месяц

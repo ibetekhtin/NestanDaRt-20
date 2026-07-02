@@ -147,7 +147,7 @@ NestanDaRt-20/
 │           └── FunnelView.jsx      ← Воронка продаж
 │
 ├── n8n/                       ← n8n workflows (backup)
-│   ├── flows/
+│   ├── live/                   ← актуальные экспорты (10 воркфлоу, без секретов)
 │   └── migration/
 │
 ├── deploy/                    ← VPS-скрипты
@@ -259,7 +259,7 @@ NestanDaRt-20/
 | Вьетнам в коде (упоминания) | везде | ✅ Да — когда не нужен |
 | `pattayaSoon` placeholder | nestandart-phuket/ | ✅ Да |
 | `baza/` (БАЗА) | React-приложение | ❌ Нет — нужно для менеджеров |
-| `n8n/` (workflows backup) | n8n/flows/ | ❌ Нет — живут в Docker volume |
+| `n8n/` (workflows backup) | n8n/live/ | ✅ Да — свежие экспорты в репо + Docker volume |
 | `docs/` (документация) | docs/ | ❌ Нет — нужно для разработки |
 | `supabase/migrations/` | миграции | ❌ Нет — история схемы |
 | `providers/` (AI fallback) | providers/ | ❌ Нет — нужно для AI |
@@ -316,7 +316,7 @@ NestanDaRt-20/
 | Правило | Статус |
 |---------|--------|
 | RLS (Row Level Security) | ✅ Включено |
-| X-Kote-Secret | ⚠️ Пока пустой (n8n не шлёт) |
+| X-Kote-Secret | ✅ Боевой (fail-closed); RPC — только service_role |
 | UFW (только 22, 80, 443) | ✅ |
 | `.env` в gitignore | ✅ |
 | Swagger `/api/docs` публичный | ⚠️ TODO: закрыть |
@@ -326,18 +326,10 @@ NestanDaRt-20/
 
 ## 9. ПРИОРИТЕТЫ (по КПТ)
 
-### P0 — Сейчас (деньги уходят мимо)
+### Актуальные приоритеты — см. docs/VISION.md §6 (этапы)
 
-1. **Паттайя — убрать заглушку** в PWA
-2. **Паттайя — посадочная страница** `/pattaya/`
-3. **Паттайя — 15 знаний** в БД + обновить промпт КотЭ
-
-### P1 — Эта неделя
-
-4. **n8n** — добавить `X-Kote-Secret` в ноды
-5. **Вьетнам PWA** — добавить в `app.html`
-6. **Вьетнам сайт** — посадочная страница
-7. **Вьетнам БД** — активировать рынок
+Прежние P0/P1 (посадочные Паттайи/Вьетнама, X-Kote-Secret в n8n) — выполнены или отменены
+решением «фокус только Пхукет» (2026-07-01) и security-харднингом (2026-07-02).
 
 ### P2 — Месяц
 
@@ -354,12 +346,12 @@ NestanDaRt-20/
 ```bash
 # Локально
 cd nestandart-phuket && npx serve . -p 3000      # Сайт
-cd hq && npm install && npm run dev               # Штаб
+cd baza && npm install && npm run dev             # БАЗА (Штаб)
 cd app/backend && pip install -r requirements.txt && uvicorn main:app --reload  # Backend
 
 # VPS
 ssh root@77.42.93.187
-cd /opt/NestanDaRt-20
+cd /opt/nestandart
 docker compose ps                                 # Статус
 docker compose logs -f kote-backend              # Логи
 git pull && docker compose build kote-backend && docker compose up -d  # Деплой

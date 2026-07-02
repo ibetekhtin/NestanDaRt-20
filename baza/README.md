@@ -1,16 +1,20 @@
-# React + Vite
+# БАЗА (Штаб) — админ-панель Nestandart
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite. Живёт на **baza.nestandart.online** (nginx → статика `baza-dist/`).
 
-Currently, two official plugins are available:
+## Что внутри
+- DashboardView — КПТ (Количество Проданных Туров) + KPI
+- WikiView — база знаний (live Supabase)
+- KoteView — диалоги КотЭ
+- ReferralsView — 3-уровневые рефералы
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Данные
+Supabase JS-клиент под **anon-ключом + Supabase Auth** (magic link). Доступ к данным — через RLS
+(админ-политики `is_admin()`); RPC панель не вызывает. Env: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Разработка и деплой
+```bash
+cd baza && npm install && npm run dev     # локально
+npm run build                             # → dist/
+cp -r dist/* ../baza-dist/                # baza-dist/ трекается в git и деплоится git pull'ом
+```

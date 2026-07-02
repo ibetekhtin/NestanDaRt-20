@@ -46,10 +46,10 @@
 | `nestandart-phuket/` | 59 | **САЙТ**: `index.html`, 27 стр. туров, 10 статей блога, `baza/` (знания), `js/config.js` (боты, города), sitemap/robots/og | ✅ деплоится на VPS nginx (`/var/www/nestandart`) |
 | `baza/` | 25 | **ШТАБ**: React + Vite админка → Supabase. Вьюхи: CRM, ContentFactory, Dashboard, Finance, Kanban, Wiki. Вход только админу | ⏳ есть код, деплой не подтверждён |
 | `app/` | 13 | **BACKEND**: `app/backend/` FastAPI (роутеры ai/bookings/clients/leads/markets/memory/sos/webhooks) | ✅ деплоится (`kote-backend`), но GitHub-версия v1.0.0 — отстаёт |
-| `archive-docs/` | 13 | архив старых доков | 🗄️ архив |
+| `docs/archive/` | 13 | архив старых доков | 🗄️ архив |
 | `docs/` | 10 | актуальные каноны: `АРХИТЕКТУРА-КАНОН.md`, `AI_ARCHITECTURE.md`, `ARCHITECTURE.md`, `N8N_MIGRATION.md`, `ENV.md`, `SUPABASE.md`, `API.md`, `DEPLOY.md` + этот файл | ✅ канон |
 | `deploy/` | 10 | скрипты VPS: setup, deploy, backup, healthcheck, nginx.conf | ⚠️ часть устарела (см. CLAUDE.md «деплой ручной») |
-| `n8n/` | 8 | экспорт воркфлоу (`n8n/flows/`) | 🗄️ снимки, не живой источник |
+| `n8n/` | 8 | экспорт воркфлоу (`n8n/live/`) | 🗄️ снимки, не живой источник |
 | `supabase/` | 7 | `schema.sql` + 6 миграций | ✅ справочник схемы |
 | `providers/` | 5 | **AI-каскад**: `ai.py`, `groq.py`, `aitunnel.py`*, `openrouter.py`, `gemini.py` (*aitunnel только на VPS) | ⚠️ GitHub-версия старая |
 | `shared/` | 2 | `markets.js`, `brand.js` — константы рынков и бренда | ✅ |

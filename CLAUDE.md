@@ -1,6 +1,7 @@
 # CLAUDE.md — МАСТЕР-ФАЙЛ ПРОЕКТА
 # Nestandart / Нестандартный Отдых®
-> Последнее обновление: 2026-06-23 · v5 — единый канон Nestandart
+> Последнее обновление: 2026-07-02 · v6 — единый канон Nestandart
+> Карта видения: docs/VISION.md · Карта проекта: PROJECT_MAP.md
 > Этот файл — единственный источник истины для Claude Code и любого AI-агента.
 > Читать полностью перед любой работой с проектом.
 
@@ -34,7 +35,7 @@
 
 ## 🗺️ ЧТО ЭТО ЗА ПРОЕКТ
 
-**Нестандартный Отдых®** — туристическая платформа в Таиланде (Пхукет, Паттайя, Вьетнам).
+**Нестандартный Отдых®** — туристическая платформа продажи экскурсий; фокус сейчас — только Пхукет (Паттайя/Вьетнам в архиве, цель — весь мир, см. docs/VISION.md).
 Продаём авторские экскурсии. Главный инструмент продаж — **Telegram-бот КотЭ** на базе AI.
 
 **Бизнес-модель:** клиент пишет в Telegram → КотЭ помогает выбрать тур → менеджер закрывает сделку → клиент едет на экскурсию.
@@ -133,9 +134,16 @@ Nestandart/
 │
 ├── providers/                 ← AI fallback chain
 │
-│   ├── app.html               ← PWA v11.0, ~230 KB self-contained
-│   ├── Nestandart/prompt.txt ← ЛИЧНОСТЬ КотЭ (n8n workflow prompt)
-│   └── supabase/schema.sql    ← справочник схемы
+├── platform/
+│   └── app.html               ← PWA «Нестандарт» (self-contained) → app.nestandart.online
+│
+├── n8n/
+│   ├── live/                  ← актуальные экспорты живых воркфлоу (без секретов)
+│   └── reference/             ← исторический монолит (KOTE_SOUL = личность КотЭ живёт в live/main-bot-ai-agent.json)
+│
+├── supabase/
+│   ├── schema.reference.sql   ← свежий дамп боевой схемы
+│   └── migrations/
 │
 ├── baza/                        ← БАЗА (React Vite, baza.nestandart.online)
 │   └── src/components/
@@ -148,7 +156,7 @@ Nestandart/
 │   ├── healthcheck.sh         ← cron */5 мин
 │   └── run-backup.sh
 │
-└── docs/ + archive-docs/
+└── docs/ (VISION, API, ENV, DATA_MODEL, …) + docs/archive/ (исторические отчёты)
 ```
 
 ---
@@ -205,7 +213,7 @@ YOOKASSA_SECRET_KEY=...
 | Таблица | Назначение |
 |---------|-----------|
 | `markets` | Рынки (id text: 'phuket', 'pattaya', 'vietnam') |
-| `tours` | Каталог туров (133 активных: Пхукет 68, Паттайя 53, Вьетнам 12) |
+| `tours` | Каталог туров (активен рынок Пхукет — 68; Паттайя/Вьетнам в БД, но в архиве) |
 | `clients` | База клиентов |
 | `bookings` | Брони |
 | `payments` | Платежи YooKassa |
@@ -222,15 +230,16 @@ app_upsert_lead(p_name, p_phone, p_email, p_telegram, p_tg_chat_id,
                 p_tour_name, p_tour_slug, p_date_start, p_people,
                 p_total, p_comment, p_status, p_ref_code)
 get_kote_context(p_tg_chat_id, p_query)
-credit_referral(p_booking_id)   -- начисляет % партнёру при оплате
+app_mark_paid(p_external_id)    -- бронь → «Оплачено» (чистый RPC для вебхука)
+-- реферальный % начисляет триггер trg_referral_bonus (функции credit_referral в проде нет как RPC-вызова)
 ```
 
-### RLS
+### Безопасность БД (модель с 2026-07-02)
 
-- **anon:** читает туры/знания, пишет через `app_upsert_lead`
-- **authenticated:** `email = auth.jwt()->>'email'` (клиент видит СВОИ данные)
-- **is_admin():** полный доступ (ibetekhtin@gmail.com)
-- **service_role:** полный доступ через backend
+- **Все бизнес-RPC** (`app_upsert_lead`, `app_mark_paid`, `get_kote_context`, …) — REVOKE от anon/authenticated; исполняет только **service_role** (backend и n8n). Внутри каждой — второй рубеж: sha256-гейт `KOTE_SECRET`.
+- **anon:** только читает витрину (tours/packages/knowledge/markets) — сайт ходит из браузера.
+- **authenticated:** `email = auth.jwt()->>'email'` (клиент видит СВОИ данные); **is_admin()** — полный доступ админа (БАЗА).
+- **n8n:** ключ не в JSON воркфлоу — ноды ссылаются на `{{ $env.SUPABASE_SERVICE_KEY }}` (env контейнера).
 
 ### Supabase Auth
 
@@ -405,8 +414,7 @@ fail2ban-client status sshd
 ## 🚀 СЛЕДУЮЩИЕ ШАГИ (по ROI)
 
 - [ ] Сайт — единый кабинет через Supabase Auth (как в приложении)
-- [ ] Паттайя полный запуск (туры готовы, нужна страница)
-- [ ] Вьетнам полный запуск (12 туров уже в БД, рынок готов — нужна страница)
+- [x] ~~Паттайя/Вьетнам запуск~~ — отменено: фокус только Пхукет, возврат рынков — этап 4 в docs/VISION.md
 - [ ] SUPABASE_DB_URL → SQL-бэкапы через pg_dump
 - [ ] Offsite backup (S3/Cloudflare R2)
 - [ ] Внешний мониторинг (UptimeRobot)
