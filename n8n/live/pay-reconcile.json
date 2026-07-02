@@ -1,1 +1,113 @@
-{"updatedAt":"2026-06-25T12:20:55.000Z","createdAt":"2026-06-25T12:20:39.599Z","id":"kotereconcile01","name":"🧮 КотЭ — Сверка платежей (reconcile)","description":null,"active":true,"isArchived":false,"nodes":[{"parameters":{"rule":{"interval":[{"field":"hours","hoursInterval":1}]}},"id":"schedrec00000001","name":"⏰ Каждый час","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.2,"position":[400,300]},{"parameters":{"method":"POST","url":"https://nestandart.online/api/v1/pay/reconcile","sendHeaders":true,"headerParameters":{"parameters":[{"name":"X-Kote-Secret","value":"={{ $env.KOTE_SECRET }}"}]},"options":{}},"id":"httprec000000001","name":"🧮 reconcile","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[620,300]}],"connections":{"⏰ Каждый час":{"main":[[{"node":"🧮 reconcile","type":"main","index":0}]]}},"settings":{"executionOrder":"v1","errorWorkflow":"koteerrmon00001"},"staticData":{"node:⏰ Каждый час":{"recurrenceRules":[]}},"meta":null,"nodeGroups":[],"pinData":null,"versionId":"c976c4b3-15ae-4fd9-a157-b09e1fe6c3aa","activeVersionId":"c976c4b3-15ae-4fd9-a157-b09e1fe6c3aa","versionCounter":1,"triggerCount":1,"sourceWorkflowId":null,"tags":[],"shared":[{"updatedAt":"2026-06-25T12:20:39.605Z","createdAt":"2026-06-25T12:20:39.605Z","role":"workflow:owner","workflowId":"kotereconcile01","projectId":"MqwDP4C0laO81Bqg","project":{"updatedAt":"2026-06-19T04:42:11.152Z","createdAt":"2026-06-18T20:48:04.578Z","id":"MqwDP4C0laO81Bqg","name":"Ilia Betekhtin <ibetekhtin@gmail.com>","type":"personal","icon":null,"description":null,"customTelemetryTags":[],"creatorId":"7c1a3523-c2a1-45ab-99ab-c48c16f7c6b9"}}],"versionMetadata":{"name":null,"description":null}}
+{
+  "updatedAt": "2026-06-25T12:20:55.000Z",
+  "createdAt": "2026-06-25T12:20:39.599Z",
+  "id": "kotereconcile01",
+  "name": "🧮 КотЭ — Сверка платежей (reconcile)",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedrec00000001",
+      "name": "⏰ Каждый час",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://kote-backend:8000/api/v1/pay/reconcile",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Kote-Secret",
+              "value": "={{ $env.KOTE_SECRET }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "httprec000000001",
+      "name": "🧮 reconcile",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        620,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3
+    }
+  ],
+  "connections": {
+    "⏰ Каждый час": {
+      "main": [
+        [
+          {
+            "node": "🧮 reconcile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "koteerrmon00001"
+  },
+  "staticData": {
+    "node:⏰ Каждый час": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "nodeGroups": [],
+  "versionId": "c976c4b3-15ae-4fd9-a157-b09e1fe6c3aa",
+  "activeVersionId": "c976c4b3-15ae-4fd9-a157-b09e1fe6c3aa",
+  "versionCounter": 1,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-06-25T12:20:39.605Z",
+      "createdAt": "2026-06-25T12:20:39.605Z",
+      "role": "workflow:owner",
+      "workflowId": "kotereconcile01",
+      "projectId": "MqwDP4C0laO81Bqg",
+      "project": {
+        "updatedAt": "2026-06-19T04:42:11.152Z",
+        "createdAt": "2026-06-18T20:48:04.578Z",
+        "id": "MqwDP4C0laO81Bqg",
+        "name": "Ilia Betekhtin <ibetekhtin@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "7c1a3523-c2a1-45ab-99ab-c48c16f7c6b9"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

@@ -1,1 +1,196 @@
-{"updatedAt":"2026-06-24T15:22:56.000Z","createdAt":"2026-06-19T04:38:24.723Z","id":"cf689f7f42b433cd","name":"⭐ КотЭ — Запрос отзыва после тура","description":null,"active":true,"isArchived":false,"nodes":[{"parameters":{"rule":{"interval":[{"field":"cronExpression","expression":"0 3 * * *"}]}},"name":"⏰ Каждый день 10:00 Бангкок","type":"n8n-nodes-base.scheduleTrigger","typeVersion":1.3,"position":[0,0],"id":"babb813a-faa0-439b-9b85-696ae77e6707"},{"parameters":{"method":"POST","url":"https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/rpc/get_review_requests","sendHeaders":true,"headerParameters":{"parameters":[{"name":"apikey","value":"={{ $env.SUPABASE_SERVICE_KEY }}"},{"name":"Authorization","value":"=Bearer {{ $env.SUPABASE_SERVICE_KEY }}"},{"name":"Content-Type","value":"application/json"}]},"sendBody":true,"specifyBody":"json","jsonBody":"={ \"p_days_ago\": 1, \"p_secret\": \"{{ $env.KOTE_SECRET }}\" }"},"name":"✅ Туры вчера (Supabase)","type":"n8n-nodes-base.httpRequest","typeVersion":4.4,"position":[224,0],"id":"15692c0f-8099-4263-bcb6-3130809fbfab"},{"parameters":{"batchSize":1},"name":"🔄 По каждому клиенту","type":"n8n-nodes-base.splitInBatches","typeVersion":3,"position":[448,0],"id":"60d8d327-8a87-4ccd-9baf-57dd69b74224"},{"parameters":{"resource":"message","operation":"sendMessage","chatId":"={{ $json.tg_chat_id }}","text":"=👋 {{ $json.client_name }}, привет!\n\nВы вчера были в туре «{{ $json.tour_name }}» 🌴 Надеемся, всё прошло отлично!\n\nОставьте отзыв — это помогает другим туристам нас найти 🙏\n\nИли напишите пару слов прямо здесь — мы читаем каждый отзыв и отвечаем ⭐","additionalFields":{"appendAttribution":false,"disable_web_page_preview":true}},"name":"⭐ Запросить отзыв","type":"n8n-nodes-base.telegram","typeVersion":1.2,"position":[672,0],"id":"72a383e4-96f5-4911-a948-0469282f6769","credentials":{"telegramApi":{"id":"a1b2c3d4e5f60718","name":"Telegram KotE"}}}],"connections":{"⏰ Каждый день 10:00 Бангкок":{"main":[[{"node":"✅ Туры вчера (Supabase)","type":"main","index":0}]]},"✅ Туры вчера (Supabase)":{"main":[[{"node":"🔄 По каждому клиенту","type":"main","index":0}]]},"🔄 По каждому клиенту":{"main":[[],[{"node":"⭐ Запросить отзыв","type":"main","index":0}]]},"⭐ Запросить отзыв":{"main":[[{"node":"🔄 По каждому клиенту","type":"main","index":0}]]}},"settings":{"executionOrder":"v1","errorWorkflow":"koteerrmon00001"},"staticData":{"node:⏰ Каждый день 10:00 Бангкок":{"recurrenceRules":[]}},"meta":null,"nodeGroups":[],"pinData":null,"versionId":"f0ff6233-4f49-4280-a27b-9ce61fc48f2c","activeVersionId":"f0ff6233-4f49-4280-a27b-9ce61fc48f2c","versionCounter":8,"triggerCount":1,"sourceWorkflowId":null,"tags":[],"shared":[{"updatedAt":"2026-06-19T04:38:24.725Z","createdAt":"2026-06-19T04:38:24.725Z","role":"workflow:owner","workflowId":"cf689f7f42b433cd","projectId":"MqwDP4C0laO81Bqg","project":{"updatedAt":"2026-06-19T04:42:11.152Z","createdAt":"2026-06-18T20:48:04.578Z","id":"MqwDP4C0laO81Bqg","name":"Ilia Betekhtin <ibetekhtin@gmail.com>","type":"personal","icon":null,"description":null,"customTelemetryTags":[],"creatorId":"7c1a3523-c2a1-45ab-99ab-c48c16f7c6b9"}}],"versionMetadata":{"name":null,"description":null}}
+{
+  "updatedAt": "2026-06-24T15:22:56.000Z",
+  "createdAt": "2026-06-19T04:38:24.723Z",
+  "id": "cf689f7f42b433cd",
+  "name": "⭐ КотЭ — Запрос отзыва после тура",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 3 * * *"
+            }
+          ]
+        }
+      },
+      "name": "⏰ Каждый день 10:00 Бангкок",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "babb813a-faa0-439b-9b85-696ae77e6707"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/rpc/get_review_requests",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"p_days_ago\": 1, \"p_secret\": \"{{ $env.KOTE_SECRET }}\" }",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "name": "✅ Туры вчера (Supabase)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "15692c0f-8099-4263-bcb6-3130809fbfab"
+    },
+    {
+      "parameters": {
+        "batchSize": 1
+      },
+      "name": "🔄 По каждому клиенту",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "60d8d327-8a87-4ccd-9baf-57dd69b74224"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.tg_chat_id }}",
+        "text": "=👋 {{ $json.client_name }}, привет!\n\nВы вчера были в туре «{{ $json.tour_name }}» 🌴 Надеемся, всё прошло отлично!\n\nОставьте отзыв — это помогает другим туристам нас найти 🙏\n\nИли напишите пару слов прямо здесь — мы читаем каждый отзыв и отвечаем ⭐",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true
+        }
+      },
+      "name": "⭐ Запросить отзыв",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "72a383e4-96f5-4911-a948-0469282f6769",
+      "credentials": {
+        "telegramApi": {
+          "id": "a1b2c3d4e5f60718",
+          "name": "Telegram KotE"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "⏰ Каждый день 10:00 Бангкок": {
+      "main": [
+        [
+          {
+            "node": "✅ Туры вчера (Supabase)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Туры вчера (Supabase)": {
+      "main": [
+        [
+          {
+            "node": "🔄 По каждому клиенту",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔄 По каждому клиенту": {
+      "main": [
+        [],
+        [
+          {
+            "node": "⭐ Запросить отзыв",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⭐ Запросить отзыв": {
+      "main": [
+        [
+          {
+            "node": "🔄 По каждому клиенту",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "koteerrmon00001"
+  },
+  "staticData": {
+    "node:⏰ Каждый день 10:00 Бангкок": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "nodeGroups": [],
+  "versionId": "f0ff6233-4f49-4280-a27b-9ce61fc48f2c",
+  "activeVersionId": "f0ff6233-4f49-4280-a27b-9ce61fc48f2c",
+  "versionCounter": 8,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-06-19T04:38:24.725Z",
+      "createdAt": "2026-06-19T04:38:24.725Z",
+      "role": "workflow:owner",
+      "workflowId": "cf689f7f42b433cd",
+      "projectId": "MqwDP4C0laO81Bqg",
+      "project": {
+        "updatedAt": "2026-06-19T04:42:11.152Z",
+        "createdAt": "2026-06-18T20:48:04.578Z",
+        "id": "MqwDP4C0laO81Bqg",
+        "name": "Ilia Betekhtin <ibetekhtin@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "7c1a3523-c2a1-45ab-99ab-c48c16f7c6b9"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

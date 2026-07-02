@@ -8,8 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Нестандартный Отдых"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<meta name="description" content="Нестандартный Отдых — авторские экскурсии и туры на Пхукете и в Паттайе. Выбирай, бронируй и оплачивай в пару кликов."/>
-<title>Нестандартный Отдых — экскурсии и туры на Пхукете и в Паттайе</title>
+<meta name="description" content="Нестандартный Отдых — авторские экскурсии и туры на Пхукете. Выбирай, бронируй и оплачивай в пару кликов."/>
+<title>Нестандартный Отдых — экскурсии и туры на Пхукете</title>
 <!-- PWA manifest as inline data URI so the file is self-contained -->
 <link rel="manifest" id="manifestLink"/>
 <link rel="icon" type="image/svg+xml" id="iconLink"/>
@@ -2824,9 +2824,9 @@ function hideOnboarding(){ $('onboarding').style.display = 'none'; }
    Until configured, we guide the user to fill the form manually. */
 const OAUTH_CONFIG = {
   // fill these once you register apps (see social-login.md)
-  google: { client_id:'', redirect:'https://app.nestandart-phuket.ru/oauth/google' },
-  vk:     { client_id:'', redirect:'https://app.nestandart-phuket.ru/oauth/vk' },
-  ok:     { client_id:'', redirect:'https://app.nestandart-phuket.ru/oauth/ok' }
+  google: { client_id:'', redirect:'https://app.nestandart.online/oauth/google' },
+  vk:     { client_id:'', redirect:'https://app.nestandart.online/oauth/vk' },
+  ok:     { client_id:'', redirect:'https://app.nestandart.online/oauth/ok' }
 };
 function socialLogin(provider){
   haptic('light');
@@ -3776,7 +3776,7 @@ function finalizeOrder(paid){
 
 function shareSuccess(){
   const text = `Забронировал экскурсии через Нестандартный Отдых`;
-  const url = 'https://app.nestandart-phuket.ru';
+  const url = 'https://app.nestandart.online';
   if(IN_TG && tg.openTelegramLink){
     tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`);
   } else if(navigator.share){
@@ -3795,7 +3795,7 @@ const LEGAL = {
     title: 'Публичная оферта',
     body: `
       <p class="font-mono text-[10px] tracking-wider2 text-muted mb-4 section-label">Редакция от 30.05.2026</p>
-      <p>Настоящий документ является публичной офертой (предложением) индивидуального предпринимателя / общества с ограниченной ответственностью «Нестандартный Отдых» (далее — Исполнитель) о заключении договора на оказание услуг по организации экскурсий и туров на Пхукете и в Паттайе.</p>
+      <p>Настоящий документ является публичной офертой (предложением) индивидуального предпринимателя / общества с ограниченной ответственностью «Нестандартный Отдых» (далее — Исполнитель) о заключении договора на оказание услуг по организации экскурсий и туров на Пхукете.</p>
       <h4 class="font-bold mt-5 mb-2">1. Предмет договора</h4>
       <p>Исполнитель обязуется оказать Заказчику услуги по организации экскурсии или комплекса экскурсионных услуг согласно описанию выбранного тура, размещённого в приложении Исполнителя.</p>
       <h4 class="font-bold mt-5 mb-2">2. Стоимость и порядок оплаты</h4>
@@ -3922,7 +3922,7 @@ const ICON_URL = 'data:image/svg+xml;utf8,' + encodeURIComponent(ICON_SVG);
 const MANIFEST = {
   name: 'Нестандартный Отдых — экскурсии и туры',
   short_name: 'Нестандарт',
-  description: 'Авторские туры на Пхукете и в Паттайе с русскоязычными гидами',
+  description: 'Авторские туры на Пхукете с русскоязычными гидами',
   start_url: location.pathname.split('?')[0] || './',
   scope: './',
   display: 'standalone',

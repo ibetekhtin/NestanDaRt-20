@@ -1,1 +1,295 @@
-{"updatedAt":"2026-06-25T12:20:17.000Z","createdAt":"2026-06-24T19:19:19.673Z","id":"koterukavbron01","name":"🐾 КотЭ — Рукав: Бронь","description":null,"active":true,"isArchived":false,"nodes":[{"parameters":{},"id":"trg-rukav-bron-0001","name":"🔍 Интент","type":"n8n-nodes-base.executeWorkflowTrigger","typeVersion":1,"position":[2208,448]},{"parameters":{"method":"POST","url":"https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/rpc/app_upsert_lead","sendHeaders":true,"headerParameters":{"parameters":[{"name":"apikey","value":"={{ $env.SUPABASE_SERVICE_KEY }}"},{"name":"Authorization","value":"=Bearer {{ $env.SUPABASE_SERVICE_KEY }}"},{"name":"Content-Type","value":"application/json"}]},"sendBody":true,"specifyBody":"json","jsonBody":"={\n  \"p_secret\": \"{{ $env.KOTE_SECRET }}\",\n  \"p_external_id\": \"{{ $('🔍 Интент').first().json.booking.external_id }}\",\n  \"p_source\": \"Telegram (КотЭ)\",\n  \"p_name\": \"{{ $('🔍 Интент').first().json.booking.name }}\",\n  \"p_phone\": \"{{ $('🔍 Интент').first().json.booking.phone }}\",\n  \"p_tg_chat_id\": \"{{ $('🔍 Интент').first().json.tg_chat_id }}\",\n  \"p_tour_name\": \"{{ $('🔍 Интент').first().json.booking.tour }}\",\n  \"p_tour_slug\": \"{{ $('🔍 Интент').first().json.booking.tour_slug }}\",\n  \"p_date_start\": {{ $('🔍 Интент').first().json.booking.date_iso ? ('\"' + $('🔍 Интент').first().json.booking.date_iso + '\"') : 'null' }},\n  \"p_people\": {{ $('🔍 Интент').first().json.booking.total }},\n  \"p_adults\": {{ $('🔍 Интент').first().json.booking.adults }},\n  \"p_children\": {{ $('🔍 Интент').first().json.booking.children }},\n  \"p_infants\": {{ $('🔍 Интент').first().json.booking.infants }},\n  \"p_comment\": \"Дата: {{ $('🔍 Интент').first().json.booking.date }}. Отель: {{ $('🔍 Интент').first().json.booking.hotel }}, комната {{ $('🔍 Интент').first().json.booking.room }}. Взрослых: {{ $('🔍 Интент').first().json.booking.adults }}, детей: {{ $('🔍 Интент').first().json.booking.children }}, младенцев до 4 (беспл.): {{ $('🔍 Интент').first().json.booking.infants }}.\",\n  \"p_status\": \"Новый\"\n}","options":{}},"id":"kote-crm-booking-0001","name":"📥 Бронь в CRM","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[2448,640],"retryOnFail":true,"maxTries":3,"waitBetweenTries":2000},{"parameters":{"method":"POST","url":"http://kote-backend:8000/api/v1/pay/create","sendHeaders":true,"headerParameters":{"parameters":[{"name":"Content-Type","value":"application/json"},{"name":"X-Kote-Secret","value":"={{ $env.KOTE_SECRET }}"}]},"sendBody":true,"specifyBody":"json","jsonBody":"={\n  \"external_id\": \"{{ $('🔍 Интент').first().json.booking.external_id }}\",\n  \"tour_slug\": \"{{ $('🔍 Интент').first().json.booking.tour_slug }}\",\n  \"adults\": {{ $('🔍 Интент').first().json.booking.adults }},\n  \"children\": {{ $('🔍 Интент').first().json.booking.children }},\n  \"name\": \"{{ $('🔍 Интент').first().json.booking.name }}\",\n  \"tg_chat_id\": \"{{ $('🔍 Интент').first().json.tg_chat_id }}\"\n}","options":{}},"id":"kote-pay-create-0001","name":"💳 Создать оплату","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[2672,640],"onError":"continueRegularOutput"},{"parameters":{"conditions":{"options":{"caseSensitive":true,"leftValue":"","typeValidation":"strict","version":1},"conditions":[{"leftValue":"={{ $json.available }}","rightValue":true,"operator":{"type":"boolean","operation":"true"}}],"combinator":"and"},"options":{}},"id":"kote-pay-if-0001","name":"🤔 Ссылка на оплату есть?","type":"n8n-nodes-base.if","typeVersion":2,"position":[2896,640]},{"parameters":{"chatId":"={{ $('🔍 Интент').first().json.tg_chat_id }}","text":"=Мур-р-р! 🐾 Бронь принята. Чтобы закрепить место — оплати по ссылке, и я сразу подтвержу:\n{{ $json.confirmation_url }}","additionalFields":{"appendAttribution":false,"parse_mode":"HTML"}},"id":"kote-pay-send-0001","name":"💸 Отправить ссылку клиенту","type":"n8n-nodes-base.telegram","typeVersion":1.2,"position":[3120,640],"webhookId":"a8ba61bd-15e8-44ac-8763-338a3a7d5f2e","credentials":{"telegramApi":{"id":"a1b2c3d4e5f60718","name":"Telegram KotE"}}},{"parameters":{"chatId":"8943048058","text":"=🔔 <b>НОВАЯ БРОНЬ</b> — данные собраны\n\n👤 <b>{{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.name) }}</b>\n📞 {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.phone) }}\n🏝 Тур: {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.tour) }}\n📅 Дата: {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.date) }}\n🏨 Отель: {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.hotel) }}, комната {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.room) }}\n👥 Всего: {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.total) }} — взрослых {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.adults) }}, детей {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.children) }}, младенцев до 4 (беспл.) {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.infants) }}\n💬 Chat ID: <code>{{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.tg_chat_id) }}</code>","additionalFields":{"appendAttribution":false,"parse_mode":"HTML"}},"id":"866c8b16-6158-459c-8d4b-81fec0f6e613","name":"📲 Уведомить о брони","type":"n8n-nodes-base.telegram","typeVersion":1.2,"position":[2448,448],"webhookId":"a8ba61bd-15e8-44ac-8763-338a3a7d5f2e","credentials":{"telegramApi":{"id":"a1b2c3d4e5f60718","name":"Telegram KotE"}}}],"connections":{"🔍 Интент":{"main":[[{"node":"📥 Бронь в CRM","type":"main","index":0}]]},"📥 Бронь в CRM":{"main":[[{"node":"💳 Создать оплату","type":"main","index":0},{"node":"📲 Уведомить о брони","type":"main","index":0}]]},"💳 Создать оплату":{"main":[[{"node":"🤔 Ссылка на оплату есть?","type":"main","index":0}]]},"🤔 Ссылка на оплату есть?":{"main":[[{"node":"💸 Отправить ссылку клиенту","type":"main","index":0}],[]]}},"settings":{"executionOrder":"v1","errorWorkflow":"koteerrmon00001"},"staticData":null,"meta":null,"nodeGroups":[],"pinData":{"🔍 Интент":[{"json":{"booking":{"external_id":"TEST_RUKAV_20260624","name":"TEST КотЭ Проверка","phone":"+66000000000","tour":"Острова Пхи-Пхи (TEST)","tour_slug":"phiphi-bamboo","date":"1 июля 2026","date_iso":"2026-07-01","adults":2,"children":1,"infants":0,"total":3,"hotel":"TEST Hotel","room":"101"},"booking_ready":true,"tg_chat_id":"8943048058"}}]},"versionId":"045227fe-f7b8-417d-9aed-c9da42fb4984","activeVersionId":"045227fe-f7b8-417d-9aed-c9da42fb4984","versionCounter":4,"triggerCount":0,"sourceWorkflowId":null,"tags":[],"shared":[{"updatedAt":"2026-06-24T19:19:19.681Z","createdAt":"2026-06-24T19:19:19.681Z","role":"workflow:owner","workflowId":"koterukavbron01","projectId":"MqwDP4C0laO81Bqg","project":{"updatedAt":"2026-06-19T04:42:11.152Z","createdAt":"2026-06-18T20:48:04.578Z","id":"MqwDP4C0laO81Bqg","name":"Ilia Betekhtin <ibetekhtin@gmail.com>","type":"personal","icon":null,"description":null,"customTelemetryTags":[],"creatorId":"7c1a3523-c2a1-45ab-99ab-c48c16f7c6b9"}}],"versionMetadata":{"name":null,"description":null}}
+{
+  "updatedAt": "2026-06-25T12:20:17.000Z",
+  "createdAt": "2026-06-24T19:19:19.673Z",
+  "id": "koterukavbron01",
+  "name": "🐾 КотЭ — Рукав: Бронь",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trg-rukav-bron-0001",
+      "name": "🔍 Интент",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cmmdrhususjuadqzyssc.supabase.co/rest/v1/rpc/app_upsert_lead",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.SUPABASE_SERVICE_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"p_secret\": \"{{ $env.KOTE_SECRET }}\",\n  \"p_external_id\": \"{{ $('🔍 Интент').first().json.booking.external_id }}\",\n  \"p_source\": \"Telegram (КотЭ)\",\n  \"p_name\": \"{{ $('🔍 Интент').first().json.booking.name }}\",\n  \"p_phone\": \"{{ $('🔍 Интент').first().json.booking.phone }}\",\n  \"p_tg_chat_id\": \"{{ $('🔍 Интент').first().json.tg_chat_id }}\",\n  \"p_tour_name\": \"{{ $('🔍 Интент').first().json.booking.tour }}\",\n  \"p_tour_slug\": \"{{ $('🔍 Интент').first().json.booking.tour_slug }}\",\n  \"p_date_start\": {{ $('🔍 Интент').first().json.booking.date_iso ? ('\"' + $('🔍 Интент').first().json.booking.date_iso + '\"') : 'null' }},\n  \"p_people\": {{ $('🔍 Интент').first().json.booking.total }},\n  \"p_adults\": {{ $('🔍 Интент').first().json.booking.adults }},\n  \"p_children\": {{ $('🔍 Интент').first().json.booking.children }},\n  \"p_infants\": {{ $('🔍 Интент').first().json.booking.infants }},\n  \"p_comment\": \"Дата: {{ $('🔍 Интент').first().json.booking.date }}. Отель: {{ $('🔍 Интент').first().json.booking.hotel }}, комната {{ $('🔍 Интент').first().json.booking.room }}. Взрослых: {{ $('🔍 Интент').first().json.booking.adults }}, детей: {{ $('🔍 Интент').first().json.booking.children }}, младенцев до 4 (беспл.): {{ $('🔍 Интент').first().json.booking.infants }}.\",\n  \"p_status\": \"Новый\"\n}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "kote-crm-booking-0001",
+      "name": "📥 Бронь в CRM",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2448,
+        640
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://kote-backend:8000/api/v1/pay/create",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Kote-Secret",
+              "value": "={{ $env.KOTE_SECRET }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"external_id\": \"{{ $('🔍 Интент').first().json.booking.external_id }}\",\n  \"tour_slug\": \"{{ $('🔍 Интент').first().json.booking.tour_slug }}\",\n  \"adults\": {{ $('🔍 Интент').first().json.booking.adults }},\n  \"children\": {{ $('🔍 Интент').first().json.booking.children }},\n  \"name\": \"{{ $('🔍 Интент').first().json.booking.name }}\",\n  \"tg_chat_id\": \"{{ $('🔍 Интент').first().json.tg_chat_id }}\"\n}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "kote-pay-create-0001",
+      "name": "💳 Создать оплату",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2672,
+        640
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.available }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "kote-pay-if-0001",
+      "name": "🤔 Ссылка на оплату есть?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2896,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('🔍 Интент').first().json.tg_chat_id }}",
+        "text": "=Мур-р-р! 🐾 Бронь принята. Чтобы закрепить место — оплати по ссылке, и я сразу подтвержу:\n{{ $json.confirmation_url }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "kote-pay-send-0001",
+      "name": "💸 Отправить ссылку клиенту",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3120,
+        640
+      ],
+      "webhookId": "a8ba61bd-15e8-44ac-8763-338a3a7d5f2e",
+      "credentials": {
+        "telegramApi": {
+          "id": "a1b2c3d4e5f60718",
+          "name": "Telegram KotE"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8943048058",
+        "text": "=🔔 <b>НОВАЯ БРОНЬ</b> — данные собраны\n\n👤 <b>{{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.name) }}</b>\n📞 {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.phone) }}\n🏝 Тур: {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.tour) }}\n📅 Дата: {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.date) }}\n🏨 Отель: {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.hotel) }}, комната {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.room) }}\n👥 Всего: {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.total) }} — взрослых {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.adults) }}, детей {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.children) }}, младенцев до 4 (беспл.) {{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.booking.infants) }}\n💬 Chat ID: <code>{{ (v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))($('🔍 Интент').first().json.tg_chat_id) }}</code>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "866c8b16-6158-459c-8d4b-81fec0f6e613",
+      "name": "📲 Уведомить о брони",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2448,
+        448
+      ],
+      "webhookId": "a8ba61bd-15e8-44ac-8763-338a3a7d5f2e",
+      "credentials": {
+        "telegramApi": {
+          "id": "a1b2c3d4e5f60718",
+          "name": "Telegram KotE"
+        }
+      }
+    },
+    {
+      "id": "payfailalert00001",
+      "name": "🚨 Оплата не создана",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2668,
+        648
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "chatId": "8943048058",
+        "text": "=⚠️ ОПЛАТА НЕ СОЗДАНА по брони {{ $json.external_id || $('🔍 Интент').item.json.external_id || '—' }}\nПричина: {{ $json.reason || $json.error || 'ошибка pay/create' }}\nКлиент ждёт ссылку — обработайте вручную!",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "a1b2c3d4e5f60718",
+          "name": "Telegram KotE"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "🔍 Интент": {
+      "main": [
+        [
+          {
+            "node": "📥 Бронь в CRM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Бронь в CRM": {
+      "main": [
+        [
+          {
+            "node": "💳 Создать оплату",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📲 Уведомить о брони",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "💳 Создать оплату": {
+      "main": [
+        [
+          {
+            "node": "🤔 Ссылка на оплату есть?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🤔 Ссылка на оплату есть?": {
+      "main": [
+        [
+          {
+            "node": "💸 Отправить ссылку клиенту",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🚨 Оплата не создана",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "koteerrmon00001"
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "versionId": "045227fe-f7b8-417d-9aed-c9da42fb4984",
+  "activeVersionId": "045227fe-f7b8-417d-9aed-c9da42fb4984",
+  "versionCounter": 4,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-06-24T19:19:19.681Z",
+      "createdAt": "2026-06-24T19:19:19.681Z",
+      "role": "workflow:owner",
+      "workflowId": "koterukavbron01",
+      "projectId": "MqwDP4C0laO81Bqg",
+      "project": {
+        "updatedAt": "2026-06-19T04:42:11.152Z",
+        "createdAt": "2026-06-18T20:48:04.578Z",
+        "id": "MqwDP4C0laO81Bqg",
+        "name": "Ilia Betekhtin <ibetekhtin@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "7c1a3523-c2a1-45ab-99ab-c48c16f7c6b9"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}
