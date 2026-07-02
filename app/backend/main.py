@@ -149,5 +149,3 @@ async def app_order(order: AppOrder):
         f"🏝 {order.tour_name or '—'} — {order.total or '?'} ₽\n💬 {order.comment or ''}"
     )
     return {"ok": True}
-
-

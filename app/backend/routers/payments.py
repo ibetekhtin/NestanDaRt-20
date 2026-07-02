@@ -114,8 +114,10 @@ async def pay_create(body: PayCreate, _=Depends(require_secret)):
 
     # 3) B3: идемпотентность — не плодить платежи по одной брони
     try:
-        ex = await run_in_threadpool(lambda: sb.table("payments").select("payment_id,status,confirmation_url,amount")
-                                      .eq("booking_id", booking_id).order("created_at", desc=True).limit(1).execute())
+        ex = await run_in_threadpool(
+            lambda: sb.table("payments").select("payment_id,status,confirmation_url,amount")
+            .eq("booking_id", booking_id).order("created_at", desc=True).limit(1).execute()
+        )
         if ex.data:
             p = ex.data[0]
             if p.get("status") == "succeeded":
