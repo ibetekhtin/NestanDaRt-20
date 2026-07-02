@@ -28,7 +28,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
-  DOCKER_IMAGE_BACKEND: ghcr.io/ibetekhtin/nestandart/kote-backend  # ghcr требует lowercase (репо NestanDaRt-20 — с заглавными)
+  DOCKER_IMAGE_BACKEND: ghcr.io/ibetekhtin/nestandart-20/kote-backend  # lowercase от имени репо: пакет обязан жить в namespace репозитория
 
 jobs:
   # ─── Job 1: Проверка кода ────────────────────────────────────
