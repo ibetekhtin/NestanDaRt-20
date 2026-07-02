@@ -100,27 +100,41 @@ class AppOrder(BaseModel):
     source: str = "Приложение"
     name: str | None = None
     phone: str | None = None
+    email: str | None = None
+    telegram: str | None = None
+    whatsapp: str | None = None
     tg_chat_id: str | None = None
     tour_name: str | None = None
+    tour_slug: str | None = None
+    date_start: str | None = None
+    people: int | None = None
     total: int | None = None
     status: str = "Новый"
     comment: str | None = None
+    ref_code: str | None = None   # промокод — дописываем в comment (в app_upsert_lead нет p_ref_code)
 
 
 @app.post("/api/leads", tags=["leads"], include_in_schema=False)
 async def app_order(order: AppOrder):
     # Не создаём пустой лид-мусор и не спамим менеджера при пустом теле.
-    if not any([order.phone, order.tg_chat_id, order.name]):
-        raise HTTPException(status_code=400, detail="Нужен хотя бы один идентификатор: phone / tg_chat_id / name")
+    if not any([order.phone, order.tg_chat_id, order.name, order.email]):
+        raise HTTPException(status_code=400, detail="Нужен хотя бы один идентификатор: phone / tg_chat_id / name / email")
+    comment = order.comment
+    if order.ref_code:
+        comment = f"{comment or ''} | Промокод: {order.ref_code}".lstrip(" |")
     try:
         # sync-клиент Supabase — уводим в threadpool, чтобы не блокировать event loop
         await run_in_threadpool(
             lambda: upsert_lead(
                 external_id=order.external_id,
                 source=order.source or "Приложение",
-                name=order.name, phone=order.phone, tg_chat_id=order.tg_chat_id,
-                tour_name=order.tour_name, total=order.total,
-                comment=order.comment, status=order.status or "Новый",
+                name=order.name, phone=order.phone, email=order.email,
+                telegram=order.telegram, whatsapp=order.whatsapp,
+                tg_chat_id=order.tg_chat_id,
+                tour_name=order.tour_name, tour_slug=order.tour_slug,
+                date_start=order.date_start, people=order.people,
+                total=order.total, comment=comment,
+                status=order.status or "Новый",
             )
         )
     except Exception:
