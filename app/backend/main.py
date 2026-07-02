@@ -18,12 +18,11 @@ Nestandart / Нестандартный Отдых®
   POST  /api/v1/webhook/lead, /api/v1/webhook/booking
   GET   /api/docs                  — Swagger UI
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from config import settings
-from db import sb
+from db import upsert_lead
 from notify import notify_manager
 from routers import ai, bookings, clients, leads, markets, memory, payments, sos, tours, webhooks
 
@@ -81,27 +80,15 @@ class LeadIn(BaseModel):
 @app.post("/api/v1/lead", tags=["leads"], include_in_schema=False)
 async def upsert_lead_legacy(lead: LeadIn):
     """Backward-compatible endpoint. Use POST /api/v1/leads instead."""
-    res = sb.rpc("app_upsert_lead", {
-        "p_name":        lead.name,
-        "p_phone":       lead.phone,
-        "p_telegram":    lead.telegram,
-        "p_tg_chat_id":  lead.tg_chat_id,
-        "p_source":      lead.source,
-        "p_external_id": None,
-        "p_email":       None,
-        "p_whatsapp":    None,
-        "p_instagram":   None,
-        "p_vk":          None,
-        "p_tour_name":   None,
-        "p_tour_slug":   None,
-        "p_date_start":  None,
-        "p_people":      None,
-        "p_budget":      None,
-        "p_total":       None,
-        "p_comment":     None,
-        "p_status":      "Новый",
-        "p_secret":      settings.KOTE_RPC_SECRET,
-    }).execute()
+    if not any([lead.phone, lead.tg_chat_id, lead.telegram]):
+        raise HTTPException(status_code=400, detail="Нужен хотя бы один идентификатор: phone / tg_chat_id / telegram")
+    try:
+        res = upsert_lead(
+            name=lead.name, phone=lead.phone, telegram=lead.telegram,
+            tg_chat_id=lead.tg_chat_id, source=lead.source,
+        )
+    except Exception:
+        raise HTTPException(status_code=500, detail="Не удалось сохранить лид")
     return {"ok": True, "data": res.data}
 
 
@@ -121,19 +108,17 @@ class AppOrder(BaseModel):
 
 @app.post("/api/leads", tags=["leads"], include_in_schema=False)
 async def app_order(order: AppOrder):
+    # Не создаём пустой лид-мусор и не спамим менеджера при пустом теле.
+    if not any([order.phone, order.tg_chat_id, order.name]):
+        raise HTTPException(status_code=400, detail="Нужен хотя бы один идентификатор: phone / tg_chat_id / name")
     try:
-        sb.rpc("app_upsert_lead", {
-            "p_external_id": order.external_id,
-            "p_source":      order.source or "Приложение",
-            "p_name":        order.name,
-            "p_phone":       order.phone,
-            "p_tg_chat_id":  order.tg_chat_id,
-            "p_tour_name":   order.tour_name,
-            "p_total":       order.total,
-            "p_comment":     order.comment,
-            "p_status":      order.status or "Новый",
-            "p_secret":      settings.KOTE_RPC_SECRET,
-        }).execute()
+        upsert_lead(
+            external_id=order.external_id,
+            source=order.source or "Приложение",
+            name=order.name, phone=order.phone, tg_chat_id=order.tg_chat_id,
+            tour_name=order.tour_name, total=order.total,
+            comment=order.comment, status=order.status or "Новый",
+        )
     except Exception:
         # Не валим клиента (он уйдёт в outbox), но сообщаем менеджеру об ошибке записи.
         await notify_manager(

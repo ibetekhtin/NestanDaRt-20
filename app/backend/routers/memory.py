@@ -31,7 +31,7 @@ async def get_memory(client_id: str, _=Depends(require_secret)):
     try:
         result = sb.table("client_memory").select("*").eq("client_id", client_id).maybe_single().execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Внутренняя ошибка сервера") from e
     return (result.data if result else None) or {}
 
 
@@ -44,5 +44,5 @@ async def upsert_memory(client_id: str, mem: MemoryUpsert, _=Depends(require_sec
             payload, on_conflict="client_id"
         ).execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Внутренняя ошибка сервера") from e
     return result.data[0] if result.data else {"status": "ok"}

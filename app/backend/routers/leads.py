@@ -6,8 +6,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 from auth import require_secret
-from config import settings
-from db import sb
+from db import sb, upsert_lead
 
 router = APIRouter()
 
@@ -30,29 +29,14 @@ async def create_lead(lead: LeadCreate):
     if not any([lead.phone, lead.tg_chat_id, lead.telegram, lead.email]):
         raise HTTPException(status_code=400, detail="Нужен хотя бы один идентификатор: phone / tg_chat_id / telegram / email")
     try:
-        result = sb.rpc("app_upsert_lead", {
-            "p_name":       lead.name,
-            "p_phone":      lead.phone,
-            "p_telegram":   lead.telegram,
-            "p_tg_chat_id": lead.tg_chat_id,
-            "p_email":      lead.email,
-            "p_source":     lead.source,
-            "p_tour_name":  lead.tour_name,
-            "p_tour_slug":  lead.tour_slug,
-            "p_comment":    lead.comment,
-            "p_budget":     lead.budget,
-            "p_external_id": None,
-            "p_whatsapp":   None,
-            "p_instagram":  None,
-            "p_vk":         None,
-            "p_date_start": None,
-            "p_people":     None,
-            "p_total":      None,
-            "p_status":     "Новый",
-            "p_secret":     settings.KOTE_RPC_SECRET,
-        }).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        result = upsert_lead(
+            name=lead.name, phone=lead.phone, telegram=lead.telegram,
+            tg_chat_id=lead.tg_chat_id, email=lead.email, source=lead.source,
+            tour_name=lead.tour_name, tour_slug=lead.tour_slug,
+            comment=lead.comment, budget=lead.budget,
+        )
+    except Exception:
+        raise HTTPException(status_code=500, detail="Не удалось сохранить лид")
     return {"ok": True, "data": result.data}
 
 
@@ -72,6 +56,6 @@ async def get_leads(
         if stage:
             query = query.eq("stage", stage)
         result = query.order("created_at", desc=True).limit(limit).execute()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=500, detail="Ошибка чтения лидов")
     return result.data or []

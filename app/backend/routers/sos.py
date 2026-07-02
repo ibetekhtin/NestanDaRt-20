@@ -30,7 +30,7 @@ async def trigger_sos(req: SOSRequest, _=Depends(require_secret)):
     try:
         result = sb.table("clients").select("name, stage").eq("tg_chat_id", req.tg_chat_id).maybe_single().execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Внутренняя ошибка сервера") from e
 
     client_name = (result.data["name"] if result and result.data else None) or "Турист"
     numbers = EMERGENCY_NUMBERS.get(req.market_id, EMERGENCY_DEFAULT)

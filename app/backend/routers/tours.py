@@ -34,7 +34,7 @@ async def get_tours(
             q = q.eq("category", category)
         result = q.order("sort_order").execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Внутренняя ошибка сервера") from e
     return result.data or []
 
 
@@ -44,7 +44,7 @@ async def get_tour(tour_id: str):
     try:
         result = sb.table("tours").select("*").eq(column, tour_id).maybe_single().execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Внутренняя ошибка сервера") from e
     if not result or not result.data:
         raise HTTPException(status_code=404, detail="Tour not found")
     return result.data

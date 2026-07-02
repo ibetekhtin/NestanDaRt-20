@@ -51,7 +51,7 @@ async def create_booking(booking: BookingCreate, _=Depends(require_secret)):
             "status":       "Новый",
         }).execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Внутренняя ошибка сервера") from e
     if not result.data:
         raise HTTPException(status_code=500, detail="Booking insert returned no row")
     return {"booking_id": result.data[0]["id"], "status": "Новый"}
@@ -62,7 +62,7 @@ async def update_booking(booking_id: str, update: BookingUpdate, _=Depends(requi
     try:
         sb.table("bookings").update({"status": update.status}).eq("id", booking_id).execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Внутренняя ошибка сервера") from e
     return {"booking_id": booking_id, "status": update.status}
 
 
@@ -73,7 +73,7 @@ async def get_booking(booking_id: str, _=Depends(require_secret)):
             "*, clients(name, phone, tg_chat_id), tours(title, slug)"
         ).eq("id", booking_id).maybe_single().execute()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Внутренняя ошибка сервера") from e
     if not result or not result.data:
         raise HTTPException(status_code=404, detail="Booking not found")
     return result.data
