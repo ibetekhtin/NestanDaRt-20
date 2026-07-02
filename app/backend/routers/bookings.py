@@ -34,7 +34,7 @@ class BookingUpdate(BaseModel):
 
 
 @router.post("/bookings")
-async def create_booking(booking: BookingCreate, _=Depends(require_secret)):
+def create_booking(booking: BookingCreate, _=Depends(require_secret)):
     try:
         result = sb.table("bookings").insert({
             "client_id":    booking.client_id,
@@ -58,7 +58,7 @@ async def create_booking(booking: BookingCreate, _=Depends(require_secret)):
 
 
 @router.patch("/bookings/{booking_id}")
-async def update_booking(booking_id: str, update: BookingUpdate, _=Depends(require_secret)):
+def update_booking(booking_id: str, update: BookingUpdate, _=Depends(require_secret)):
     try:
         sb.table("bookings").update({"status": update.status}).eq("id", booking_id).execute()
     except Exception as e:
@@ -67,7 +67,7 @@ async def update_booking(booking_id: str, update: BookingUpdate, _=Depends(requi
 
 
 @router.get("/bookings/{booking_id}")
-async def get_booking(booking_id: str, _=Depends(require_secret)):
+def get_booking(booking_id: str, _=Depends(require_secret)):
     try:
         result = sb.table("bookings").select(
             "*, clients(name, phone, tg_chat_id), tours(title, slug)"

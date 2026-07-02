@@ -62,13 +62,30 @@ def test_tour_not_found(client):
     assert client.get(f"{V1}/tours/definitely-not-a-tour").status_code == 404
 
 
+# PII-эндпоинты приватные: без X-Kote-Secret — 403, с секретом — честный 404.
+SECRET = os.getenv("KOTE_RPC_SECRET", "")
+_secret_hdr = {"X-Kote-Secret": SECRET}
+needs_secret = pytest.mark.skipif(not SECRET, reason="KOTE_RPC_SECRET не задан в env")
+
+
+def test_client_requires_secret(client):
+    assert client.get(f"{V1}/clients/0000000000").status_code in (403, 503)
+
+
+def test_booking_requires_secret(client):
+    nil_uuid = "00000000-0000-0000-0000-000000000000"
+    assert client.get(f"{V1}/bookings/{nil_uuid}").status_code in (403, 503)
+
+
+@needs_secret
 def test_client_not_found(client):
-    assert client.get(f"{V1}/clients/0000000000").status_code == 404
+    assert client.get(f"{V1}/clients/0000000000", headers=_secret_hdr).status_code == 404
 
 
+@needs_secret
 def test_booking_not_found(client):
     nil_uuid = "00000000-0000-0000-0000-000000000000"
-    assert client.get(f"{V1}/bookings/{nil_uuid}").status_code == 404
+    assert client.get(f"{V1}/bookings/{nil_uuid}", headers=_secret_hdr).status_code == 404
 
 
 def test_lead_validation_requires_identifier(client):

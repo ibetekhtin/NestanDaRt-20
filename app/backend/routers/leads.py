@@ -25,7 +25,7 @@ class LeadCreate(BaseModel):
 
 
 @router.post("/leads")
-async def create_lead(lead: LeadCreate):
+def create_lead(lead: LeadCreate):
     if not any([lead.phone, lead.tg_chat_id, lead.telegram, lead.email]):
         raise HTTPException(status_code=400, detail="Нужен хотя бы один идентификатор: phone / tg_chat_id / telegram / email")
     try:
@@ -41,7 +41,7 @@ async def create_lead(lead: LeadCreate):
 
 
 @router.get("/leads")
-async def get_leads(
+def get_leads(
     status: Optional[str] = None,
     stage: Optional[str] = None,
     limit: int = Query(50, le=200),

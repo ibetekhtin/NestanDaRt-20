@@ -19,6 +19,7 @@ Nestandart / Нестандартный Отдых®
   GET   /api/docs                  — Swagger UI
 """
 from fastapi import FastAPI, HTTPException
+from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -78,7 +79,7 @@ class LeadIn(BaseModel):
 
 
 @app.post("/api/v1/lead", tags=["leads"], include_in_schema=False)
-async def upsert_lead_legacy(lead: LeadIn):
+def upsert_lead_legacy(lead: LeadIn):
     """Backward-compatible endpoint. Use POST /api/v1/leads instead."""
     if not any([lead.phone, lead.tg_chat_id, lead.telegram]):
         raise HTTPException(status_code=400, detail="Нужен хотя бы один идентификатор: phone / tg_chat_id / telegram")
@@ -112,12 +113,15 @@ async def app_order(order: AppOrder):
     if not any([order.phone, order.tg_chat_id, order.name]):
         raise HTTPException(status_code=400, detail="Нужен хотя бы один идентификатор: phone / tg_chat_id / name")
     try:
-        upsert_lead(
-            external_id=order.external_id,
-            source=order.source or "Приложение",
-            name=order.name, phone=order.phone, tg_chat_id=order.tg_chat_id,
-            tour_name=order.tour_name, total=order.total,
-            comment=order.comment, status=order.status or "Новый",
+        # sync-клиент Supabase — уводим в threadpool, чтобы не блокировать event loop
+        await run_in_threadpool(
+            lambda: upsert_lead(
+                external_id=order.external_id,
+                source=order.source or "Приложение",
+                name=order.name, phone=order.phone, tg_chat_id=order.tg_chat_id,
+                tour_name=order.tour_name, total=order.total,
+                comment=order.comment, status=order.status or "Новый",
+            )
         )
     except Exception:
         # Не валим клиента (он уйдёт в outbox), но сообщаем менеджеру об ошибке записи.

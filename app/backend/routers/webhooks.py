@@ -27,7 +27,7 @@ class BookingWebhook(BaseModel):
 
 
 @router.post("/webhook/lead")
-async def webhook_lead(payload: LeadWebhook, _=Depends(require_secret)):
+def webhook_lead(payload: LeadWebhook, _=Depends(require_secret)):
     try:
         result = upsert_lead(
             name=payload.name, phone=payload.phone, telegram=payload.telegram,
@@ -40,7 +40,7 @@ async def webhook_lead(payload: LeadWebhook, _=Depends(require_secret)):
 
 
 @router.post("/webhook/booking")
-async def webhook_booking(payload: BookingWebhook, _=Depends(require_secret)):
+def webhook_booking(payload: BookingWebhook, _=Depends(require_secret)):
     try:
         sb.table("bookings").update({"status": payload.status}).eq("id", payload.booking_id).execute()
     except Exception:

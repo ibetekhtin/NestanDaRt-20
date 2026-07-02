@@ -21,6 +21,7 @@ from typing import Optional
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 
 from auth import require_secret
@@ -85,7 +86,7 @@ async def _notify_manager(text: str) -> None:
 async def pay_create(body: PayCreate, _=Depends(require_secret)):
     # 1) цена тура из БД (источник истины)
     try:
-        tr = sb.table("tours").select("price_adult,price_child,title").eq("slug", body.tour_slug).limit(1).execute()
+        tr = await run_in_threadpool(lambda: sb.table("tours").select("price_adult,price_child,title").eq("slug", body.tour_slug).limit(1).execute())
     except Exception as e:
         log.warning("tours lookup failed: %s", e)
         return {"available": False, "reason": "tour_lookup_failed"}
@@ -99,7 +100,7 @@ async def pay_create(body: PayCreate, _=Depends(require_secret)):
     # 2) B4: бронь ДОЛЖНА существовать
     booking_id = None
     try:
-        bk = sb.table("bookings").select("id").eq("external_id", body.external_id).limit(1).execute()
+        bk = await run_in_threadpool(lambda: sb.table("bookings").select("id").eq("external_id", body.external_id).limit(1).execute())
         if bk.data:
             booking_id = bk.data[0]["id"]
     except Exception as e:
@@ -113,8 +114,8 @@ async def pay_create(body: PayCreate, _=Depends(require_secret)):
 
     # 3) B3: идемпотентность — не плодить платежи по одной брони
     try:
-        ex = sb.table("payments").select("payment_id,status,confirmation_url,amount") \
-            .eq("booking_id", booking_id).order("created_at", desc=True).limit(1).execute()
+        ex = await run_in_threadpool(lambda: sb.table("payments").select("payment_id,status,confirmation_url,amount")
+                                      .eq("booking_id", booking_id).order("created_at", desc=True).limit(1).execute())
         if ex.data:
             p = ex.data[0]
             if p.get("status") == "succeeded":
@@ -151,11 +152,11 @@ async def pay_create(body: PayCreate, _=Depends(require_secret)):
     url = (pay.get("confirmation") or {}).get("confirmation_url")
     # 5) записать платёж (idempotent: при повторе Idempotence-Key вернётся тот же id)
     try:
-        sb.table("payments").upsert({
+        await run_in_threadpool(lambda: sb.table("payments").upsert({
             "booking_id": booking_id, "provider": "yookassa", "payment_id": pay.get("id"),
             "amount": amount, "currency": "RUB",
             "status": pay.get("status", "pending"), "confirmation_url": url,
-        }, on_conflict="payment_id").execute()
+        }, on_conflict="payment_id").execute())
     except Exception as e:
         log.warning("payments insert failed: %s", e)
 
@@ -183,7 +184,7 @@ async def pay_webhook(request: Request):
 
     # B6: обрабатываем только ИЗВЕСТНЫЕ нам платежи (есть в нашей таблице)
     try:
-        known = sb.table("payments").select("amount,currency,status,booking_id").eq("payment_id", pay_id).limit(1).execute()
+        known = await run_in_threadpool(lambda: sb.table("payments").select("amount,currency,status,booking_id").eq("payment_id", pay_id).limit(1).execute())
     except Exception as e:
         log.error("payments lookup failed: %s", e)
         raise HTTPException(status_code=503, detail="retry")   # B4: 5xx → YooKassa повторит
@@ -208,12 +209,12 @@ async def pay_webhook(request: Request):
     # B5: ВОЗВРАТ
     if event.startswith("refund") or status == "refunded" or (pay.get("refunded_amount") or {}).get("value"):
         try:
-            sb.table("payments").update({"status": "refunded"}).eq("payment_id", pay_id).execute()
+            await run_in_threadpool(lambda: sb.table("payments").update({"status": "refunded"}).eq("payment_id", pay_id).execute())
         except Exception:
             raise HTTPException(status_code=503, detail="retry")
         if ext:
             try:
-                sb.rpc("app_set_booking_status", {"p_external_id": ext, "p_status": "Возврат", "p_secret": secret}).execute()
+                await run_in_threadpool(lambda: sb.rpc("app_set_booking_status", {"p_external_id": ext, "p_status": "Возврат", "p_secret": secret}).execute())
             except Exception as e:
                 log.warning("refund status set failed: %s", e)
         await _notify_manager(f"↩️ <b>ВОЗВРАТ</b> по брони <code>{ext}</code> (платёж {pay_id}). Бронь → «Возврат».")
@@ -222,7 +223,7 @@ async def pay_webhook(request: Request):
     # B5: ОТМЕНА
     if status == "canceled":
         try:
-            sb.table("payments").update({"status": "canceled"}).eq("payment_id", pay_id).execute()
+            await run_in_threadpool(lambda: sb.table("payments").update({"status": "canceled"}).eq("payment_id", pay_id).execute())
         except Exception:
             raise HTTPException(status_code=503, detail="retry")
         return {"ok": True}
@@ -247,7 +248,7 @@ async def pay_webhook(request: Request):
 
     # payments → succeeded
     try:
-        sb.table("payments").update({"status": "succeeded", "paid_at": datetime.now(timezone.utc).isoformat()}).eq("payment_id", pay_id).execute()
+        await run_in_threadpool(lambda: sb.table("payments").update({"status": "succeeded", "paid_at": datetime.now(timezone.utc).isoformat()}).eq("payment_id", pay_id).execute())
     except Exception:
         raise HTTPException(status_code=503, detail="retry")
 
@@ -255,7 +256,7 @@ async def pay_webhook(request: Request):
     booking_marked = False
     if ext:
         try:
-            res = sb.rpc("app_mark_paid", {"p_external_id": ext, "p_secret": secret}).execute()
+            res = await run_in_threadpool(lambda: sb.rpc("app_mark_paid", {"p_external_id": ext, "p_secret": secret}).execute())
             data = res.data if isinstance(res.data, dict) else (res.data[0] if isinstance(res.data, list) and res.data else None)
             booking_marked = bool(data and data.get("ok"))
         except Exception as e:
@@ -274,7 +275,7 @@ async def pay_webhook(request: Request):
 async def pay_reconcile(_=Depends(require_secret)):
     """Вызывается n8n по расписанию: ищет зависшие pending и succeeded без оплаченной брони."""
     try:
-        res = sb.rpc("pay_stuck_report", {"p_secret": settings.KOTE_RPC_SECRET, "p_hours": 2}).execute()
+        res = await run_in_threadpool(lambda: sb.rpc("pay_stuck_report", {"p_secret": settings.KOTE_RPC_SECRET, "p_hours": 2}).execute())
         rep = res.data if isinstance(res.data, dict) else (res.data[0] if isinstance(res.data, list) and res.data else {})
     except Exception as e:
         log.warning("reconcile report failed: %s", e)

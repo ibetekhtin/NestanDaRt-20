@@ -1,5 +1,6 @@
 """SOS Router — экстренные вызовы (приватный, с секрет-гейтом)."""
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 
 from auth import require_secret
@@ -28,7 +29,9 @@ class SOSRequest(BaseModel):
 @router.post("/sos")
 async def trigger_sos(req: SOSRequest, _=Depends(require_secret)):
     try:
-        result = sb.table("clients").select("name, stage").eq("tg_chat_id", req.tg_chat_id).maybe_single().execute()
+        result = await run_in_threadpool(
+            lambda: sb.table("clients").select("name, stage").eq("tg_chat_id", req.tg_chat_id).maybe_single().execute()
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail="Внутренняя ошибка сервера") from e
 

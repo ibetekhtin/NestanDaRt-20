@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get("/markets")
-async def get_markets():
+def get_markets():
     try:
         result = sb.table("markets").select(
             "id, name, name_en, country, accent_color, timezone, currency, tagline, active"
@@ -19,7 +19,7 @@ async def get_markets():
 
 
 @router.get("/markets/{market_id}")
-async def get_market(market_id: str):
+def get_market(market_id: str):
     try:
         result = sb.table("markets").select("*").eq("id", market_id).maybe_single().execute()
     except Exception as e:

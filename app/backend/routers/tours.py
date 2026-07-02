@@ -21,7 +21,7 @@ _LIST_COLS = (
 
 
 @router.get("/tours")
-async def get_tours(
+def get_tours(
     market_id: Optional[str] = None,
     category: Optional[str] = None,
     active: bool = True,
@@ -39,7 +39,7 @@ async def get_tours(
 
 
 @router.get("/tours/{tour_id}")
-async def get_tour(tour_id: str):
+def get_tour(tour_id: str):
     column = "id" if _UUID_RE.match(tour_id) else "slug"
     try:
         result = sb.table("tours").select("*").eq(column, tour_id).maybe_single().execute()
