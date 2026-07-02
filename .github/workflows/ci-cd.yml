@@ -1,15 +1,15 @@
 # ============================================================================
-# NestanDaRt-20 — CI/CD Pipeline
+# Nestandart — CI/CD Pipeline
 # ============================================================================
 # Запускается при пуше в main (только при изменении кода, не docs).
 # Jobs:
 #   1. lint         — проверка Python, поиск хардкод-секретов
 #   2. secret-scan  — gitleaks
 #   3. docker       — сборка и пуш образа backend в ghcr.io
-#   4. deploy       — SSH деплой на VPS /opt/NestanDaRt-20 (если VPS_HOST задан)
+#   4. deploy       — SSH деплой на VPS /opt/nestandart (если VPS_HOST задан)
 # ============================================================================
 
-name: NestanDaRt-20 CI/CD
+name: Nestandart CI/CD
 
 on:
   push:
@@ -145,20 +145,20 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
             set -e
-            cd /opt/NestanDaRt-20
+            cd /opt/nestandart
 
             echo "📥 Pulling latest code..."
             git pull origin main
 
             echo "🐳 Rebuilding backend..."
-            docker compose build nestandart-backend
+            docker compose build kote-backend
             docker compose up -d --remove-orphans
 
             echo "⏳ Waiting for health check..."
             HEALTHY=0
             for i in $(seq 1 20); do
               if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
-                echo "✅ nestandart-backend is healthy"
+                echo "✅ kote-backend is healthy"
                 HEALTHY=1
                 break
               fi
